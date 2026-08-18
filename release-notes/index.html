@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Changelog — Salesforce Comet</title>
+    <meta name="description" content="Salesforce Comet changelog. See what's new, improved, and fixed in every version.">
+    <meta name="author" content="Salesforce Comet">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="../assets/icon-128.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">
+            <img src="../assets/icon-128.png" alt="" class="nav-logo">
+            <span>Salesforce Comet</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#showcase">Demo</a></li>
+            <li><a href="release-notes" class="active">Changelog</a></li>
+            <li><a href="privacy">Privacy</a></li>
+        </ul>
+        <a href="https://chromewebstore.google.com/detail/salesforce-comet/pigmbghmkdaalhebdhfoeldcekhiemhi" target="_blank" rel="noopener" class="nav-cta"><img src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" width="14" height="14" alt=""> Install Free</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+</nav>
+
+<section class="page-hero">
+    <div class="page-hero-content">
+        <span class="section-tag">Changelog</span>
+        <h1>Release Notes</h1>
+        <p class="page-subtitle">Every update, improvement, and fix — documented so you always know what's new.</p>
+        <div class="page-meta">
+            <span>Current: v3.1.1</span>
+        </div>
+    </div>
+</section>
+
+<main class="page-content">
+    <div class="content-wrap">
+
+        <div class="timeline">
+
+            <!-- v3.1.1 -->
+            <div class="timeline-entry reveal">
+                <div class="timeline-marker">
+                    <div class="timeline-dot active"></div>
+                    <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-header">
+                        <div class="timeline-version">
+                            <h2>v3.1.1</h2>
+                            <span class="badge badge-latest">Latest</span>
+                        </div>
+
+                    </div>
+                    <p class="timeline-summary">Security hardening, Chrome Web Store compliance, and bug fixes.</p>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#34d399"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Security &amp; Compliance</h3>
+                        <ul>
+                            <li>Vault passwords now encrypted at rest using <strong>AES-256-GCM</strong> with PBKDF2 key derivation (310,000 iterations)</li>
+                            <li>One-click login credentials automatically wiped after 40-second watchdog alarm</li>
+                            <li>Session-based logins set the <code>sid</code> cookie instead of URL parameter (prevents history/log leakage)</li>
+                            <li>CSP tightened — removed unused <code>cdnjs</code> allowance, all inline scripts externalized</li>
+                            <li>Full Chrome Web Store Featured Badge compliance audit passed</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#f472b6"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span> Bug Fixes</h3>
+                        <ul>
+                            <li>Fixed Diff Checker Monaco editor failing to load (broken AMD require config path)</li>
+                            <li>Fixed dead favicon path in <code>completion_list.html</code></li>
+                            <li>Fixed trailing space in manifest name causing inconsistent branding</li>
+                            <li>Removed orphaned <code>panel.html</code> with dangling script reference</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#7cb8c9"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span> Improvements</h3>
+                        <ul>
+                            <li>Unified extension title to "Salesforce Comet" across all surfaces</li>
+                            <li>Privacy policy added (<code>PRIVACY.md</code>)</li>
+                            <li>Welcome onboarding page script externalized for CSP compliance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v3.1.0 -->
+            <div class="timeline-entry reveal">
+                <div class="timeline-marker">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-header">
+                        <div class="timeline-version">
+                            <h2>v3.1.0</h2>
+                        </div>
+
+                    </div>
+                    <p class="timeline-summary">Major feature release with Bulk Permission Wizard, Automation Cascade analysis, and Event Monitor.</p>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#a78bfa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> New Features</h3>
+                        <ul>
+                            <li><strong>Bulk Permission Wizard</strong> — Manage Permission Set assignments across multiple users with a guided, step-by-step wizard interface</li>
+                            <li><strong>Automation Cascade Analyzer</strong> — Visualize and debug the complete order of execution for triggers, flows, process builders, and workflow rules on any object</li>
+                            <li><strong>Event Monitor</strong> — Real-time platform event monitoring and inspection tool</li>
+                            <li><strong>Bulk Field Builder</strong> — Create multiple custom fields across objects in bulk with a visual field editor</li>
+                            <li><strong>GraphQL Explorer</strong> — Interactive GraphQL API explorer for Salesforce orgs</li>
+                            <li><strong>Org Limits Dashboard</strong> — Real-time governor limits and API usage monitoring</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#7cb8c9"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span> Improvements</h3>
+                        <ul>
+                            <li>Command Palette now includes search across Permission Sets, Custom Metadata Types, and Platform Events</li>
+                            <li>Data Export supports automatic pagination for large result sets</li>
+                            <li>Record Cloner preserves relationship fields with configurable field selection</li>
+                            <li>Flow Scanner now detects Subflow references and displays automation chains</li>
+                            <li>Colored favicons support custom domain org identification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v3.0.0 -->
+            <div class="timeline-entry reveal">
+                <div class="timeline-marker">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-header">
+                        <div class="timeline-version">
+                            <h2>v3.0.0</h2>
+                            <span class="badge badge-major">Major</span>
+                        </div>
+
+                    </div>
+                    <p class="timeline-summary">Complete architecture rewrite. Manifest V3 migration, new glassmorphism UI, Monaco Code Editor, and comprehensive Data Import wizard.</p>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#a78bfa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> New Features</h3>
+                        <ul>
+                            <li><strong>Manifest V3 Migration</strong> — Full migration from MV2 to MV3 with service worker architecture</li>
+                            <li><strong>Monaco Code Editor</strong> — Full-featured code editor powered by VS Code's Monaco engine with Apex syntax highlighting, IntelliSense-style autocomplete, and real-time error feedback</li>
+                            <li><strong>Data Import Wizard</strong> — CSV-based record import with field mapping, validation, and bulk DML operations (insert, update, upsert, delete)</li>
+                            <li><strong>Debug Log Viewer</strong> — Advanced log viewer with syntax highlighting, execution tree visualization, and governor limit tracking</li>
+                            <li><strong>Flow Scanner Engine</strong> — Real-time detection and inspection of active flows on any Salesforce page</li>
+                            <li><strong>REST API Explorer</strong> — Execute raw REST API calls directly against your org</li>
+                            <li><strong>Code Coverage Reports</strong> — View Apex test coverage with line-by-line highlighting</li>
+                            <li><strong>Code Search</strong> — Full-text search across all Apex classes and triggers in your org</li>
+                            <li><strong>API Statistics</strong> — Monitor API call usage and limits</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#7cb8c9"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span> Improvements</h3>
+                        <ul>
+                            <li>Complete UI redesign with premium glassmorphism dark theme</li>
+                            <li>New welcome onboarding experience with animated logo and keyboard shortcut tutorial</li>
+                            <li>Settings page rebuilt with macOS-style sidebar navigation</li>
+                            <li>Glass toast notification system for non-intrusive feedback</li>
+                            <li>Custom dropdown components replacing browser defaults</li>
+                            <li>Theme manager with accent color customization</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v2.x Legacy -->
+            <div class="timeline-entry reveal">
+                <div class="timeline-marker">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line last"></div>
+                </div>
+                <div class="timeline-card legacy">
+                    <div class="timeline-header">
+                        <div class="timeline-version">
+                            <h2>v2.x</h2>
+                            <span class="badge badge-legacy">Legacy</span>
+                        </div>
+
+                    </div>
+                    <p class="timeline-summary">Original Manifest V2 release. Included Command Palette, Record Inspector, Field API Name Exposer, LWC Inspector, Data Export (SOQL Query Runner), and basic Debug Log management. Fully superseded by v3.0.</p>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#a78bfa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg></span> Core Features (v2.x)</h3>
+                        <ul>
+                            <li>Command Palette with Shift + Space shortcut</li>
+                            <li>Record Inspector ("Show All Data") with JSON export</li>
+                            <li>Field API Name overlay on Lightning record pages</li>
+                            <li>LWC Component Inspector for DOM debugging</li>
+                            <li>SOQL Query Runner with CSV export</li>
+                            <li>Trace Flag Manager with log level controls</li>
+                            <li>Org credential vault with one-click login</li>
+                            <li>Colored favicons for org differentiation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <img src="../assets/icon-128.png" alt="" class="footer-logo">
+            <span>Salesforce Comet</span>
+        </div>
+        <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#showcase">Demo</a></li>
+            <li><a href="release-notes">Changelog</a></li>
+            <li><a href="privacy">Privacy</a></li>
+        </ul>
+        <span class="footer-copy">&copy; 2026 Salesforce Comet</span>
+    </div>
+</footer>
+
+<script>
+(function () {
+    'use strict';
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+    const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('shown'); obs.unobserve(e.target); } }), { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>

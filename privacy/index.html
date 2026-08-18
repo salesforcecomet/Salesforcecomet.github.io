@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Privacy Policy — Salesforce Comet</title>
+    <meta name="description" content="Salesforce Comet Privacy Policy. Zero backend servers, zero analytics, AES-256-GCM encryption. Your data never leaves your browser.">
+    <meta name="author" content="Salesforce Comet">
+    <meta name="robots" content="index, follow">
+    <link rel="icon" href="../assets/icon-128.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../pages.css">
+</head>
+<body>
+
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="/" class="nav-brand">
+            <img src="../assets/icon-128.png" alt="" class="nav-logo">
+            <span>Salesforce Comet</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#showcase">Demo</a></li>
+            <li><a href="release-notes">Changelog</a></li>
+            <li><a href="privacy" class="active">Privacy</a></li>
+        </ul>
+        <a href="https://chromewebstore.google.com/detail/salesforce-comet/pigmbghmkdaalhebdhfoeldcekhiemhi" target="_blank" rel="noopener" class="nav-cta"><img src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" width="14" height="14" alt=""> Install Free</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+</nav>
+
+<section class="page-hero">
+    <div class="page-hero-content">
+        <span class="section-tag">Privacy</span>
+        <h1>Privacy Policy</h1>
+        <p class="page-subtitle">How Salesforce Comet handles your data. The short version: <strong>it never leaves your browser.</strong></p>
+        <div class="page-meta">
+            <span>Salesforce Comet v3.1</span>
+        </div>
+    </div>
+</section>
+
+<main class="page-content">
+    <div class="content-wrap">
+
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-icon" style="color:#34d399"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+                <h3>Encrypted at Rest</h3>
+                <p>AES-256-GCM encryption with PBKDF2 key derivation (310,000 iterations)</p>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon" style="color:#7cb8c9"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <h3>No Backend</h3>
+                <p>No servers, no cloud storage. Everything runs entirely in your browser.</p>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon" style="color:#a78bfa"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div>
+                <h3>Zero Tracking</h3>
+                <p>No analytics, no telemetry, no advertising, no third-party data sharing.</p>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon" style="color:#f472b6"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+                <h3>Full Deletion</h3>
+                <p>Uninstall the extension and all stored data is completely removed.</p>
+            </div>
+        </div>
+
+        <div class="legal-intro">
+            This policy describes how the <strong>Salesforce Comet</strong> browser extension handles data. The extension is a developer tool for Salesforce administrators, developers, and architects. It runs entirely in your browser and does not operate a server of our own.
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">01</span>
+                <h2>Salesforce Session</h2>
+            </div>
+            <p>To call the Salesforce REST / Tooling APIs on your behalf, the extension reads your existing Salesforce session cookie (<code>sid</code>) from the org you are already logged into. This is done locally, in your browser, using the browser's cookie APIs.</p>
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Use</h4>
+                    <p>Authentication for API calls that power the extension's features — record inspection, data export/import, metadata browsing, debug logs, flow scanning, etc.</p>
+                </div>
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Transmission</h4>
+                    <p>The session token is only ever sent to <strong>your own Salesforce orgs</strong> as the Authorization header of API requests you trigger. It is never sent to us or to any third party.</p>
+                </div>
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Storage</h4>
+                    <p>The session token is kept in memory while features run. A copy may be cached in local extension storage for a few minutes so that standalone tool tabs can pick it up; it is not retained beyond your browser session.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">02</span>
+                <h2>Saved Org Accounts</h2>
+            </div>
+            <p>The popup lets you save the login details (name, username, password, login URL, color) of Salesforce orgs for one-click login.</p>
+            <div class="detail-grid">
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Storage</h4>
+                    <p>All data is stored <strong>locally in your browser</strong> via <code>chrome.storage.local</code>.</p>
+                </div>
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Encryption</h4>
+                    <p>Passwords are <strong>encrypted at rest</strong> with AES-256-GCM using a key derived (PBKDF2, 310,000 iterations) from a <strong>master passphrase that you create</strong>. The master passphrase itself is never stored; the derived key lives only in memory for the current browser session and is wiped when the browser restarts. If you forget the master passphrase, encrypted passwords cannot be recovered and must be re-entered.</p>
+                </div>
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Transmission</h4>
+                    <p>Saved credentials are never transmitted anywhere. During one-click login, the password is written to a temporary local storage slot for at most 40 seconds so the login page can fill it in; it is then deleted.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">03</span>
+                <h2>Salesforce Org Data</h2>
+            </div>
+            <p>Records, metadata, Apex code, debug logs, flow definitions, and similar data are fetched from <strong>your Salesforce orgs</strong> via their official APIs when you use a feature. The extension renders this data locally. Nothing is uploaded to us.</p>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">04</span>
+                <h2>Browsing Activity</h2>
+            </div>
+            <p>The extension only runs on Salesforce domains (<code>*.salesforce.com</code>, <code>*.force.com</code>, <code>*.salesforce-setup.com</code>, <code>*.visualforce.com</code>, and related). It does not collect, store, or transmit your general browsing activity.</p>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">05</span>
+                <h2>What the Extension Does NOT Do</h2>
+            </div>
+            <div class="not-list">
+                <div class="not-item"><div class="not-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><p>No advertising, analytics, or tracking.</p></div>
+                <div class="not-item"><div class="not-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><p>No sale, transfer, or sharing of user data with third parties.</p></div>
+                <div class="not-item"><div class="not-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><p>No data is sent to our servers — the extension has no backend.</p></div>
+                <div class="not-item"><div class="not-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><p>No use of data for personalization, creditworthiness, or any purpose beyond the extension's single purpose as a Salesforce development tool.</p></div>
+                <div class="not-item"><div class="not-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div><p>No remote executable code. All logic ships inside the extension package.</p></div>
+            </div>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">06</span>
+                <h2>External Links</h2>
+            </div>
+            <p>On uninstall, you are offered the option to complete an anonymous feedback survey hosted on Google Forms (<code>docs.google.com</code>). Participation is optional; the survey receives only what you choose to type. The extension contains no remote executable code.</p>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">07</span>
+                <h2>User Controls &amp; Deletion</h2>
+            </div>
+            <div class="detail-grid two-col">
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Vault</h4>
+                    <p>You can delete individual accounts or whole groups from the popup. To delete everything, remove the extension — uninstalling removes all data stored in browser storage.</p>
+                </div>
+                <div class="detail-card">
+                    <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Permissions</h4>
+                    <p>You can revoke the extension's permissions at any time from <code>chrome://extensions</code>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">08</span>
+                <h2>Limited Use Disclosure</h2>
+            </div>
+            <p>The use of information received from Salesforce APIs by this extension adheres to the Chrome Web Store User Data Policy, including the Limited Use requirements.</p>
+        </div>
+
+        <div class="legal-section">
+            <div class="legal-header">
+                <span class="legal-num">09</span>
+                <h2>Contact</h2>
+            </div>
+            <p>For privacy questions or data requests, contact the publisher through the contact information listed on the extension's <a href="https://chromewebstore.google.com/detail/salesforce-comet/pigmbghmkdaalhebdhfoeldcekhiemhi" target="_blank" rel="noopener">Chrome Web Store listing</a>.</p>
+        </div>
+
+    </div>
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <img src="../assets/icon-128.png" alt="" class="footer-logo">
+            <span>Salesforce Comet</span>
+        </div>
+        <ul class="footer-links">
+            <li><a href="/#features">Features</a></li>
+            <li><a href="/#showcase">Demo</a></li>
+            <li><a href="release-notes">Changelog</a></li>
+            <li><a href="privacy">Privacy</a></li>
+        </ul>
+        <span class="footer-copy">&copy; 2026 Salesforce Comet</span>
+    </div>
+</footer>
+
+<script>
+(function () {
+    'use strict';
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+    const obs = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('shown'); obs.unobserve(e.target); } }), { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+</script>
+</body>
+</html>
