@@ -1,198 +1,661 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google-site-verification" content="jEui3qtqa1GVoYZCOKqzQvoYWeB7EdpBJs8Y-_xQMdU" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#09090b">
 
-  <title>Salesforce Comment - Chrome Extensions</title>
+    <title>Salesforce Comet — The Ultimate Salesforce Chrome Extension</title>
+    <meta name="description" content="Supercharge your Salesforce workflow. Command Palette, Record Inspector, Code Editor, Debug Logs, Data Export — 20+ developer tools in one Chrome extension.">
+    <meta name="keywords" content="Salesforce, Chrome Extension, Developer Tools, Apex, SOQL, Debug Logs, Data Export, Record Inspector, Comet">
+    <meta name="author" content="Salesforce Comet">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Salesforce Comet — The Ultimate Salesforce Chrome Extension">
+    <meta property="og:description" content="20+ powerful Salesforce dev tools in one extension.">
+    <meta property="og:image" content="assets/logo.png">
 
-  <meta name="description"
-        content="Salesforce Comment is a Chrome extension that makes working with Salesforce faster and easier.">
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      color: #172033;
-    }
-
-    header {
-      background: #0b5cab;
-      color: white;
-      padding: 20px 8%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h1 {
-      font-size: 24px;
-    }
-
-    header a {
-      color: white;
-      text-decoration: none;
-      margin-left: 20px;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 100px 20px;
-      background: white;
-    }
-
-    .hero h2 {
-      font-size: 48px;
-      margin-bottom: 20px;
-    }
-
-    .hero p {
-      font-size: 20px;
-      max-width: 700px;
-      margin: auto;
-      color: #667085;
-      line-height: 1.6;
-    }
-
-    .button {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 14px 28px;
-      background: #0b5cab;
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    .features {
-      padding: 70px 8%;
-      text-align: center;
-    }
-
-    .features h2 {
-      font-size: 32px;
-      margin-bottom: 40px;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 25px;
-    }
-
-    .feature {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-    }
-
-    .feature h3 {
-      margin-bottom: 12px;
-    }
-
-    .feature p {
-      color: #667085;
-      line-height: 1.5;
-    }
-
-    footer {
-      text-align: center;
-      padding: 30px;
-      background: #172033;
-      color: white;
-    }
-
-    footer a {
-      color: white;
-      margin: 0 10px;
-    }
-  </style>
+    <link rel="icon" href="assets/icon-128.png" type="image/png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
 
-  <header>
-    <h1>Salesforce Commenfft</h1>
-
-    <nav>
-      <a href="#features">Features</a>
-      <a href="privacy-policy.html">Privacy</a>
-    </nav>
-  </header>
-
-  <section class="hero">
-    <h2>Work Smarter in Salesforce</h2>
-
-    <p>
-      Salesforce Comment is a Chrome extension designed to make
-      Salesforce development and administration faster, easier,
-      and more productive.
-    </p>
-
-    <a
-      class="button"
-      href="https://chromewebstore.google.com/"
-      target="_blank">
-      Get the Extension
-    </a>
-  </section>
-
-  <section class="features" id="features">
-
-    <h2>Powerful Salesforce Tools</h2>
-
-    <div class="feature-grid">
-
-      <div class="feature">
-        <h3>⚡ Faster Workflow</h3>
-        <p>
-          Quickly access useful Salesforce tools without leaving
-          your Salesforce org.
-        </p>
-      </div>
-
-      <div class="feature">
-        <h3>🔍 Developer Tools</h3>
-        <p>
-          Simplify common Salesforce development and debugging tasks.
-        </p>
-      </div>
-
-      <div class="feature">
-        <h3>🛠️ Admin Tools</h3>
-        <p>
-          Make everyday Salesforce administration tasks easier.
-        </p>
-      </div>
-
-      <div class="feature">
-        <h3>🚀 Productivity</h3>
-        <p>
-          Spend less time navigating Salesforce and more time getting
-          things done.
-        </p>
-      </div>
-
+<!-- ═══════════════════════════════════════
+     NAV
+     ═══════════════════════════════════════ -->
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <a href="#" class="nav-brand">
+            <img src="assets/icon-128.png" alt="" class="nav-logo">
+            <span>Salesforce Comet</span>
+        </a>
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#showcase">Demo</a></li>
+            <li><a href="#testimonials">Reviews</a></li>
+            <li><a href="release-notes">Changelog</a></li>
+            <li><a href="privacy">Privacy</a></li>
+        </ul>
+        <a href="https://chromewebstore.google.com/detail/salesforce-comet/pigmbghmkdaalhebdhfoeldcekhiemhi" target="_blank" rel="noopener" class="nav-cta"><img src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" width="14" height="14" alt=""> Install Free</a>
+        <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
     </div>
-  </section>
+</nav>
 
-  <footer>
-    <p>© 2026 Salesforce Comment</p>
+<!-- ═══════════════════════════════════════
+     HERO
+     ═══════════════════════════════════════ -->
+<section class="hero">
+    <div class="hero-inner">
+        <div class="hero-badge">Now on Chrome Web Store</div>
 
-    <br>
+        <h1 class="hero-title">
+            Your Entire Salesforce<br>
+            <span class="hero-accent">Toolkit in One Extension</span>
+        </h1>
 
-    <a href="privacy-policy.html">Privacy Policy</a>
-    <a href="terms.html">Terms</a>
-  </footer>
+        <p class="hero-desc">
+            Command Palette, Record Inspector, Code Editor, Debug Logs, Data Export, Flow Scanner — 20+ tools built for Salesforce Developers and Admins.
+        </p>
 
+        <div class="hero-actions">
+            <a href="https://chromewebstore.google.com/detail/salesforce-comet/pigmbghmkdaalhebdhfoeldcekhiemhi" target="_blank" rel="noopener" class="btn btn-primary">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" width="18" height="18" alt="Chrome Web Store">
+                Add to Chrome — Free
+            </a>
+            <a href="#showcase" class="btn btn-ghost">See It in Action</a>
+        </div>
+
+        <div class="hero-proof">
+            <div class="hero-stars"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+            <span>Trusted by <strong>1,000+</strong> Salesforce professionals</span>
+        </div>
+
+        <div class="hero-shortcut">
+            <div class="shortcut-keys">
+                <kbd>Shift</kbd><span class="kbd-plus">+</span><kbd>Space</kbd>
+            </div>
+            <span class="shortcut-label">Launch Comet anywhere in Salesforce</span>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SHOWCASE
+     ═══════════════════════════════════════ -->
+<section class="showcase" id="showcase">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="section-tag">Live Demo</span>
+            <h2>Search Everything.<br>Navigate Instantly.</h2>
+            <p>The Command Palette gives you keyboard-driven access to your entire Salesforce org in milliseconds.</p>
+        </div>
+
+        <div class="browser reveal">
+            <div class="browser-bar">
+                <div class="browser-dots"><span></span><span></span><span></span></div>
+                <div class="browser-url">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    mycompany.lightning.force.com
+                </div>
+            </div>
+            <div class="browser-body">
+                <div class="browser-backdrop"></div>
+                <div class="palette">
+                    <div class="palette-search">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                        <span class="palette-typed"><span id="typedText"></span></span>
+                        <span class="palette-cursor"></span>
+                    </div>
+                    <div class="palette-results">
+                        <div class="palette-row active">
+                            <div class="palette-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/></svg></div>
+                            <div class="palette-info"><strong>Account</strong><span>Standard Object · 12,847 records</span></div>
+                            <span class="palette-tag tag-cyan">Object</span>
+                        </div>
+                        <div class="palette-row">
+                            <div class="palette-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+                            <div class="palette-info"><strong>AccountController</strong><span>Apex Class · Last modified 2d ago</span></div>
+                            <span class="palette-tag tag-purple">Apex</span>
+                        </div>
+                        <div class="palette-row">
+                            <div class="palette-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2dd4bf" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                            <div class="palette-info"><strong>Account_Trigger_Flow</strong><span>Record-Triggered Flow · Active</span></div>
+                            <span class="palette-tag tag-teal">Flow</span>
+                        </div>
+                        <div class="palette-row">
+                            <div class="palette-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f472b6" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+                            <div class="palette-info"><strong>Account Settings</strong><span>Setup Page</span></div>
+                            <span class="palette-tag tag-pink">Setup</span>
+                        </div>
+                    </div>
+                    <div class="palette-footer">
+                        <div class="palette-hints"><kbd>↑↓</kbd> Navigate <kbd>↵</kbd> Open <kbd>esc</kbd> Close</div>
+                        <span class="palette-brand">Salesforce Comet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SCREENSHOTS SLIDESHOW
+     ═══════════════════════════════════════ -->
+<section class="slideshow-section">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="section-tag">Screenshots</span>
+            <h2>See It in Action</h2>
+            <p>Real screenshots from the Chrome Web Store listing.</p>
+        </div>
+        <div class="slideshow-container" id="slideshowContainer">
+            <div class="slideshow-loading">
+                <div class="slideshow-spinner"></div>
+                <span>Loading screenshots...</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     STATS
+     ═══════════════════════════════════════ -->
+<section class="stats">
+    <div class="stats-inner">
+        <div class="stat reveal"><span class="stat-num" data-count="20" data-suffix="+">0</span><span class="stat-label">Developer Tools</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat reveal"><span class="stat-num" data-count="50" data-suffix="+">0</span><span class="stat-label">Keyboard Shortcuts</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat reveal"><span class="stat-num" data-count="0" data-suffix="" data-text="Zero">0</span><span class="stat-label">Data Collected</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat reveal"><span class="stat-num" data-count="100" data-suffix="%">0</span><span class="stat-label">Free Forever</span></div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FEATURES
+     ═══════════════════════════════════════ -->
+<section class="features" id="features">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="section-tag">Features</span>
+            <h2>Everything You Need,<br>Nothing You Don't</h2>
+            <p>Purpose-built for Salesforce professionals. Every tool saves time and eliminates context-switching.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="card card-wide reveal" style="--c:#38bdf8">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"/></svg></div>
+                <h3>Lightning Command Palette</h3>
+                <p>Press <strong>Shift + Space</strong> to search Objects, Records, Apex Classes, Flows, Custom Metadata, Permission Sets, and Setup Pages. Like Spotlight for Salesforce.</p>
+            </div>
+            <div class="card reveal" style="--c:#2dd4bf">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M9 3v18"/><path d="M13 8h4"/><path d="M13 12h4"/><path d="M13 16h4"/></svg></div>
+                <h3>Record Inspector</h3>
+                <p>View every field — hidden, system, audit. Export JSON, filter dynamically, clone records with one click.</p>
+            </div>
+            <div class="card reveal" style="--c:#a78bfa">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+                <h3>Monaco Code Editor</h3>
+                <p>The same engine behind VS Code. Write Apex, execute anonymous code, run tests — right in your browser.</p>
+            </div>
+            <div class="card reveal" style="--c:#38bdf8">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+                <h3>Data Export &amp; Import</h3>
+                <p>SOQL with autocomplete, pagination, CSV/JSON export. Import with validation and field mapping.</p>
+            </div>
+            <div class="card reveal" style="--c:#34d399">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+                <h3>LWC Inspector</h3>
+                <p>Inspect Lightning Web Components, explore hierarchy, view reactive state, trace shadow DOM.</p>
+            </div>
+            <div class="card card-wide reveal" style="--c:#f472b6">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+                <h3>Debug Log Manager</h3>
+                <p>Create trace flags, customize log levels with a checkbox matrix, and analyze logs with syntax highlighting and governor limit tracking.</p>
+            </div>
+            <div class="card reveal" style="--c:#60a5fa">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                <h3>Field API Names</h3>
+                <p>Overlay API names on Lightning layouts. Copy any field's API name instantly.</p>
+            </div>
+            <div class="card reveal" style="--c:#2dd4bf">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v6"/><path d="M12 15v6"/><path d="M3 12h6"/><path d="M15 12h6"/></svg></div>
+                <h3>Flow Scanner</h3>
+                <p>Detect active Flows, Subflows, Process Builders, and Workflow Rules on any page.</p>
+            </div>
+            <div class="card reveal" style="--c:#a78bfa">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                <h3>Permission Wizard</h3>
+                <p>Manage Permission Sets and bulk-create custom fields with guided wizards.</p>
+            </div>
+            <div class="card reveal" style="--c:#60a5fa">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div>
+                <h3>REST Explorer</h3>
+                <p>Execute raw REST and GraphQL calls against your org directly.</p>
+            </div>
+            <div class="card reveal" style="--c:#f472b6">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                <h3>API Stats</h3>
+                <p>Monitor real-time API usage and governor limits at a glance.</p>
+            </div>
+            <div class="card reveal" style="--c:#34d399">
+                <div class="card-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.5-.7 1.5-1.5 0-.4-.1-.7-.4-1-.3-.3-.4-.6-.4-1 0-.8.7-1.5 1.5-1.5H16c3.3 0 6-2.7 6-6 0-5.5-4.5-9-10-9z"/></svg></div>
+                <h3>Colored Favicons</h3>
+                <p>Color-coded browser tabs for Production, Sandbox, and Developer orgs.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     HOW IT WORKS
+     ═══════════════════════════════════════ -->
+<section class="steps" id="steps">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="section-tag">Getting Started</span>
+            <h2>Up and Running<br>in 30 Seconds</h2>
+            <p>No configuration, no backend, no signup. Install and go.</p>
+        </div>
+        <div class="steps-row">
+            <div class="step reveal">
+                <div class="step-num">1</div>
+                <h4>Install</h4>
+                <p>Click "Add to Chrome" and the extension installs instantly.</p>
+            </div>
+            <div class="step-line"></div>
+            <div class="step reveal">
+                <div class="step-num">2</div>
+                <h4>Open Salesforce</h4>
+                <p>Navigate to any Lightning or Classic org. Comet detects it.</p>
+            </div>
+            <div class="step-line"></div>
+            <div class="step reveal">
+                <div class="step-num">3</div>
+                <h4>Press Shift + Space</h4>
+                <p>Launch the Command Palette. 20+ tools at your fingertips.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+     ═══════════════════════════════════════ -->
+<section class="testimonials" id="testimonials">
+    <div class="section-wrap">
+        <div class="section-head">
+            <span class="section-tag">Reviews</span>
+            <h2>Loved by Salesforce Pros</h2>
+            <p>Join thousands who've transformed their Salesforce workflow.</p>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial reveal">
+                <div class="testimonial-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <p>"The Command Palette alone is worth it. I used to waste 2-3 minutes navigating to Setup pages. Now it's instant."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar" style="background:#1a5276">JD</div>
+                    <div><strong>James Davidson</strong><span>Salesforce Developer</span></div>
+                </div>
+            </div>
+            <div class="testimonial reveal">
+                <div class="testimonial-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <p>"Record Inspector is a game-changer. Every field including system fields and audit data. No more guessing."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar" style="background:#4a235a">SP</div>
+                    <div><strong>Sarah Park</strong><span>12x Certified Admin</span></div>
+                </div>
+            </div>
+            <div class="testimonial reveal">
+                <div class="testimonial-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <p>"Data Export is like having Workbench inside my browser. Deleted my Data Loader shortcut — this does everything."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar" style="background:#1a4d2e">MR</div>
+                    <div><strong>Marcus Rodriguez</strong><span>Platform Architect</span></div>
+                </div>
+            </div>
+            <div class="testimonial reveal">
+                <div class="testimonial-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <p>"Colored favicons saved me from deploying to the wrong org. The Debug Log Manager? Finally, no more hair-pulling."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar" style="background:#6c3461">LK</div>
+                    <div><strong>Lisa Kim</strong><span>Salesforce MVP</span></div>
+                </div>
+            </div>
+            <div class="testimonial reveal">
+                <div class="testimonial-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <p>"Replaced 4 separate tools with one extension. Monaco editor in the browser is surprisingly good."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar" style="background:#7d6608">TW</div>
+                    <div><strong>Tom Wilson</strong><span>Full-Stack Developer</span></div>
+                </div>
+            </div>
+            <div class="testimonial reveal">
+                <div class="testimonial-stars"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="12" height="12" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <p>"Permission Wizard and Field API Exposer save me an hour each day. Incredibly polished for a free tool."</p>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar" style="background:#1b4f72">AN</div>
+                    <div><strong>Aisha Nguyen</strong><span>Salesforce Admin</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     PRIVACY
+     ═══════════════════════════════════════ -->
+<section class="privacy" id="privacy">
+    <div class="section-wrap">
+        <div class="privacy-grid">
+            <div class="privacy-text reveal">
+                <span class="section-tag">Privacy</span>
+                <h2>Your Data Stays<br>On Your Machine</h2>
+                <p>Zero backend servers, zero analytics, zero tracking. Your Salesforce data never leaves your browser.</p>
+            </div>
+            <div class="privacy-cards reveal">
+                <div class="privacy-card"><div class="pci" style="color:#34d399"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div><div><h4>Encrypted Locally</h4><p>AES-256-GCM. Passphrase never stored.</p></div></div>
+                <div class="privacy-card"><div class="pci" style="color:#38bdf8"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div><h4>No Backend</h4><p>Everything runs in your browser.</p></div></div>
+                <div class="privacy-card"><div class="pci" style="color:#a78bfa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg></div><div><h4>Zero Analytics</h4><p>No tracking, no telemetry.</p></div></div>
+                <div class="privacy-card"><div class="pci" style="color:#f472b6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><h4>No Sharing</h4><p>Tokens used only for your orgs.</p></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CTA
+     ═══════════════════════════════════════ -->
+<section class="cta">
+    <div class="section-wrap">
+        <div class="cta-inner reveal">
+            <h2>Stop Juggling Tools.<br>Start Shipping Faster.</h2>
+            <p>Replace Developer Console, Workbench, Data Loader, and countless Setup tabs with one extension.</p>
+            <a href="https://chromewebstore.google.com/detail/salesforce-comet/pigmbghmkdaalhebdhfoeldcekhiemhi" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" width="18" height="18" alt="Chrome Web Store">
+                Add to Chrome — Free Forever
+            </a>
+            <p class="cta-note">No signup · No data collection · Works instantly</p>
+            <div class="hero-proof" style="margin-top:24px">
+                <div class="hero-stars"><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="14" height="14" viewBox="0 0 24 24" fill="#fbbf24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg></div>
+                <span id="ctaBadge">Chrome Web Store</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════ -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <img src="assets/icon-128.png" alt="" class="footer-logo">
+            <span>Salesforce Comet</span>
+        </div>
+        <ul class="footer-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#showcase">Demo</a></li>
+            <li><a href="release-notes">Changelog</a></li>
+            <li><a href="privacy">Privacy</a></li>
+        </ul>
+        <span class="footer-copy">&copy; 2026 Salesforce Comet</span>
+    </div>
+</footer>
+
+<script>
+(function () {
+    'use strict';
+
+    /* Nav scroll */
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+
+    /* Mobile toggle */
+    const toggle = document.getElementById('navToggle');
+    const links = document.getElementById('navLinks');
+    toggle.addEventListener('click', () => links.classList.toggle('open'));
+    links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+    /* ── Slideshow: Fetch from screenshots.json ── */
+    (async function() {
+        const container = document.getElementById('slideshowContainer');
+        if (!container) return;
+
+        const EXT_ID = 'pigmbghmkdaalhebdhfoeldcekhiemhi';
+        let screenshots = [];
+
+        try {
+            const res = await fetch('screenshots.json');
+            if (res.ok) {
+                const data = await res.json();
+                screenshots = (data.screenshots || []).filter(s => s.url && s.url.length > 0);
+            }
+        } catch (e) {
+            // JSON not found, show fallback
+        }
+
+        if (screenshots.length === 0) {
+            container.innerHTML = `
+                <div class="slideshow-fallback">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>View screenshots on the Chrome Web Store</span>
+                    <a href="https://chromewebstore.google.com/detail/salesforce-comet/${EXT_ID}" target="_blank" rel="noopener">
+                        <img src="https://fonts.gstatic.com/s/i/productlogos/chrome_store/v7/192px.svg" width="16" height="16" alt="">
+                        View Listing
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        // Build slideshow
+        let current = 0;
+        let autoplayTimer;
+
+        function render() {
+            let html = '';
+            screenshots.forEach((shot, i) => {
+                html += `<div class="slideshow-slide${i === 0 ? ' active' : ''}" title="${shot.label || ''}"><img src="${shot.url}" alt="${shot.label || 'Screenshot ' + (i+1)}" loading="lazy"></div>`;
+            });
+
+            html += `<div class="slideshow-arrows">
+                <button class="slideshow-arrow" id="slidePrev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+                <button class="slideshow-arrow" id="slideNext"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+            </div>`;
+
+            html += '<div class="slideshow-nav">';
+            screenshots.forEach((_, i) => {
+                html += `<button class="slideshow-dot${i === 0 ? ' active' : ''}" data-i="${i}"></button>`;
+            });
+            html += '</div>';
+
+            container.innerHTML = html;
+
+            // Bind events
+            document.getElementById('slidePrev').addEventListener('click', () => goTo(current - 1));
+            document.getElementById('slideNext').addEventListener('click', () => goTo(current + 1));
+            container.querySelectorAll('.slideshow-dot').forEach(dot => {
+                dot.addEventListener('click', () => goTo(+dot.dataset.i));
+            });
+
+            startAutoplay();
+        }
+
+        function goTo(i) {
+            const slides = container.querySelectorAll('.slideshow-slide');
+            const dots = container.querySelectorAll('.slideshow-dot');
+            slides[current].classList.remove('active');
+            dots[current].classList.remove('active');
+            current = (i + screenshots.length) % screenshots.length;
+            slides[current].classList.add('active');
+            dots[current].classList.add('active');
+            resetAutoplay();
+        }
+
+        function startAutoplay() {
+            autoplayTimer = setInterval(() => goTo(current + 1), 4000);
+        }
+
+        function resetAutoplay() {
+            clearInterval(autoplayTimer);
+            startAutoplay();
+        }
+
+        render();
+    })();
+
+    /* Hide reviews until October 30 */
+    if (new Date() < new Date('2026-10-30')) {
+        const rev = document.getElementById('testimonials');
+        if (rev) rev.style.display = 'none';
+    }
+
+    /* ── Enhanced Scroll Reveal ── */
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('shown');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { 
+        threshold: 0.08,
+        rootMargin: '0px 0px -60px 0px'
+    });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    /* ── Smooth Counter Animation ── */
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            const target = +el.dataset.count;
+            const suffix = el.dataset.suffix || '';
+            const text = el.dataset.text || '';
+            
+            if (target === 0 && text) {
+                el.textContent = text;
+                counterObserver.unobserve(el);
+                return;
+            }
+            
+            const duration = 1800;
+            const startTime = performance.now();
+            
+            function easeOutExpo(t) {
+                return t === 1 ? 1 : 1 - Math.pow(2, -10 * t);
+            }
+            
+            function tick(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = easeOutExpo(progress);
+                el.textContent = Math.round(eased * target) + suffix;
+                if (progress < 1) requestAnimationFrame(tick);
+            }
+            
+            requestAnimationFrame(tick);
+            counterObserver.unobserve(el);
+        });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('.stat-num').forEach(el => counterObserver.observe(el));
+
+    /* ── Typing Animation ── */
+    const typed = document.getElementById('typedText');
+    const terms = ['Account', 'ContactTrigger', 'Lead_Flow', 'Permission Sets'];
+    let termIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    let delay = 120;
+    
+    function typeLoop() {
+        const currentTerm = terms[termIndex];
+        
+        if (!isDeleting) {
+            charIndex++;
+            typed.textContent = currentTerm.slice(0, charIndex);
+            delay = 70 + Math.random() * 80;
+            
+            if (charIndex === currentTerm.length) {
+                isDeleting = true;
+                delay = 2000;
+            }
+        } else {
+            charIndex--;
+            typed.textContent = currentTerm.slice(0, charIndex);
+            delay = 35;
+            
+            if (charIndex === 0) {
+                isDeleting = false;
+                termIndex = (termIndex + 1) % terms.length;
+                delay = 400;
+            }
+        }
+        
+        setTimeout(typeLoop, delay);
+    }
+    typeLoop();
+
+    /* ── Smooth Scroll with Offset ── */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const target = document.querySelector(a.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                const y = target.getBoundingClientRect().top + window.scrollY - 72;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+        });
+    });
+
+    /* ── Subtle Parallax on Scroll ── */
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                const scrollY = window.scrollY;
+                document.querySelectorAll('.section-head').forEach(header => {
+                    const rect = header.getBoundingClientRect();
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        const progress = (window.innerHeight - rect.top) / (window.innerHeight + rect.height);
+                        header.style.transform = `translateY(${(1 - progress) * 8}px)`;
+                    }
+                });
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
+
+    /* ── Chrome Web Store Badge ── */
+    const EXT = 'pigmbghmkdaalhebdhfoeldcekhiemhi';
+    const badge = document.getElementById('ctaBadge');
+    async function fetchCWS() {
+        for (const proxy of [`https://corsproxy.io/?https://chromewebstore.google.com/product/${EXT}`, `https://api.allorigins.win/raw?url=https://chromewebstore.google.com/product/${EXT}`]) {
+            try {
+                const ctrl = new AbortController();
+                const timer = setTimeout(() => ctrl.abort(), 6000);
+                const res = await fetch(proxy, { signal: ctrl.signal });
+                clearTimeout(timer);
+                if (!res.ok) continue;
+                const html = await res.text();
+                const ratingMatch = html.match(/"ratingValue"\s*:\s*([\d.]+)/);
+                const countMatch = html.match(/"(ratingCount|reviewCount)"\s*:\s*(\d+)/);
+                if (ratingMatch) return { rating: +ratingMatch[1], count: countMatch ? +countMatch[2] : null };
+            } catch(e) { continue; }
+        }
+        return null;
+    }
+    fetchCWS().then(data => {
+        if (data && badge) {
+            badge.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="#c9a94e" style="vertical-align:-2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" style="vertical-align:-2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" style="vertical-align:-2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" style="vertical-align:-2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg><svg width="13" height="13" viewBox="0 0 24 24" fill="#fbbf24" style="vertical-align:-2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg> ${data.rating.toFixed(1)} · ${data.count ? data.count.toLocaleString() + ' reviews' : 'Chrome Web Store'}`;
+        }
+    });
+})();
+</script>
 </body>
 </html>
