@@ -429,7 +429,7 @@
         let screenshots = [];
 
         try {
-            const res = await fetch('screenshots.json');
+            const res = await fetch('screenshots.json?v=2', { cache: 'no-store' });
             if (res.ok) {
                 const data = await res.json();
                 screenshots = (data.screenshots || []).filter(s => s.url && s.url.length > 0);
