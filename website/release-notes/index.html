@@ -40,7 +40,7 @@
         <h1>Release Notes</h1>
         <p class="page-subtitle">Every update, improvement, and fix — documented so you always know what's new.</p>
         <div class="page-meta">
-            <span>Current: v3.1.1</span>
+            <span>Current: v3.1.3</span>
         </div>
     </div>
 </section>
@@ -50,7 +50,7 @@
 
         <div class="timeline">
 
-            <!-- v3.1.1 -->
+            <!-- v3.1.3 -->
             <div class="timeline-entry reveal">
                 <div class="timeline-marker">
                     <div class="timeline-dot active"></div>
@@ -59,8 +59,54 @@
                 <div class="timeline-card">
                     <div class="timeline-header">
                         <div class="timeline-version">
-                            <h2>v3.1.1</h2>
+                            <h2>v3.1.3</h2>
                             <span class="badge badge-latest">Latest</span>
+                        </div>
+                    </div>
+                    <p class="timeline-summary">Chrome Web Store readiness, safer session handling, and a faster Metadata Exporter selection workflow.</p>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#34d399"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span> Security &amp; Chrome Compliance</h3>
+                        <ul>
+                            <li>Moved Salesforce session handoff data to timestamped, memory-only <code>chrome.storage.session</code> and removed legacy persistent session keys</li>
+                            <li>Bundled extension fonts locally and removed third-party font requests from the extension CSP</li>
+                            <li>Narrowed permissions and web-accessible resources while retaining Salesforce-only right-click tool shortcuts</li>
+                            <li>Removed CSP-blocked inline handlers and the unnecessary repeating service-worker keepalive</li>
+                            <li>Replaced the inaccessible feedback form with the public GitHub Issues support page</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#7cb8c9"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></span> Metadata Exporter</h3>
+                        <ul>
+                            <li>Added per-metadata-type selected component counts, including a clear <strong>All</strong> state for wildcard selections</li>
+                            <li>Component rows can now be selected by clicking anywhere on the row</li>
+                            <li>Added selected-row highlighting and accessible Enter/Space keyboard selection</li>
+                            <li>Kept large metadata lists responsive with chunked rendering validated against 18,000 components</li>
+                        </ul>
+                    </div>
+
+                    <div class="change-group">
+                        <h3><span class="change-icon" style="color:#f472b6"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span> Reliability</h3>
+                        <ul>
+                            <li>Hardened Event Monitor org/session matching and refreshed its reliability regression coverage</li>
+                            <li>Added production-package checks for unwanted development artifacts and archive integrity</li>
+                            <li>Updated extension version and production package naming to make releases unambiguous</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- v3.1.1 -->
+            <div class="timeline-entry reveal">
+                <div class="timeline-marker">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-line"></div>
+                </div>
+                <div class="timeline-card">
+                    <div class="timeline-header">
+                        <div class="timeline-version">
+                            <h2>v3.1.1</h2>
                         </div>
 
                     </div>
