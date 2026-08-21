@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "@crxjs/vite-plugin": "^2.2.1",
+    "fs-extra": "^11.4.0",
+    "terser": "^5.49.2"
+  },
+  "dependencies": {
+    "@tarmiz/web-glass-toast": "^1.2.1",
+    "acorn": "^8.18.0"
+  }
+}

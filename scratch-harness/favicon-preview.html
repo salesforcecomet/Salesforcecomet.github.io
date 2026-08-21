@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Favicon — Salesforce Comet logo, org colors</title>
+<style>
+  body { margin: 0; background: #f4f6f8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 20px; }
+  h2 { font-size: 15px; margin: 0 0 10px; }
+  .panel { border: 1.5px dashed #cbd5e1; background: #f8fafc; border-radius: 12px; padding: 14px; margin-bottom: 18px; }
+  .grid { display: flex; gap: 12px; flex-wrap: wrap; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; text-align: center; min-width: 110px; }
+  .card img { display: block; margin: 0 auto 6px; width: 32px; height: 32px; }
+  .hex { font-size: 11px; color: #64748b; font-family: ui-monospace, Menlo, monospace; }
+  .dark-panel { background: #12161c; border-color: #1e2530; }
+  .dark-panel .card { background: #181d26; border-color: #2a3340; }
+  .dark-panel .hex { color: #94a3b8; }
+  pre { font-size: 9px; line-height: 1; font-family: ui-monospace, Menlo, monospace; margin: 4px 0 0; white-space: pre; }
+  .verify { margin-top: 12px; }
+  button { padding: 6px 12px; border-radius: 6px; border: 1px solid #cbd5e1; background: #fff; cursor: pointer; font-size: 12px; }
+</style>
+</head>
+<body>
+<script>(function () {
+    if (window.__sfarcColoredFaviconLoaded) return;
+    window.__sfarcColoredFaviconLoaded = true;
+
+    // DJB2 Hash Algorithm for high-entropy hashing
+    function djb2Hash(str) {
+        let hash = 5381;
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+        }
+        return Math.abs(hash);
+    }
+
+    let cachedSubdomain = null;
+
+    // Extract unique org subdomain prefix
+    function getOrgSubdomain() {
+        if (cachedSubdomain) return cachedSubdomain;
+        const host = window.location.hostname.toLowerCase();
+        if (host && (host.includes('salesforce') || host.includes('force.com'))) {
+            const parts = host.split('.');
+            let sub = parts[0] || 'salesforce';
+            cachedSubdomain = sub.replace(/--c$/, '');
+            return cachedSubdomain;
+        }
+
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const hostParam = params.get('host');
+            if (hostParam) {
+                const parts = hostParam.split('.');
+                cachedSubdomain = parts[0].replace(/--c$/, '');
+                return cachedSubdomain;
+            }
+        } catch (e) { }
+
+        try {
+            const raw = localStorage.getItem('sfarc_logged_in_user');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.username && parsed.username.includes('@')) {
+                    const domainPart = parsed.username.split('@')[1];
+                    if (domainPart) {
+                        cachedSubdomain = domainPart.split('.')[0];
+                        return cachedSubdomain;
+                    }
+                }
+            }
+        } catch (e) { }
+
+        return 'salesforce';
+    }
+
+    function detectDarkScheme() {
+        try {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function hslToRgb(h, s, l) {
+        s /= 100; l /= 100;
+        const k = n => (n + h / 30) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+        return { r: Math.round(255 * f(0)), g: Math.round(255 * f(8)), b: Math.round(255 * f(4)) };
+    }
+
+    function getLuminance({ r, g, b }) {
+        const toLin = c => {
+            const s = c / 255;
+            return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+        };
+        return 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b);
+    }
+
+    function contrastRatio(l1, l2) {
+        const L1 = Math.max(l1, l2);
+        const L2 = Math.min(l1, l2);
+        return (L1 + 0.05) / (L2 + 0.05);
+    }
+
+    function getOrgColor() {
+        const sub = getOrgSubdomain();
+        const hue = djb2Hash(sub) % 360;
+
+        const isDarkBg = detectDarkScheme();
+
+        let sat = 80;
+        let light = isDarkBg ? 62 : 48;
+
+        let attempts = 0;
+        while (attempts++ < 20) {
+            const bgRgb = hslToRgb(hue, sat, light);
+            const bgLum = getLuminance(bgRgb);
+            const fgRgb = isDarkBg ? { r: 0, g: 0, b: 0 } : { r: 255, g: 255, b: 255 };
+            const fgLum = getLuminance(fgRgb);
+            const chromeTabRgb = isDarkBg ? { r: 41, g: 42, b: 47 } : { r: 230, g: 232, b: 234 };
+            const chromeLum = getLuminance(chromeTabRgb);
+
+            const vsChrome = contrastRatio(bgLum, chromeLum);
+            const vsFg = contrastRatio(bgLum, fgLum);
+
+            if (vsChrome >= 1.6 && vsFg >= 3.2) {
+                break;
+            }
+
+            if (vsChrome < 1.6) {
+                light = isDarkBg ? Math.min(85, light + 3) : Math.max(15, light - 3);
+            }
+            if (vsFg < 3.2) {
+                sat = Math.max(40, sat - 2);
+                light = isDarkBg ? Math.min(85, light + 2) : Math.max(15, light - 2);
+            }
+        }
+
+        return `hsl(${hue}, ${sat}%, ${light}%)`;
+    }
+
+    // The official Salesforce cloud mark (the cloud-only logo, no wordmark),
+    // traced verbatim from Salesforce's published cloud SVG. It's the classic
+    // wide cloud with a two-lobe top — filled with the org color, transparent
+    // background. No text anywhere: just the cloud + the comet sparkle below.
+    const COMET_CLOUD_PATH =
+        'M416.224 76.763c32.219-33.57 77.074-54.391 126.682-54.391 65.946 0 123.48 36.772 154.12 91.361 26.626-11.896 56.098-18.514 87.106-18.514 118.94 0 215.368 97.268 215.368 217.247 0 119.993-96.428 217.261-215.368 217.261a213.735 213.735 0 0 1-42.422-4.227c-26.981 48.128-78.397 80.646-137.412 80.646-24.705 0-48.072-5.706-68.877-15.853-27.352 64.337-91.077 109.448-165.348 109.448-77.344 0-143.261-48.939-168.563-117.574-11.057 2.348-22.513 3.572-34.268 3.572C75.155 585.74.5 510.317.5 417.262c0-62.359 33.542-116.807 83.378-145.937-10.26-23.608-15.967-49.665-15.967-77.06C67.911 87.25 154.79.5 261.948.5c62.914 0 118.827 29.913 154.276 76.263';
+
+    // Salesforce Comet favicon as an SVG data URI: no background, just the
+    // official cloud mark filled with the org color. No text, no sparkle, no
+    // white dots — the cloud alone, like the reference logo.
+    function createColoredFaviconDataUrl(color, withGreenDot) {
+        const dot = withGreenDot
+            ? '<circle cx="819.6" cy="603.2" r="70" fill="#ffffff"/><circle cx="819.6" cy="603.2" r="50" fill="#22c55e"/>'
+            : '';
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 999.5 699.74" width="32" height="32"><path d="${COMET_CLOUD_PATH}" fill="${color}"/>${dot}</svg>`;
+        return 'data:image/svg+xml;base64,' + btoa(svg);
+    }
+
+    let isApplying = false;
+    let panelIndicatorActive = false;
+
+    function applyFavicon() {
+        if (isApplying) return;
+        isApplying = true;
+
+        try {
+            const color = getOrgColor();
+            const dataUrl = createColoredFaviconDataUrl(color, panelIndicatorActive);
+
+            const head = document.head || document.getElementsByTagName('head')[0];
+            if (!head) return;
+
+            let favicons = head.querySelectorAll("link[rel*='icon']");
+            let targetLink = document.getElementById('sfarc-colored-favicon');
+
+            if (!targetLink) {
+                targetLink = document.createElement('link');
+                targetLink.id = 'sfarc-colored-favicon';
+                targetLink.rel = 'shortcut icon';
+                targetLink.type = 'image/svg+xml';
+                head.appendChild(targetLink);
+            } else {
+                targetLink.type = 'image/svg+xml';
+            }
+
+            targetLink.href = dataUrl;
+
+            // Remove standard default favicons so ours takes priority
+            favicons.forEach(link => {
+                if (link !== targetLink && link.id !== 'sfarc-colored-favicon' && link.id !== 'sfarc-custom-favicon') {
+                    link.remove();
+                }
+            });
+        } catch (e) {
+            console.error('[salesforce comet] Colored Favicon error:', e);
+        } finally {
+            isApplying = false;
+        }
+    }
+
+    // Exposed globally so main.js can toggle the green dot on panel open/close
+    window.__sfarcSetPanelIndicator = function (show) {
+        const newState = !!show;
+        if (panelIndicatorActive === newState) return;
+        panelIndicatorActive = newState;
+        applyFavicon();
+    };
+
+    function initColoredFavicon() {
+        const host = window.location.hostname.toLowerCase();
+        if (host === 'login.salesforce.com' || host === 'test.salesforce.com') return;
+
+        applyFavicon();
+
+        if (window.chrome && chrome.storage && chrome.storage.local) {
+            chrome.storage.local.get(['sfarcLoggedInUser'], (res) => {
+                if (res && res.sfarcLoggedInUser && res.sfarcLoggedInUser.username) {
+                    const domainPart = res.sfarcLoggedInUser.username.split('@')[1];
+                    if (domainPart) {
+                        cachedSubdomain = domainPart.split('.')[0];
+                        applyFavicon();
+                    }
+                }
+            });
+        }
+
+        try {
+            const mql = window.matchMedia('(prefers-color-scheme: dark)');
+            const handler = () => applyFavicon();
+            if (mql.addEventListener) {
+                mql.addEventListener('change', handler);
+            } else if (mql.addListener) {
+                mql.addListener(handler);
+            }
+        } catch (e) { }
+
+        // Observe document.head to re-apply if Salesforce Lightning SPA overwrites
+        // favicon, or if another extension (e.g. Salesforce Inspector) injects or
+        // replaces a favicon link AFTER us. Re-assert ours whenever our link is
+        // missing OR any foreign favicon link exists.
+        const targetHead = document.head || document.getElementsByTagName('head')[0];
+        if (targetHead) {
+            const observer = new MutationObserver(() => {
+                const ourLink = document.getElementById('sfarc-colored-favicon');
+                const foreign = Array.from(document.querySelectorAll("link[rel*='icon']")).filter(l =>
+                    l !== ourLink && l.id !== 'sfarc-colored-favicon' && l.id !== 'sfarc-custom-favicon' && document.head.contains(l));
+                if (!ourLink || !document.head.contains(ourLink) || foreign.length) {
+                    applyFavicon();
+                }
+            });
+
+            observer.observe(targetHead, { childList: true, subtree: true });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initColoredFavicon);
+    } else {
+        initColoredFavicon();
+    }
+})();
+</script>
+
+<div class="panel">
+  <h2>Applied on this page (org color from host)</h2>
+  <div class="grid">
+    <div class="card">
+      <img id="current-fav" alt="current favicon">
+      <div class="hex">current</div>
+    </div>
+  </div>
+  <div class="verify">
+    <button id="toggle-dot">Toggle green dot</button>
+    <button id="toggle-dark">Toggle dark scheme</button>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Same real logo in other org colors (no background)</h2>
+  <div class="grid" id="light-grid"></div>
+</div>
+
+<div class="panel dark-panel">
+  <h2 style="color:#fff">Same colors on a dark tab background</h2>
+  <div class="grid" id="dark-grid"></div>
+</div>
+
+<div class="panel">
+  <h2>Shape check (applied favicon, alpha channel)</h2>
+  <button id="shape-apply">Re-apply favicon & draw shape</button>
+  <pre id="shape">(click the button)</pre>
+</div>
+
+<script>
+  const colors = ["#0176d3","#dc2626","#059669","#d97706","#7c3aed","#db2777"];
+  const b64 = s => 'data:image/svg+xml;base64,' + btoa(s);
+  const mkSvg = color => {
+    // mirror of createColoredFaviconDataUrl (official cloud mark + sparkle)
+    const cloud = 'M416.224 76.763c32.219-33.57 77.074-54.391 126.682-54.391 65.946 0 123.48 36.772 154.12 91.361 26.626-11.896 56.098-18.514 87.106-18.514 118.94 0 215.368 97.268 215.368 217.247 0 119.993-96.428 217.261-215.368 217.261a213.735 213.735 0 0 1-42.422-4.227c-26.981 48.128-78.397 80.646-137.412 80.646-24.705 0-48.072-5.706-68.877-15.853-27.352 64.337-91.077 109.448-165.348 109.448-77.344 0-143.261-48.939-168.563-117.574-11.057 2.348-22.513 3.572-34.268 3.572C75.155 585.74.5 510.317.5 417.262c0-62.359 33.542-116.807 83.378-145.937-10.26-23.608-15.967-49.665-15.967-77.06C67.911 87.25 154.79.5 261.948.5c62.914 0 118.827 29.913 154.276 76.263';
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 999.5 699.74" width="32" height="32">' +
+      '<path d="' + cloud + '" fill="' + color + '"/>' +
+      '</svg>';
+  };
+  const grids = {
+    light: document.getElementById('light-grid'),
+    dark: document.getElementById('dark-grid')
+  };
+  colors.forEach(c => {
+    const card = document.createElement('div'); card.className = 'card';
+    card.innerHTML = '<img src="' + b64(mkSvg(c)) + '"><div class="hex">' + c + '</div>';
+    grids.light.appendChild(card);
+    const card2 = document.createElement('div'); card2.className = 'card';
+    card2.innerHTML = '<img src="' + b64(mkSvg(c)) + '"><div class="hex">' + c + '</div>';
+    grids.dark.appendChild(card2);
+  });
+
+  function refreshCurrent() {
+    const links = document.querySelectorAll("link[rel*='icon']");
+    const target = document.getElementById('sfarc-colored-favicon');
+    if (target) document.getElementById('current-fav').src = target.href;
+  }
+  refreshCurrent();
+  setInterval(refreshCurrent, 300);
+
+  document.getElementById('toggle-dot').addEventListener('click', () => {
+    const on = !!document.getElementById('sfarc-green-dot-flag');
+    if (on) { document.getElementById('sfarc-green-dot-flag').remove(); }
+    else { const f = document.createElement('span'); f.id = 'sfarc-green-dot-flag'; document.body.appendChild(f); }
+    window.__sfarcSetPanelIndicator(!on);
+    setTimeout(refreshCurrent, 100);
+  });
+  document.getElementById('toggle-dark').addEventListener('click', () => {
+    const dark = !document.getElementById('sfarc-dark-flag');
+    if (dark) { const f = document.createElement('span'); f.id = 'sfarc-dark-flag'; document.body.appendChild(f); }
+    else { const f = document.getElementById('sfarc-dark-flag'); if (f) f.remove(); }
+    // pretend the media query changed
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mql.__sfarcDark === undefined) mql.__sfarcDark = false;
+    mql.__sfarcDark = dark;
+    window.matchMedia = function () { return { matches: dark, addEventListener: function () {}, addListener: function () {} }; };
+    if (window.__sfarcSetPanelIndicator) window.__sfarcSetPanelIndicator(!!document.getElementById('sfarc-green-dot-flag'));
+    // force re-apply by removing the link
+    const link = document.getElementById('sfarc-colored-favicon');
+    if (link) link.remove();
+    document.getElementById('sfarc-colored-favicon') && 0;
+    setTimeout(refreshCurrent, 100);
+  });
+
+  document.getElementById('shape-apply').addEventListener('click', () => {
+    const link = document.getElementById('sfarc-colored-favicon');
+    if (!link) return;
+    const img = new Image();
+    img.onload = () => {
+      const c = document.createElement('canvas'); c.width = 96; c.height = 96;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0, 96, 96);
+      const d = ctx.getImageData(0, 0, 96, 96).data;
+      let out = '';
+      for (let y = 0; y < 96; y++) {
+        let line = '';
+        for (let x = 0; x < 96; x++) {
+          const a = d[(y * 96 + x) * 4 + 3];
+          const r = d[(y * 96 + x) * 4], g = d[(y * 96 + x) * 4 + 1], b = d[(y * 96 + x) * 4 + 2];
+          if (a < 20) line += ' ';
+          else if (r > 240 && g > 240 && b > 240) line += '.'; // white sparkle / highlights
+          else if (a > 200) line += '#';                        // colored cloud
+          else line += '+';
+        }
+        out += line + '\n';
+      }
+      document.getElementById('shape').textContent = out;
+    };
+    img.src = link.href;
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Toggle Pill Test</title>
+<style>
+  body { font-family: -apple-system, 'Segoe UI', sans-serif; margin: 20px; background: #f1f5f9; }
+  .sfarc-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; background: #fff; border-bottom: 1px solid #e0e0e0; }
+  .sfarc-header-btn { background: transparent; border: none; cursor: pointer; padding: 6px; border-radius: 50%; color: #444; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  #sfarc-header-icons-toggle {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+    padding: 4px 6px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    gap: 8px !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+  }
+  #sfarc-header-icons-toggle:hover { background: transparent !important; }
+  #sfarc-header-icons-toggle span {
+    display: inline !important;
+    visibility: visible !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    color: #1f2328 !important;
+    white-space: nowrap !important;
+  }
+  #sfarc-panel.sfarc-dark-theme #sfarc-header-icons-toggle { background: transparent !important; }
+  #sfarc-panel.sfarc-dark-theme #sfarc-header-icons-toggle:hover { background: transparent !important; }
+  #sfarc-panel.sfarc-dark-theme #sfarc-header-icons-toggle span { color: #e8e8ed !important; }
+  #sfarc-panel.sfarc-dark-theme #sfarc-header-icons-toggle .sfarc-apple-switch { background-color: #39393d !important; }
+  #sfarc-header-icons-toggle.active .sfarc-apple-switch { background-color: #2563eb !important; }
+  #sfarc-header-icons-toggle.active .sfarc-apple-switch-handle { transform: translateX(16px) !important; }
+  #sfarc-panel.sfarc-dark-theme #sfarc-header-icons-toggle.active .sfarc-apple-switch { background-color: #2563eb !important; }
+  body.sfarc-dark-theme { background: #0b1220; }
+  #sfarc-panel.sfarc-dark-theme .sfarc-header { background: #1e1e1e; border-bottom: 1px solid #3a3a3a; }
+  #sfarc-panel.sfarc-dark-theme { background: #16181d; }
+  #sfarc-panel { border: 1px solid #ccc; border-radius: 12px; overflow: hidden; max-width: 480px; }
+  #sfarc-panel.sfarc-dark-theme { border-color: #333; }
+  .theme-btn { margin: 12px 0 0 16px; }
+</style>
+</head>
+<body>
+  <div id="sfarc-panel" style="background:#fff;">
+    <div class="sfarc-header">
+      <div style="font-weight:600; font-size:14px;">Salesforce Comet</div>
+      <div class="sfarc-header-controls" style="display:flex; align-items:center; gap:8px;">
+        <button class="sfarc-header-btn" id="sfarc-header-icons-toggle" title="Toggle Injected Header Icons" style="display:flex; align-items:center; gap:8px; background:transparent; border:none; cursor:pointer; color:#444; font-size:13px; font-weight:500; outline:none !important; box-shadow:none !important;">
+          <span>Show Icons</span>
+          <div class="sfarc-apple-switch" style="position:relative; width:36px; height:20px; background-color:#e9e9ea; border-radius:10px; transition:background-color 0.25s; cursor:pointer; pointer-events:none;">
+            <div class="sfarc-apple-switch-handle" style="position:absolute; top:2px; left:2px; width:16px; height:16px; background-color:#fff; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,0.15), 0 1px 1px rgba(0,0,0,0.1); transition:transform 0.25s;"></div>
+          </div>
+        </button>
+      </div>
+    </div>
+    <div style="padding:20px; color:#444; font-size:13px;">Panel body — toggle pill should show above with its label always visible.</div>
+  </div>
+  <button class="theme-btn" onclick="document.getElementById('sfarc-panel').classList.toggle('sfarc-dark-theme'); document.body.classList.toggle('sfarc-dark-theme');">🌗 Toggle Theme</button>
+  <button class="theme-btn" onclick="const b=document.getElementById('sfarc-header-icons-toggle'); b.classList.toggle('active'); b.querySelector('span').textContent = b.classList.contains('active') ? 'Hide Icons' : 'Show Icons';">Toggle ON/OFF</button>
+</body>
+</html>

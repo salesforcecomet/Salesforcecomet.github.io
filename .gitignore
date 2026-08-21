@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output / release artifacts
+dist/
+*.zip
+
+# Duplicate extension copies (source of truth is the repo root)
+salesforce-arc-extension/
+salesforce-comet-production/
+
+# OS / editor noise
+.DS_Store
+__MACOSX
+.idea/
+.freebuff/
+
+# Debug scratch
+src/debug-logs/

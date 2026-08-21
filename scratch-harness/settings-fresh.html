@@ -1,0 +1,2601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Settings — Fresh Preview</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<style>
+body { margin: 0; }
+/* settings.css - macOS System Settings Aesthetic */
+:root {
+  --mac-bg-app: #f2f2f7;
+  --mac-bg-sidebar: #e5e5ea;
+  --mac-card-bg: #ffffff;
+  --mac-border: rgba(0, 0, 0, 0.08);
+  --mac-text: #1c1c1e;
+  --mac-secondary-text: #8e8e93;
+  --mac-tertiary-text: #aeaeb2;
+  --mac-hover: rgba(0, 0, 0, 0.05);
+  --mac-active-blue: #007aff;
+  --mac-active-text: #ffffff;
+  --mac-divider: rgba(0, 0, 0, 0.06);
+  --mac-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+body.sfarc-dark-theme,
+[data-theme="dark"] {
+  --mac-bg-app: #1e1e1e;
+  --mac-bg-sidebar: #252528;
+  --mac-card-bg: #2c2c2e;
+  --mac-border: rgba(255, 255, 255, 0.1);
+  --mac-text: #f2f2f7;
+  --mac-secondary-text: #98989d;
+  --mac-tertiary-text: #636366;
+  --mac-hover: rgba(255, 255, 255, 0.06);
+  --mac-active-blue: #0a84ff;
+  --mac-active-text: #ffffff;
+  --mac-divider: rgba(255, 255, 255, 0.08);
+  --mac-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: var(--mac-bg-app);
+  color: var(--mac-text);
+  font-size: 13px;
+  line-height: 1.4;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mac-settings-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ==================== LEFT SIDEBAR ==================== */
+.mac-sidebar {
+  width: 270px;
+  background-color: var(--mac-bg-sidebar);
+  border-right: 1px solid var(--mac-border);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px 12px 12px;
+  flex-shrink: 0;
+  height: 100%;
+}
+
+/* Search Box */
+.mac-search-wrapper {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.mac-search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--mac-secondary-text);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+#sfarc-settings-search {
+  width: 100%;
+  padding: 6px 30px 6px 12px;
+  background: var(--mac-card-bg);
+  border: 1px solid var(--mac-border);
+  border-radius: 8px;
+  font-size: 12.5px;
+  color: var(--mac-text);
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+#sfarc-settings-search:focus {
+  border-color: var(--mac-active-blue);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.25);
+}
+
+/* User Card */
+.mac-user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--mac-card-bg);
+  border: 1px solid var(--mac-border);
+  margin-bottom: 14px;
+  box-shadow: var(--mac-shadow);
+  overflow: hidden;
+}
+
+.mac-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.mac-user-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.mac-user-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--mac-text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mac-user-subtitle {
+  font-size: 11px;
+  color: var(--mac-secondary-text);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+/* Navigation Menu */
+.mac-nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.mac-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: var(--mac-text);
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+
+}
+
+.mac-nav-item:hover {
+  background-color: var(--mac-hover);
+}
+
+.mac-nav-item.active {
+  background-color: var(--mac-active-blue);
+  color: var(--mac-active-text);
+  font-weight: 600;
+}
+
+/* Icon Badges */
+.mac-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.badge-blue { background: linear-gradient(180deg, #34aadc 0%, #007aff 100%); }
+.badge-purple { background: linear-gradient(180deg, #af52de 0%, #5856d6 100%); }
+.badge-amber { background: linear-gradient(180deg, #ffcc00 0%, #ff9500 100%); }
+.badge-green { background: linear-gradient(180deg, #30d158 0%, #34c759 100%); }
+.badge-cyan { background: linear-gradient(180deg, #55bef0 0%, #00aee6 100%); }
+.badge-indigo { background: linear-gradient(180deg, #5e5ce6 0%, #3634a3 100%); }
+.badge-red { background: linear-gradient(180deg, #ff453a 0%, #ff3b30 100%); }
+.badge-orange { background: linear-gradient(180deg, #ff9f0a 0%, #ff9500 100%); }
+.badge-teal { background: linear-gradient(180deg, #40c8e0 0%, #009688 100%); }
+.badge-gray { background: linear-gradient(180deg, #8e8e93 0%, #636366 100%); }
+
+/* Sidebar Footer */
+.mac-sidebar-footer {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--mac-border);
+}
+
+.mac-reset-btn {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--mac-border);
+  background: var(--mac-card-bg);
+  color: #ff3b30;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mac-reset-btn:hover {
+  background: rgba(255, 59, 48, 0.1);
+}
+
+/* ==================== MAIN CONTENT AREA ==================== */
+.mac-content-area {
+  flex: 1;
+  background-color: var(--mac-bg-app);
+  overflow-y: auto;
+  padding: 24px 36px 40px 36px;
+  position: relative;
+}
+
+/* Toast */
+.sfarc-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #1c1c1e;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 99999;
+}
+
+.sfarc-toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.sfarc-toast i {
+  color: #34c759;
+}
+
+/* Search Empty State */
+.mac-search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--mac-secondary-text);
+  gap: 10px;
+  text-align: center;
+}
+
+.mac-search-empty i {
+  font-size: 26px;
+  opacity: 0.6;
+}
+
+.mac-search-empty p {
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Settings Sections */
+.mac-settings-section {
+  display: none;
+  animation: macFadeIn 0.2s ease-out;
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.mac-settings-section.active {
+  display: block;
+}
+
+@keyframes macFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Hero Header */
+.mac-section-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.mac-hero-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mac-section-hero h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--mac-text);
+  letter-spacing: -0.02em;
+  margin: 0 0 4px 0;
+}
+
+.mac-section-hero p {
+  font-size: 13px;
+  color: var(--mac-secondary-text);
+  margin: 0;
+  max-width: 500px;
+}
+
+/* Inset Group Cards */
+.mac-card-group {
+  background-color: var(--mac-card-bg);
+  border: 1px solid var(--mac-border);
+  border-radius: 12px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: var(--mac-shadow);
+}
+
+.mac-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--mac-divider);
+  gap: 16px;
+  min-height: 52px;
+}
+
+.mac-setting-row:last-child {
+  border-bottom: none;
+}
+
+.mac-setting-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.mac-setting-info label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mac-text);
+  margin-bottom: 2px;
+  cursor: pointer;
+}
+
+.mac-setting-info .desc {
+  font-size: 11.5px;
+  color: var(--mac-secondary-text);
+  line-height: 1.35;
+}
+
+/* ==================== macOS CONTROLS ==================== */
+
+/* macOS Toggle Switch */
+.mac-toggle-switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.mac-toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.mac-toggle-switch label {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #e9e9ea;
+  border-radius: 24px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+body.sfarc-dark-theme .mac-toggle-switch label,
+[data-theme="dark"] .mac-toggle-switch label {
+  background-color: #39393d;
+}
+
+.mac-toggle-switch label:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.mac-toggle-switch input:checked + label {
+  background-color: var(--mac-active-blue, var(--sfarc-accent, #2196f3));
+}
+
+.mac-toggle-switch input:checked + label:before {
+  transform: translateX(18px);
+}
+
+/* Color Swatches & Custom Picker */
+.mac-swatch-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  outline: none;
+  padding: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.mac-swatch-btn:hover {
+  transform: scale(1.18);
+}
+
+.mac-swatch-btn.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 2px var(--mac-active-blue, var(--sfarc-accent, #2196f3));
+  transform: scale(1.1);
+}
+
+.mac-color-input {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+  outline: none;
+  flex-shrink: 0;
+}
+
+.mac-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.mac-color-input::-webkit-color-swatch {
+  border: 1px solid var(--mac-border, #334155);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* macOS Select Dropdown */
+.mac-select {
+  appearance: none;
+  background-color: var(--mac-bg-app);
+  border: 1px solid var(--mac-border);
+  border-radius: 8px;
+  padding: 6px 28px 6px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--mac-text);
+  cursor: pointer;
+  outline: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%238e8e93%22%20d%3D%22M2.146%204.146a.5.5%200%200%201%20.708%200L6%207.293l3.146-3.147a.5.5%200%200%201%20.708.708l-3.5%203.5a.5.5%200%200%201-.708%200l-3.5-3.5a.5.5%200%200%201%200-.708z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: all 0.2s ease;
+  min-width: 140px;
+}
+
+.mac-select:focus {
+  border-color: var(--mac-active-blue);
+}
+
+/* macOS Text & Number Input */
+.mac-input {
+  background-color: var(--mac-bg-app);
+  border: 1px solid var(--mac-border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12.5px;
+  color: var(--mac-text);
+  outline: none;
+  transition: all 0.2s ease;
+  width: 120px;
+}
+
+.mac-input:focus {
+  border-color: var(--mac-active-blue);
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.25);
+}
+
+/* macOS Slider */
+.mac-slider-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* macOS / iOS style slider — blue filled track (left of the thumb) + white pill thumb */
+.mac-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 140px;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #007aff 0%, #007aff var(--slider-pct, 50%), var(--mac-border) var(--slider-pct, 50%), var(--mac-border) 100%);
+  outline: none;
+}
+
+.mac-slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.mac-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.mac-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--mac-border);
+  border: none;
+}
+
+.mac-slider::-moz-range-progress {
+  height: 4px;
+  border-radius: 4px;
+  background: #007aff;
+}
+
+.mac-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+
+.mac-slider-val {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mac-text);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* Segmented Control */
+.mac-segmented-control {
+  display: flex;
+  background: var(--mac-bg-app);
+  border-radius: 8px;
+  padding: 2px;
+  border: 1px solid var(--mac-border);
+  gap: 2px;
+}
+
+.mac-segment-btn {
+  border: none;
+  background: transparent;
+  color: var(--mac-secondary-text);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.mac-segment-btn.active {
+  background: var(--mac-card-bg);
+  color: var(--mac-text);
+  font-weight: 700;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* Checkbox Group */
+.mac-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.mac-check-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--mac-text);
+  cursor: pointer;
+}
+
+.mac-check-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--mac-active-blue);
+  cursor: pointer;
+}
+
+/* Badges & Buttons */
+.mac-hotkey-badge,
+.mac-value-badge {
+  background: var(--mac-bg-app);
+  border: 1px solid var(--mac-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--mac-text);
+  letter-spacing: 0.02em;
+}
+
+.mac-action-btn {
+  background: var(--mac-bg-app);
+  border: 1px solid var(--mac-border);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mac-text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.mac-action-btn:hover {
+  background: var(--mac-hover);
+  border-color: var(--mac-active-blue);
+  color: var(--mac-active-blue);
+}
+
+/* ==================== FLOW SCANNER SEVERITY BADGES ==================== */
+.sfarc-sev-select {
+  appearance: none;
+  border-radius: 8px;
+  padding: 5px 26px 5px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 10px;
+}
+
+.sfarc-sev-select.sev-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+  border-color: #fcd34d;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23b45309%22%20d%3D%22M2.146%204.146a.5.5%200%200%201%20.708%200L6%207.293l3.146-3.147a.5.5%200%200%201%20.708.708l-3.5%203.5a.5.5%200%200%201-.708%200l-3.5-3.5a.5.5%200%200%201%200-.708z%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.sfarc-sev-select.sev-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border-color: #fca5a5;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23b91c1c%22%20d%3D%22M2.146%204.146a.5.5%200%200%201%20.708%200L6%207.293l3.146-3.147a.5.5%200%200%201%20.708.708l-3.5%203.5a.5.5%200%200%201-.708%200l-3.5-3.5a.5.5%200%200%201%200-.708z%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.sfarc-sev-select.sev-info {
+  background-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12);
+  color: var(--sfarc-accent-dark, #1976d2);
+  border-color: var(--sfarc-accent-light, #5eb4ff);
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%230369a1%22%20d%3D%22M2.146%204.146a.5.5%200%200%201%20.708%200L6%207.293l3.146-3.147a.5.5%200%200%201%20.708.708l-3.5%203.5a.5.5%200%200%201-.708%200l-3.5-3.5a.5.5%200%200%201%200-.708z%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.sfarc-sev-select.sev-note {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #d1d5db;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23374151%22%20d%3D%22M2.146%204.146a.5.5%200%200%201%20.708%200L6%207.293l3.146-3.147a.5.5%200%200%201%20.708.708l-3.5%203.5a.5.5%200%200%201-.708%200l-3.5-3.5a.5.5%200%200%201%200-.708z%22%2F%3E%3C%2Fsvg%3E");
+}
+
+.mac-setting-row.disabled-rule {
+  opacity: 0.55;
+}
+
+/* ==================== RIGHT-CLICK MENU SETTINGS ==================== */
+
+.mac-setting-row.mac-setting-head {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.05);
+}
+
+.mac-check-list {
+  padding: 4px 0;
+}
+
+.mac-check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--mac-divider);
+  transition: background 0.15s ease;
+}
+
+.mac-check-row:last-child {
+  border-bottom: none;
+}
+
+.mac-check-row:hover {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.06);
+}
+
+.mac-check-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--sfarc-accent, #2196f3);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.mac-check-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--sfarc-accent, #2196f3);
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12);
+  flex-shrink: 0;
+}
+
+.mac-check-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.mac-check-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mac-text);
+}
+
+.mac-check-desc {
+  font-size: 11px;
+  color: var(--mac-secondary-text);
+  line-height: 1.35;
+}
+
+.mac-cm-empty {
+  padding: 14px 16px;
+  font-size: 12px;
+  color: var(--mac-secondary-text);
+  text-align: center;
+}
+
+.mac-cm-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--mac-divider);
+}
+
+.mac-cm-item:last-child {
+  border-bottom: none;
+}
+
+.mac-cm-item-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  color: var(--sfarc-accent, #2196f3);
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+  flex-shrink: 0;
+}
+
+.mac-cm-item-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.mac-cm-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mac-text);
+}
+
+.mac-cm-item-target {
+  font-size: 11px;
+  color: var(--mac-secondary-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mac-cm-item-del {
+  border: none;
+  background: transparent;
+  color: var(--mac-secondary-text);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.mac-cm-item-del:hover {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+}
+
+.mac-cm-add-row {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--mac-divider);
+  flex-wrap: wrap;
+}
+
+.mac-cm-add-row .mac-input {
+  flex: 1;
+  min-width: 140px;
+}
+
+.mac-btn-primary {
+  background: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  border: 1px solid var(--sfarc-accent, #2196f3);
+  border-radius: 8px;
+  padding: 0 14px;
+  height: 32px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.mac-btn-primary:hover {
+  background: var(--sfarc-accent-dark, #1976d2);
+  border-color: var(--sfarc-accent-dark, #1976d2);
+}
+
+</style>
+</head>
+<body>
+
+  <div class="mac-settings-container">
+    <!-- Left Sidebar (macOS Style) -->
+    <aside class="mac-sidebar">
+      <!-- Search Input -->
+      <div class="mac-search-wrapper">
+        <i class="fa-solid fa-magnifying-glass mac-search-icon"></i>
+        <input type="text" id="sfarc-settings-search" placeholder="Search settings..." autocomplete="off">
+      </div>
+
+      <!-- Category Navigation Menu -->
+      <nav class="mac-nav-menu" id="sfarc-nav-menu">
+        <button class="mac-nav-item active" data-target="appearance">
+          <div class="mac-badge badge-purple"><i class="fa-solid fa-palette"></i></div>
+          <span>Appearance</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="apex">
+          <div class="mac-badge badge-amber"><i class="fa-solid fa-bolt"></i></div>
+          <span>Anonymous Apex</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="bulk-field">
+          <div class="mac-badge badge-green"><i class="fa-solid fa-table-columns"></i></div>
+          <span>Bulk Field Creator</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="bulk-data">
+          <div class="mac-badge badge-cyan"><i class="fa-solid fa-database"></i></div>
+          <span>Bulk Data Tools</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="flow-scanner">
+          <div class="mac-badge badge-blue"><i class="fa-solid fa-diagram-project"></i></div>
+          <span>Flow Scanner Rules</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="debug-logs">
+          <div class="mac-badge badge-indigo" style="display: flex; align-items: center; justify-content: center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13v-2h-3.17c-.18-.63-.47-1.21-.86-1.73l2.25-2.25-1.42-1.42-2.54 2.54c-.61-.38-1.28-.65-2-.76V4h3V2H9v2h3v3.38c-.72.11-1.39.38-2 .76L7.46 5.6 6.04 7.02l2.25 2.25c-.39.52-.68 1.1-.86 1.73H4v2h3.04c0 .33-.04.66-.04 1v1H4v2h3c.15 1.4.74 2.65 1.63 3.61L6.04 21.41l1.42 1.42 2.76-2.76c.57.26 1.18.43 1.83.49V22h2v-1.44c.65-.06 1.26-.23 1.83-.49l2.76 2.76 1.42-1.42-2.59-2.59c.89-.96 1.48-2.21 1.63-3.61h3v-2h-3v-1c0-.34-.04-.67-.04-1H19zm-7 7c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg></div>
+          <span>Debug Logs & Trace</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="security">
+          <div class="mac-badge badge-red"><i class="fa-solid fa-shield-halved"></i></div>
+          <span>Access & Security</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="context-menu">
+          <div class="mac-badge badge-blue"><i class="fa-solid fa-mouse-pointer"></i></div>
+          <span>Right-Click Menu</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="shortcuts">
+          <div class="mac-badge badge-orange"><i class="fa-solid fa-keyboard"></i></div>
+          <span>Shortcuts & Hotkeys</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="api-limits">
+          <div class="mac-badge badge-teal"><i class="fa-solid fa-network-wired"></i></div>
+          <span>API & Org Limits</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="about">
+          <div class="mac-badge badge-gray"><i class="fa-solid fa-circle-info"></i></div>
+          <span>About</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="mac-sidebar-footer">
+        <button id="sfarc-reset-defaults" class="mac-reset-btn">
+          <i class="fa-solid fa-rotate-left"></i> Reset to Defaults
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="mac-content-area">
+      <!-- Toast Notification -->
+      <div id="sfarc-toast" class="sfarc-toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="sfarc-toast-msg">Settings saved</span>
+      </div>
+
+      <!-- Search Empty State -->
+      <div id="sfarc-search-empty" class="mac-search-empty" style="display: none;">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <p>No settings match your search</p>
+      </div>
+
+      <!-- 1. APPEARANCE SETTINGS -->
+      <section id="appearance" class="mac-settings-section active">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-purple"><i class="fa-solid fa-palette"></i></div>
+          <h2>Appearance</h2>
+          <p>Customize the visual styling, theme, typography, and card presentation.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Theme Mode</label>
+              <span class="desc">Select visual dark or light glassmorphism theme.</span>
+            </div>
+            <div class="mac-segmented-control">
+              <button class="mac-segment-btn active" data-theme="system">System</button>
+              <button class="mac-segment-btn" data-theme="dark">Dark</button>
+              <button class="mac-segment-btn" data-theme="light">Light</button>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Extension Accent / Asset Color</label>
+              <span class="desc">Select primary color theme applied across buttons, badges, tabs, and highlights.</span>
+            </div>
+            <div class="mac-accent-color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+              <div class="mac-color-swatches" style="display: flex; gap: 6px; align-items: center;">
+                <button type="button" class="mac-swatch-btn active" data-color="#2196f3" title="Salesforce Blue" style="background: #2196f3;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#10b981" title="Emerald Green" style="background: #10b981;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#8b5cf6" title="Royal Purple" style="background: #8b5cf6;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#f59e0b" title="Amber Orange" style="background: #f59e0b;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#6366f1" title="Electric Indigo" style="background: #6366f1;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#ef4444" title="Crimson Red" style="background: #ef4444;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#06b6d4" title="Cyan Slate" style="background: #06b6d4;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="org" title="Match Org Favicon Color — accent follows the current org's favicon hue" style="background: conic-gradient(#38bdf8, #a78bfa, #f472b6, #fbbf24, #34d399, #38bdf8); border: 1px solid rgba(255,255,255,0.4);"></button>
+              </div>
+              <input type="color" id="sfarc-accent-color-input" class="mac-color-input" value="#2196f3" title="Custom Accent Color">
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-editor-font">Code Editor Font Family</label>
+              <span class="desc">Font typeface used in Anonymous Apex & Code Search views.</span>
+            </div>
+            <select id="sfarc-editor-font" class="mac-select">
+              <option value="Fira Code">Fira Code (Ligatures)</option>
+              <option value="Cascadia Code">Cascadia Code</option>
+              <option value="Consolas">Consolas</option>
+              <option value="Monaco">Monaco</option>
+              <option value="Courier New">Courier New</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-editor-fontsize">Code Editor Base Font Size</label>
+              <span class="desc">Adjust font size scale across Monaco and Apex code editors.</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-editor-fontsize" min="10" max="32" value="14" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-editor-fontsize-val">14px</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-compact-mode">Compact Table View</label>
+              <span class="desc">Reduce row padding for dense data density in logs and tables.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-compact-mode">
+              <label for="sfarc-compact-mode"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Header Quick Action Badges</label>
+              <span class="desc">Select quick action icons visible on the top navbar.</span>
+            </div>
+            <div class="mac-checkbox-group">
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-session-copy"> Session Copy
+              </label>
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-field-api"> Field API
+              </label>
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-lwc-viewer"> LWC Inspector
+              </label>
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-flow-viewer"> Flow Monitor
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ANONYMOUS APEX SETTINGS -->
+      <section id="apex" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-amber"><i class="fa-solid fa-bolt"></i></div>
+          <h2>Anonymous Apex</h2>
+          <p>Configure script execution timeout, formatting rules, and history.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-timeout">Execution Timeout (Seconds)</label>
+              <span class="desc">Maximum allowed waiting time before canceling Apex request.</span>
+            </div>
+            <input type="number" id="sfarc-apex-timeout" value="30" min="5" max="120" class="mac-input">
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-format-run">Auto-Format Code Before Execution</label>
+              <span class="desc">Automatically align braces and indentation when clicking Execute.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-apex-format-run">
+              <label for="sfarc-apex-format-run"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-linenumbers">Show Editor Line Numbers</label>
+              <span class="desc">Display line gutter numbers in the Anonymous Apex editor.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-apex-linenumbers" checked>
+              <label for="sfarc-apex-linenumbers"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-history-limit">Script History Storage Limit</label>
+              <span class="desc">Max number of recently executed scripts remembered in history.</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-apex-history-limit" min="10" max="100" value="50" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-apex-history-val">50</span>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-intellisense">Monaco Autocomplete & IntelliSense</label>
+              <span class="desc">Show SObject, SOQL, and Apex keyword autocompletion popups.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-apex-intellisense" checked>
+              <label for="sfarc-apex-intellisense"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. BULK FIELD CREATOR SETTINGS -->
+      <section id="bulk-field" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-green"><i class="fa-solid fa-table-columns"></i></div>
+          <h2>Bulk Field Creator</h2>
+          <p>Default field attributes, API name conventions, and permission set rules.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-naming-convention" style="display: flex; align-items: center; gap: 6px;">
+                Field Naming Convention
+                <i class="fa-solid fa-circle-info" title="Choose auto-formatting convention for API Names (e.g. PascalCase vs snake_case)" style="color: var(--mac-secondary-text); font-size: 12px;"></i>
+              </label>
+              <span class="desc">Automatic case formatting rule applied when generating API names from Field Labels.</span>
+            </div>
+            <select id="sfarc-field-naming-convention" class="mac-select">
+              <option value="PascalCase">PascalCase (CustomerNotes__c)</option>
+              <option value="snake_case">snake_case (Customer_Notes__c)</option>
+              <option value="camelCase">camelCase (customerNotes__c)</option>
+              <option value="UPPERCASE">UPPERCASE (CUSTOMER_NOTES__c)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-include-managed" style="display: flex; align-items: center; gap: 6px;">
+                Include managed packages objects
+                <i class="fa-solid fa-circle-info" title="Include custom objects from installed managed packages (with namespace prefixes) in target object selector" style="color: var(--mac-secondary-text); font-size: 12px;"></i>
+              </label>
+              <span class="desc">Include custom objects from installed managed packages in the Object selector.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-field-include-managed">
+              <label for="sfarc-field-include-managed"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-default-length">Default Text Field Length</label>
+              <span class="desc">Default char length applied when adding a new Text field row.</span>
+            </div>
+            <input type="text" id="sfarc-field-default-length" value="255" class="mac-input">
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-default-precision">Default Number Precision & Scale</label>
+              <span class="desc">Format for numeric fields (e.g., 18,2 for currency/decimal).</span>
+            </div>
+            <input type="text" id="sfarc-field-default-precision" value="18,0" class="mac-input">
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-auto-apiname">Auto-Generate API Name (__c)</label>
+              <span class="desc">Automatically format Field Label into valid Salesforce API Name.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-field-auto-apiname" checked>
+              <label for="sfarc-field-auto-apiname"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-ps-policy">Default Permission Set Access Policy</label>
+              <span class="desc">Automatic FLS assignment strategy when deploying custom fields.</span>
+            </div>
+            <select id="sfarc-field-ps-policy" class="mac-select">
+              <option value="none">Manual Selection (None)</option>
+              <option value="all">Grant All Permission Sets</option>
+              <option value="admin">Admin & System Permission Sets Only</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-auto-popout">Auto-Popout Standalone Tab for Large Datasets</label>
+              <span class="desc">Automatically open standalone window when building >10 fields.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-field-auto-popout">
+              <label for="sfarc-field-auto-popout"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. BULK DATA TOOLS SETTINGS -->
+      <section id="bulk-data" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-cyan"><i class="fa-solid fa-database"></i></div>
+          <h2>Bulk Data Tools</h2>
+          <p>Export delimiters, SOQL query batch sizes, and data import options.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-csv-delimiter">CSV Export & Import Delimiter</label>
+              <span class="desc">Character used to separate columns in CSV files.</span>
+            </div>
+            <select id="sfarc-csv-delimiter" class="mac-select">
+              <option value=",">Comma (,)</option>
+              <option value=";">Semicolon (;)</option>
+              <option value="	">Tab (\t)</option>
+              <option value="|">Pipe (|)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-batch-size">REST Composite Batch Size</label>
+              <span class="desc">Number of records sent per request payload in Bulk Operations.</span>
+            </div>
+            <select id="sfarc-batch-size" class="mac-select">
+              <option value="25">25 Records (Safest)</option>
+              <option value="50">50 Records</option>
+              <option value="200">200 Records (Standard)</option>
+              <option value="2000">2,000 Records (Bulk API)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-max-records">Max Query Records Limit</label>
+              <span class="desc">Maximum records retrieved per SOQL Query execution.</span>
+            </div>
+            <input type="number" id="sfarc-max-records" value="10000" min="100" max="50000" class="mac-input">
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-query-all-rows">Query ALL ROWS (Include Deleted & Archived)</label>
+              <span class="desc">Include recycled records when running SOQL queries.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-query-all-rows">
+              <label for="sfarc-query-all-rows"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOW SCANNER RULES SETTINGS -->
+      <section id="flow-scanner" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-blue"><i class="fa-solid fa-diagram-project"></i></div>
+          <h2>Flow Scanner Rules</h2>
+          <p>Configure static analysis rule severities, thresholds, and activation for Lightning Flows.</p>
+        </div>
+
+        <div class="mac-card-group" id="sfarc-flow-rules-list">
+          <!-- Dynamically populated via JavaScript -->
+        </div>
+      </section>
+
+      <!-- 6. DEBUG LOGS & TRACE SETTINGS -->
+      <section id="debug-logs" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-indigo" style="display: flex; align-items: center; justify-content: center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13v-2h-3.17c-.18-.63-.47-1.21-.86-1.73l2.25-2.25-1.42-1.42-2.54 2.54c-.61-.38-1.28-.65-2-.76V4h3V2H9v2h3v3.38c-.72.11-1.39.38-2 .76L7.46 5.6 6.04 7.02l2.25 2.25c-.39.52-.68 1.1-.86 1.73H4v2h3.04c0 .33-.04.66-.04 1v1H4v2h3c.15 1.4.74 2.65 1.63 3.61L6.04 21.41l1.42 1.42 2.76-2.76c.57.26 1.18.43 1.83.49V22h2v-1.44c.65-.06 1.26-.23 1.83-.49l2.76 2.76 1.42-1.42-2.59-2.59c.89-.96 1.48-2.21 1.63-3.61h3v-2h-3v-1c0-.34-.04-.67-.04-1H19zm-7 7c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg></div>
+          <h2>Debug Logs & Trace</h2>
+          <p>Trace log capture levels, auto-refresh intervals, and retention limits.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-log-type">Default Trace Log Category</label>
+              <span class="desc">Default log filter type applied on Debug Logs panel.</span>
+            </div>
+            <select id="sfarc-log-type" class="mac-select">
+              <option value="USER_DEBUG">USER_DEBUG (My Logs Only)</option>
+              <option value="ALL">ALL (System & Workflow Traces)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-log-refresh">Auto-Refresh Logs Interval</label>
+              <span class="desc">Automatically pull new Salesforce debug logs periodically.</span>
+            </div>
+            <select id="sfarc-log-refresh" class="mac-select">
+              <option value="0">Off (Manual Refresh)</option>
+              <option value="5">Every 5 Seconds</option>
+              <option value="10">Every 10 Seconds</option>
+              <option value="30">Every 30 Seconds</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-log-retention">Log Table Storage Limit</label>
+              <span class="desc">Maximum logs stored in memory before truncating old logs.</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-log-retention" min="20" max="500" value="100" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-log-retention-val">100</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. ACCESS & SECURITY ANALYZER SETTINGS -->
+      <section id="security" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-red"><i class="fa-solid fa-shield-halved"></i></div>
+          <h2>Access & Security</h2>
+          <p>User security audit scope, high-risk permission flags, and report export settings.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-sec-inactive">Audit Inactive Users in Security Scans</label>
+              <span class="desc">Include deactivated users when scanning permission sets and roles.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-sec-inactive">
+              <label for="sfarc-sec-inactive"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-sec-highrisk">Flag High-Risk Admin & Setup Permissions</label>
+              <span class="desc">Highlight Modify All Data, Manage Users, and Author Apex access.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-sec-highrisk" checked>
+              <label for="sfarc-sec-highrisk"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-sec-export-format">Default Security Audit Export Format</label>
+              <span class="desc">Format downloaded when generating Access & Security reports.</span>
+            </div>
+            <select id="sfarc-sec-export-format" class="mac-select">
+              <option value="csv">CSV Spreadsheet</option>
+              <option value="json">JSON Document</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. SHORTCUTS SETTINGS -->
+      <section id="shortcuts" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-orange"><i class="fa-solid fa-keyboard"></i></div>
+          <h2>Shortcuts & Hotkeys</h2>
+          <p>Keyboard shortcuts to navigate search, run Apex, and toggle extension windows.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Comet Launcher Method</label>
+              <span class="desc">Choose how to open the Salesforce Comet popup — the sidebar tab, the Shift + Space shortcut, or both.</span>
+            </div>
+            <div class="mac-segmented-control" id="launcher-method-seg">
+              <button class="mac-segment-btn active" data-launcher="both">Sidebar + Shortcut</button>
+              <button class="mac-segment-btn" data-launcher="sidebar">Sidebar Tab</button>
+              <button class="mac-segment-btn" data-launcher="shortcut">Shift + Space</button>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Global Command Search</label>
+              <span class="desc">Open global command launcher from anywhere in Salesforce.</span>
+            </div>
+            <span class="mac-hotkey-badge">Shift + Space</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Execute Anonymous Apex Script</label>
+              <span class="desc">Run currently open Apex script in editor.</span>
+            </div>
+            <span class="mac-hotkey-badge">Ctrl + Enter</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Toggle Extension Panel Drawer</label>
+              <span class="desc">Slide open or close main extension panel window.</span>
+            </div>
+            <span class="mac-hotkey-badge">Alt + S</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Refresh Debug Logs</label>
+              <span class="desc">Pull latest Salesforce trace logs instantly.</span>
+            </div>
+            <span class="mac-hotkey-badge">Ctrl + R</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT-CLICK CONTEXT MENU SETTINGS -->
+      <section id="context-menu" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-blue"><i class="fa-solid fa-mouse-pointer"></i></div>
+          <h2>Right-Click Menu</h2>
+          <p>Choose which tools appear in the right-click "Salesforce Comet" submenu, and add your own custom entries.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-cm-enabled">Enable Right-Click Menu</label>
+              <span class="desc">Show the Salesforce Comet submenu when right-clicking on Salesforce pages.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-cm-enabled">
+              <label for="sfarc-cm-enabled"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row mac-setting-head">
+            <div class="mac-setting-info">
+              <label>Menu Tools</label>
+              <span class="desc">Tick the tools you want in the right-click menu.</span>
+            </div>
+          </div>
+          <div id="sfarc-cm-tools" class="mac-check-list"></div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row mac-setting-head">
+            <div class="mac-setting-info">
+              <label>Custom Entries</label>
+              <span class="desc">Add your own menu items that open any URL or extension tool.</span>
+            </div>
+          </div>
+          <div id="sfarc-cm-custom-list"></div>
+          <div class="mac-cm-add-row">
+            <input type="text" id="sfarc-cm-custom-name" class="mac-input" placeholder="Menu label, e.g. My Tool">
+            <input type="text" id="sfarc-cm-custom-url" class="mac-input" placeholder="URL or tool page, e.g. https://example.com or org-limits">
+            <button type="button" id="sfarc-cm-custom-add" class="mac-btn mac-btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. API & LIMITS SETTINGS -->
+      <section id="api-limits" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-teal"><i class="fa-solid fa-network-wired"></i></div>
+          <h2>API & Org Limits</h2>
+          <p>Salesforce REST API version, custom instance URLs, and local cache controls.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-api-version">Salesforce REST API Version</label>
+              <span class="desc">API version used across REST and Tooling endpoints.</span>
+            </div>
+            <select id="sfarc-api-version" class="mac-select">
+              <option value="60.0">v60.0 (Spring '24)</option>
+              <option value="61.0">v61.0 (Summer '24)</option>
+              <option value="62.0">v62.0 (Winter '25)</option>
+              <option value="63.0">v63.0 (Spring '25)</option>
+              <option value="67.0">v67.0 (Latest)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-request-timeout">HTTP Request Timeout (ms)</label>
+              <span class="desc">Maximum allowed response wait time for API queries.</span>
+            </div>
+            <input type="number" id="sfarc-request-timeout" value="30000" step="1000" class="mac-input">
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Clear Local Extension Cache</label>
+              <span class="desc">Purge cached org schemas, permission sets, and SObject metadata.</span>
+            </div>
+            <button id="sfarc-clear-cache-btn" class="mac-action-btn">
+              <i class="fa-solid fa-trash-can"></i> Clear Cache
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. ABOUT SETTINGS -->
+      <section id="about" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon badge-gray"><i class="fa-solid fa-circle-info"></i></div>
+          <h2>About</h2>
+          <p>Salesforce Comet Extension version, release build, and credits.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Extension Version</label>
+              <span class="desc">Salesforce Comet Developer Suite</span>
+            </div>
+            <span class="mac-value-badge" id="sfarc-extension-version">—</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Chrome Extension ID</label>
+              <span class="desc">Active browser extension instance identifier.</span>
+            </div>
+            <span class="mac-value-badge" id="sfarc-extension-id">sfarc-comet-ext</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Software Updates</label>
+              <span class="desc">Check for the latest updates and feature patches.</span>
+              <span class="desc" id="sfarc-update-status" style="display:none; margin-top: 2px; font-weight: 600;"></span>
+            </div>
+            <button id="sfarc-check-updates-btn" class="mac-action-btn">
+              <i class="fa-solid fa-rotate"></i> Check for Updates
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  
+  
+    
+
+<script>
+
+  window.chrome = window.chrome || {};
+  if (!window.chrome.storage) {
+    window.chrome.storage = {
+      sync: {
+        get: (keys, cb) => { const o = {}; if (Array.isArray(keys)) keys.forEach(k => o[k] = undefined); else if (typeof keys === 'string') o[keys] = undefined; else Object.assign(o, keys); cb && cb(o); },
+        set: (obj, cb) => { cb && cb(); },
+        onChanged: { addListener: () => {}, removeListener: () => {} }
+      },
+      local: {
+        get: (keys, cb) => { const o = {}; if (Array.isArray(keys)) keys.forEach(k => o[k] = undefined); else if (typeof keys === 'string') o[keys] = undefined; else Object.assign(o, keys); cb && cb(o); },
+        set: (obj, cb) => { cb && cb(); },
+        onChanged: { addListener: () => {}, removeListener: () => {} }
+      }
+    };
+  }
+  window.chrome.runtime = window.chrome.runtime || {};
+  window.chrome.runtime.getManifest = () => ({ version: '3.1.1' });
+  window.chrome.runtime.getURL = (p) => p;
+  window.chrome.runtime.id = 'test-extension-id';
+  window.chrome.extension = window.chrome.extension || { getURL: (p) => p };
+  if (!window.chrome.tabs) window.chrome.tabs = { create: () => {}, query: (q, cb) => cb && cb([]) };
+  if (!window.chrome.contextMenus) window.chrome.contextMenus = { create: () => {}, removeAll: (cb) => cb && cb() };
+  if (!window.chrome.permissions) window.chrome.permissions = { contains: (p, cb) => cb && cb(false), request: (p, cb) => cb && cb(false) };
+
+</script>
+<script>
+// settings.js - macOS System Settings Manager
+const defaultSettings = {
+    // General
+    iconVisible: true,
+    iconPosition: 'left',
+    iconOffset: 50,
+    autoOpenPanel: false,
+    defaultTab: 'search',
+    panelPosition: 'right',
+    // Launcher: 'both' | 'sidebar' | 'shortcut'
+    launcherMethod: 'both',
+
+    // Appearance
+    theme: 'system',
+    accentColor: '#2196f3',
+    editorFont: 'Fira Code',
+    editorFontSize: 14,
+    compactMode: false,
+    headerIcons: {
+        sessionCopy: true,
+        fieldApi: true,
+        lwcViewer: true,
+        flowViewer: true
+    },
+
+    // Anonymous Apex
+    apexTimeout: 30,
+    apexFormatOnRun: false,
+    apexLineNumbers: true,
+    apexHistoryLimit: 50,
+    apexIntelliSense: true,
+
+    // Bulk Field Creator
+    fieldNamingConvention: 'PascalCase',
+    fieldIncludeManaged: false,
+    fieldDefaultLength: '255',
+    fieldDefaultPrecision: '18,0',
+    fieldAutoApiName: true,
+    fieldPsPolicy: 'none',
+    fieldAutoPopout: false,
+
+    // Bulk Data Tools
+    csvDelimiter: ',',
+    batchSize: '200',
+    maxQueryRecords: 10000,
+    queryAllRows: false,
+
+    // Flow Scanner Rules
+    flowScannerRules: {},
+
+    // Debug Logs & Trace
+    logType: 'USER_DEBUG',
+    logRefresh: '0',
+    logRetention: 100,
+
+    // Access & Security
+    secInactive: false,
+    secHighRisk: true,
+    secExportFormat: 'csv',
+
+    // API & Limits
+    apiVersion: '60.0',
+    requestTimeout: 30000,
+
+    // Right-click context menu
+    contextMenu: {
+        enabled: true,
+        tools: ['data-export', 'comet-launcher', 'code-editor'],
+        custom: []
+    }
+};
+
+let currentSettings = { ...defaultSettings };
+let saveTimeout = null;
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await initSettings();
+    setupNavigation();
+    setupSearchFilter();
+    setupInputs();
+    setupContextMenuInputs();
+    setupActionButtons();
+    fetchUserInfo();
+});
+
+async function initSettings() {
+    return new Promise((resolve) => {
+        if (window.chrome && chrome.storage && chrome.storage.sync) {
+            chrome.storage.sync.get(['sfiSettings'], (result) => {
+                if (result.sfiSettings) {
+                    currentSettings = { ...defaultSettings, ...result.sfiSettings };
+                } else {
+                    try {
+                        const localRaw = localStorage.getItem('sfiSettings');
+                        if (localRaw) currentSettings = { ...defaultSettings, ...JSON.parse(localRaw) };
+                    } catch(e){}
+                }
+                populateUI();
+                applyTheme(currentSettings.theme);
+                resolve();
+            });
+        } else {
+            try {
+                const localRaw = localStorage.getItem('sfiSettings');
+                if (localRaw) currentSettings = { ...defaultSettings, ...JSON.parse(localRaw) };
+            } catch(e){}
+            populateUI();
+            applyTheme(currentSettings.theme);
+            resolve();
+        }
+    });
+}
+
+function populateUI() {
+    // Appearance
+    setSegmented('appearance', 'theme', currentSettings.theme || 'system');
+    setSegmented('shortcuts', 'launcher', currentSettings.launcherMethod || 'both');
+    const colorVal = currentSettings.accentColor || '#2196f3';
+    setValue('sfarc-accent-color-input', colorVal === 'org' ? '#2196f3' : colorVal);
+    const swatches = document.querySelectorAll('.mac-swatch-btn');
+    swatches.forEach(s => {
+        if (String(s.dataset.color).toLowerCase() === String(colorVal).toLowerCase()) {
+            s.classList.add('active');
+        } else {
+            s.classList.remove('active');
+        }
+    });
+    setValue('sfarc-editor-font', currentSettings.editorFont || 'Fira Code');
+    setSlider('sfarc-editor-fontsize', 'sfarc-editor-fontsize-val', currentSettings.editorFontSize || 14, 'px');
+    setCheckbox('sfarc-compact-mode', currentSettings.compactMode);
+
+    const headerIcons = { ...defaultSettings.headerIcons, ...(currentSettings.headerIcons || {}) };
+    setCheckbox('sfarc-header-session-copy', headerIcons.sessionCopy);
+    setCheckbox('sfarc-header-field-api', headerIcons.fieldApi);
+    setCheckbox('sfarc-header-lwc-viewer', headerIcons.lwcViewer);
+    setCheckbox('sfarc-header-flow-viewer', headerIcons.flowViewer);
+
+    // Anonymous Apex
+    setValue('sfarc-apex-timeout', currentSettings.apexTimeout || 30);
+    setCheckbox('sfarc-apex-format-run', currentSettings.apexFormatOnRun);
+    setCheckbox('sfarc-apex-linenumbers', currentSettings.apexLineNumbers !== false);
+    setSlider('sfarc-apex-history-limit', 'sfarc-apex-history-val', currentSettings.apexHistoryLimit || 50, '');
+    setCheckbox('sfarc-apex-intellisense', currentSettings.apexIntelliSense !== false);
+
+    // Bulk Field Creator
+    setValue('sfarc-field-naming-convention', currentSettings.fieldNamingConvention || 'PascalCase');
+    setCheckbox('sfarc-field-include-managed', currentSettings.fieldIncludeManaged);
+    setValue('sfarc-field-default-length', currentSettings.fieldDefaultLength || '255');
+    setValue('sfarc-field-default-precision', currentSettings.fieldDefaultPrecision || '18,0');
+    setCheckbox('sfarc-field-auto-apiname', currentSettings.fieldAutoApiName !== false);
+    setValue('sfarc-field-ps-policy', currentSettings.fieldPsPolicy || 'none');
+    setCheckbox('sfarc-field-auto-popout', currentSettings.fieldAutoPopout);
+
+    // Bulk Data Tools
+    setValue('sfarc-csv-delimiter', currentSettings.csvDelimiter || ',');
+    setValue('sfarc-batch-size', currentSettings.batchSize || '200');
+    setValue('sfarc-max-records', currentSettings.maxQueryRecords || 10000);
+    setCheckbox('sfarc-query-all-rows', currentSettings.queryAllRows);
+
+    // Debug Logs & Trace
+    setValue('sfarc-log-type', currentSettings.logType || 'USER_DEBUG');
+    setValue('sfarc-log-refresh', currentSettings.logRefresh || '0');
+    setSlider('sfarc-log-retention', 'sfarc-log-retention-val', currentSettings.logRetention || 100, '');
+
+    // Access & Security
+    setCheckbox('sfarc-sec-inactive', currentSettings.secInactive);
+    setCheckbox('sfarc-sec-highrisk', currentSettings.secHighRisk !== false);
+    setValue('sfarc-sec-export-format', currentSettings.secExportFormat || 'csv');
+
+    // API & Limits
+    setValue('sfarc-api-version', currentSettings.apiVersion || '60.0');
+    setValue('sfarc-request-timeout', currentSettings.requestTimeout || 30000);
+
+    // Right-click context menu
+    if (!currentSettings.contextMenu) currentSettings.contextMenu = { ...defaultSettings.contextMenu };
+    setCheckbox('sfarc-cm-enabled', currentSettings.contextMenu.enabled !== false);
+    renderContextMenuTools();
+    renderContextMenuCustom();
+
+    // Flow Scanner Rules
+    renderFlowScannerRules();
+
+    if (window.chrome && chrome.runtime && chrome.runtime.id) {
+        const extIdEl = document.getElementById('sfarc-extension-id');
+        if (extIdEl) extIdEl.textContent = chrome.runtime.id;
+    }
+
+    if (window.chrome && chrome.runtime && chrome.runtime.getManifest) {
+        const versionEl = document.getElementById('sfarc-extension-version');
+        if (versionEl) versionEl.textContent = 'v' + (chrome.runtime.getManifest().version || '?');
+    }
+}
+
+function setupNavigation() {
+    const navItems = document.querySelectorAll('.mac-nav-item');
+    const sections = document.querySelectorAll('.mac-settings-section');
+
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const targetId = item.dataset.target;
+            navItems.forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            sections.forEach(s => s.classList.remove('active'));
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) targetSection.classList.add('active');
+        });
+    });
+}
+
+function setupSearchFilter() {
+    const searchInput = document.getElementById('sfarc-settings-search');
+    if (!searchInput) return;
+
+    const navItems = document.querySelectorAll('.mac-nav-item');
+    const sections = document.querySelectorAll('.mac-settings-section');
+
+    const clearFilter = () => {
+        navItems.forEach(n => n.style.display = 'flex');
+        sections.forEach(s => {
+            s.querySelectorAll('.mac-setting-row').forEach(r => r.style.display = 'flex');
+        });
+        const empty = document.getElementById('sfarc-search-empty');
+        if (empty) empty.style.display = 'none';
+    };
+
+    searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        clearFilter();
+
+        if (!query) return;
+
+        let matchedSectionId = null;
+        navItems.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const targetId = item.dataset.target;
+            const section = document.getElementById(targetId);
+            const sectionText = section ? section.textContent.toLowerCase() : '';
+
+            if (text.includes(query) || sectionText.includes(query)) {
+                item.style.display = 'flex';
+                if (!matchedSectionId) matchedSectionId = targetId;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        // macOS-style: auto-activate the first matching section and filter its rows
+        if (matchedSectionId) {
+            const matched = document.getElementById(matchedSectionId);
+            navItems.forEach(n => n.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            navItems.forEach(n => {
+                if (n.dataset.target === matchedSectionId) n.classList.add('active');
+            });
+            if (matched) matched.classList.add('active');
+
+            if (matched) {
+                matched.querySelectorAll('.mac-setting-row').forEach(r => {
+                    const rowText = r.textContent.toLowerCase();
+                    r.style.display = rowText.includes(query) ? 'flex' : 'none';
+                });
+            }
+        } else {
+            // No match: show a clear empty state by hiding all sections
+            sections.forEach(s => s.classList.remove('active'));
+            const allHidden = document.getElementById('sfarc-search-empty');
+            if (allHidden) allHidden.style.display = 'block';
+        }
+    });
+}
+
+function setupInputs() {
+    // Shortcuts: Comet Launcher Method Segmented
+    const launcherBtns = document.querySelectorAll('#launcher-method-seg .mac-segment-btn');
+    launcherBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            launcherBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentSettings.launcherMethod = btn.dataset.launcher;
+            autoSave();
+        });
+    });
+
+    // Appearance Theme Segmented
+    const themeBtns = document.querySelectorAll('#appearance .mac-segment-btn');
+    themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            themeBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const theme = btn.dataset.theme;
+            currentSettings.theme = theme;
+            applyTheme(theme);
+            autoSave();
+        });
+    });
+
+    // Appearance Accent / Asset Color Picker & Swatches
+    const swatchBtns = document.querySelectorAll('.mac-swatch-btn');
+    const colorPickerInput = document.getElementById('sfarc-accent-color-input');
+    const applyAccent = (color) => {
+        currentSettings.accentColor = color;
+        if (colorPickerInput) {
+            // The <input type=color> only shows hex — 'org' mode keeps its last hex value.
+            colorPickerInput.value = (color === 'org') ? '#2196f3' : color;
+        }
+        swatchBtns.forEach(s => {
+            if (String(s.dataset.color).toLowerCase() === String(color).toLowerCase()) {
+                s.classList.add('active');
+            } else {
+                s.classList.remove('active');
+            }
+        });
+        if (window.applyAccentColor) window.applyAccentColor(color);
+        autoSave();
+    };
+
+    swatchBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            applyAccent(btn.dataset.color);
+        });
+    });
+
+    if (colorPickerInput) {
+        colorPickerInput.addEventListener('input', (e) => {
+            applyAccent(e.target.value);
+        });
+    }
+
+    bindValue('sfarc-editor-font', 'editorFont');
+    bindSlider('sfarc-editor-fontsize', 'sfarc-editor-fontsize-val', 'editorFontSize', 'px');
+    bindCheckbox('sfarc-compact-mode', 'compactMode');
+
+    bindHeaderIconToggle('sfarc-header-session-copy', 'sessionCopy');
+    bindHeaderIconToggle('sfarc-header-field-api', 'fieldApi');
+    bindHeaderIconToggle('sfarc-header-lwc-viewer', 'lwcViewer');
+    bindHeaderIconToggle('sfarc-header-flow-viewer', 'flowViewer');
+
+    // Anonymous Apex
+    bindValue('sfarc-apex-timeout', 'apexTimeout', true);
+    bindCheckbox('sfarc-apex-format-run', 'apexFormatOnRun');
+    bindCheckbox('sfarc-apex-linenumbers', 'apexLineNumbers');
+    bindSlider('sfarc-apex-history-limit', 'sfarc-apex-history-val', 'apexHistoryLimit', '');
+    bindCheckbox('sfarc-apex-intellisense', 'apexIntelliSense');
+
+    // Bulk Field Creator
+    bindValue('sfarc-field-naming-convention', 'fieldNamingConvention');
+    bindCheckbox('sfarc-field-include-managed', 'fieldIncludeManaged');
+    bindValue('sfarc-field-default-length', 'fieldDefaultLength');
+    bindValue('sfarc-field-default-precision', 'fieldDefaultPrecision');
+    bindCheckbox('sfarc-field-auto-apiname', 'fieldAutoApiName');
+    bindValue('sfarc-field-ps-policy', 'fieldPsPolicy');
+    bindCheckbox('sfarc-field-auto-popout', 'fieldAutoPopout');
+
+    // Bulk Data Tools
+    bindValue('sfarc-csv-delimiter', 'csvDelimiter');
+    bindValue('sfarc-batch-size', 'batchSize');
+    bindValue('sfarc-max-records', 'maxQueryRecords', true);
+    bindCheckbox('sfarc-query-all-rows', 'queryAllRows');
+
+    // Debug Logs & Trace
+    bindValue('sfarc-log-type', 'logType');
+    bindValue('sfarc-log-refresh', 'logRefresh');
+    bindSlider('sfarc-log-retention', 'sfarc-log-retention-val', 'logRetention', '');
+
+    // Access & Security
+    bindCheckbox('sfarc-sec-inactive', 'secInactive');
+    bindCheckbox('sfarc-sec-highrisk', 'secHighRisk');
+    bindValue('sfarc-sec-export-format', 'secExportFormat');
+
+    // API & Limits
+    bindValue('sfarc-api-version', 'apiVersion');
+    bindValue('sfarc-request-timeout', 'requestTimeout', true);
+}
+
+// -------------------------------------------------------------
+// Right-click context menu settings
+// -------------------------------------------------------------
+const CONTEXT_MENU_TOOLS = [
+    // Font Awesome icons chosen to match each tool's purpose exactly
+    // (the native right-click menu itself can only show text glyphs, but this
+    // checklist — a real DOM page — uses proper FA icons).
+    { id: 'data-export',      label: 'Data Export',            desc: 'Run SOQL queries & export records', icon: 'fa-file-export' },
+    { id: 'comet-launcher',   label: 'Comet Launcher',         desc: 'Open the Comet panel on this org', icon: 'fa-rocket' },
+    { id: 'code-editor',      label: 'Code Editor',            desc: 'Open the Apex code editor', icon: 'fa-code' },
+    { id: 'org-limits',       label: 'Org Limits',             desc: 'View API limits & usage', icon: 'fa-gauge-high' },
+    { id: 'metadata-exporter',label: 'Metadata Exporter',      desc: 'Retrieve & export metadata', icon: 'fa-cube' },
+    { id: 'anonymous-apex',   label: 'Execute Anonymous Apex', desc: 'Run Apex snippets', icon: 'fa-bolt' },
+    { id: 'log-viewer',       label: 'Debug Logs',             desc: 'Browse trace flags & logs', icon: 'fa-bug' },
+    { id: 'event-monitor',    label: 'Event Monitor',          desc: 'Streaming events, CDC, replays', icon: 'fa-satellite-dish' },
+    { id: 'code-coverage',    label: 'Code Coverage',          desc: 'Apex test coverage analysis', icon: 'fa-flask-vial' },
+    { id: 'rest-explorer',    label: 'REST Explorer',          desc: 'Test REST endpoints', icon: 'fa-paper-plane' },
+    { id: 'graphql-explorer', label: 'GraphQL Explorer',       desc: 'Run GraphQL queries', icon: 'fa-diagram-project' },
+    { id: 'record-clone',     label: 'Record Clone',           desc: 'Clone records between orgs', icon: 'fa-clone' },
+    { id: 'bulk-permission-wizard', label: 'Bulk Permission Wizard', desc: 'Assign/revoke permissions', icon: 'fa-user-shield' },
+    { id: 'bulk-field-builder', label: 'Bulk Field Builder',   desc: 'Create fields in bulk', icon: 'fa-table-columns' },
+    { id: 'data-builder',     label: 'Data Builder',           desc: 'Build & map data records', icon: 'fa-database' },
+    { id: 'data-import',      label: 'Data Import',            desc: 'Import records from CSV', icon: 'fa-file-import' },
+    { id: 'diff-checker',     label: 'Diff Checker',           desc: 'Compare files & metadata', icon: 'fa-code-compare' },
+    { id: 'api-statistics',   label: 'API Statistics',         desc: 'Monitor REST API usage', icon: 'fa-chart-line' },
+    { id: 'automation-cascade', label: 'Automation Cascade',   desc: 'Trace automation triggers', icon: 'fa-sitemap' }
+];
+
+function getContextMenuCfg() {
+    if (!currentSettings.contextMenu) currentSettings.contextMenu = { ...defaultSettings.contextMenu };
+    if (!Array.isArray(currentSettings.contextMenu.tools)) currentSettings.contextMenu.tools = [...defaultSettings.contextMenu.tools];
+    if (!Array.isArray(currentSettings.contextMenu.custom)) currentSettings.contextMenu.custom = [];
+    return currentSettings.contextMenu;
+}
+
+function renderContextMenuTools() {
+    const list = document.getElementById('sfarc-cm-tools');
+    if (!list) return;
+    const cfg = getContextMenuCfg();
+    list.innerHTML = '';
+    CONTEXT_MENU_TOOLS.forEach(tool => {
+        const row = document.createElement('label');
+        row.className = 'mac-check-row';
+        row.innerHTML = `
+            <input type="checkbox" data-tool="${tool.id}" ${cfg.tools.includes(tool.id) ? 'checked' : ''}>
+            <span class="mac-check-icon"><i class="fa-solid ${tool.icon}"></i></span>
+            <span class="mac-check-info">
+                <span class="mac-check-label">${tool.label}</span>
+                <span class="mac-check-desc">${tool.desc}</span>
+            </span>
+        `;
+        const cb = row.querySelector('input');
+        cb.addEventListener('change', () => {
+            const tools = getContextMenuCfg().tools;
+            const idx = tools.indexOf(tool.id);
+            if (cb.checked && idx === -1) tools.push(tool.id);
+            if (!cb.checked && idx !== -1) tools.splice(idx, 1);
+            autoSave();
+        });
+        list.appendChild(row);
+    });
+}
+
+function renderContextMenuCustom() {
+    const list = document.getElementById('sfarc-cm-custom-list');
+    if (!list) return;
+    const cfg = getContextMenuCfg();
+    list.innerHTML = '';
+    if (!cfg.custom.length) {
+        list.innerHTML = '<div class="mac-cm-empty">No custom entries yet. Add one below — it will appear in the right-click menu.</div>';
+        return;
+    }
+    cfg.custom.forEach((entry, i) => {
+        const row = document.createElement('div');
+        row.className = 'mac-cm-item';
+        row.innerHTML = `
+            <span class="mac-cm-item-icon"><i class="fa-solid fa-link"></i></span>
+            <span class="mac-cm-item-info">
+                <span class="mac-cm-item-name">${escapeHtml(entry.name || 'Untitled')}</span>
+                <span class="mac-cm-item-target">${escapeHtml(entry.url || '')}</span>
+            </span>
+            <button type="button" class="mac-cm-item-del" title="Remove entry" data-i="${i}"><i class="fa-solid fa-trash"></i></button>
+        `;
+        row.querySelector('.mac-cm-item-del').addEventListener('click', () => {
+            getContextMenuCfg().custom.splice(i, 1);
+            renderContextMenuCustom();
+            autoSave();
+        });
+        list.appendChild(row);
+    });
+}
+
+function setupContextMenuInputs() {
+    const enabled = document.getElementById('sfarc-cm-enabled');
+    if (enabled) {
+        enabled.addEventListener('change', (e) => {
+            getContextMenuCfg().enabled = e.target.checked;
+            autoSave();
+        });
+    }
+    const addBtn = document.getElementById('sfarc-cm-custom-add');
+    if (addBtn) {
+        addBtn.addEventListener('click', () => {
+            const nameEl = document.getElementById('sfarc-cm-custom-name');
+            const urlEl = document.getElementById('sfarc-cm-custom-url');
+            const name = (nameEl ? nameEl.value : '').trim();
+            const url = (urlEl ? urlEl.value : '').trim();
+            if (!name || !url) return;
+            getContextMenuCfg().custom.push({ name, url });
+            if (nameEl) nameEl.value = '';
+            if (urlEl) urlEl.value = '';
+            renderContextMenuCustom();
+            autoSave();
+        });
+    }
+}
+
+function escapeHtml(str) {
+    return String(str == null ? '' : str)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function bindCheckbox(elementId, settingKey) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.addEventListener('change', (e) => {
+        currentSettings[settingKey] = e.target.checked;
+        autoSave();
+    });
+}
+
+function bindValue(elementId, settingKey, isNumber = false) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    const evt = (el.tagName === 'SELECT' || el.type === 'checkbox') ? 'change' : 'input';
+    el.addEventListener(evt, (e) => {
+        const val = e.target.value;
+        currentSettings[settingKey] = isNumber ? Number(val) : val;
+        autoSave();
+    });
+}
+
+function updateSliderPct(slider) {
+    if (!slider) return;
+    const min = parseFloat(slider.min) || 0;
+    const max = parseFloat(slider.max) || 100;
+    const val = parseFloat(slider.value) || 0;
+    const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
+    slider.style.setProperty('--slider-pct', pct + '%');
+}
+
+function bindSlider(elementId, valId, settingKey, unit = '') {
+    const slider = document.getElementById(elementId);
+    const valSpan = document.getElementById(valId);
+    if (!slider) return;
+
+    slider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        if (valSpan) valSpan.textContent = `${val}${unit}`;
+        updateSliderPct(e.target);
+        currentSettings[settingKey] = Number(val);
+        autoSave();
+    });
+}
+
+function bindHeaderIconToggle(elementId, iconKey) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.addEventListener('change', (e) => {
+        if (!currentSettings.headerIcons) currentSettings.headerIcons = { ...defaultSettings.headerIcons };
+        currentSettings.headerIcons[iconKey] = e.target.checked;
+        autoSave();
+    });
+}
+
+function autoSave() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(() => {
+        if (window.chrome && chrome.storage && chrome.storage.sync) {
+            chrome.storage.sync.set({ sfiSettings: currentSettings }, () => {
+                showToast('Settings saved');
+            });
+        }
+        try {
+            localStorage.setItem('sfiSettings', JSON.stringify(currentSettings));
+            showToast('Settings saved');
+        } catch(e){}
+    }, 250);
+}
+
+function showToast(msg) {
+    const toast = document.getElementById('sfarc-toast');
+    const msgEl = document.getElementById('sfarc-toast-msg');
+    if (!toast) return;
+    if (msgEl) msgEl.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2000);
+}
+
+function setCheckbox(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.checked = !!val;
+}
+
+function setValue(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+}
+
+function setSlider(sliderId, valId, val, unit = '') {
+    const slider = document.getElementById(sliderId);
+    const valSpan = document.getElementById(valId);
+    if (slider) {
+        slider.value = val;
+        updateSliderPct(slider);
+    }
+    if (valSpan) valSpan.textContent = `${val}${unit}`;
+}
+
+function setSegmented(sectionId, attr, val) {
+    const btns = document.querySelectorAll(`#${sectionId} .mac-segment-btn`);
+    btns.forEach(b => {
+        if (b.dataset[attr] === val) b.classList.add('active');
+        else b.classList.remove('active');
+    });
+}
+
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.body.classList.add('sfarc-dark-theme');
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else if (theme === 'light') {
+        document.body.classList.remove('sfarc-dark-theme');
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDark) {
+            document.body.classList.add('sfarc-dark-theme');
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.body.classList.remove('sfarc-dark-theme');
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    }
+}
+
+function setupActionButtons() {
+    const resetBtn = document.getElementById('sfarc-reset-defaults');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', async () => {
+            if (await toast.confirm('Are you sure you want to reset all settings to default values?', {danger: true})) {
+                currentSettings = { ...defaultSettings };
+                populateUI();
+                applyTheme('system');
+                autoSave();
+                showToast('All settings reset to defaults');
+            }
+        });
+    }
+
+    const clearCacheBtn = document.getElementById('sfarc-clear-cache-btn');
+    if (clearCacheBtn) {
+        clearCacheBtn.addEventListener('click', () => {
+            try {
+                localStorage.removeItem('sfarc_org_schema');
+                localStorage.removeItem('sfarc_bulk_field_state');
+                localStorage.removeItem('sfarc_recent_commands');
+                showToast('Extension local cache cleared');
+            } catch(e){}
+        });
+    }
+
+    const updatesBtn = document.getElementById('sfarc-check-updates-btn');
+    if (updatesBtn) {
+        updatesBtn.addEventListener('click', () => checkForUpdates(updatesBtn));
+    }
+}
+
+// ─── Software Update Check (Chrome Web Store) ───────────────────────────────
+function compareVersions(a, b) {
+    const pa = String(a || '0').split('.').map(n => parseInt(n, 10) || 0);
+    const pb = String(b || '0').split('.').map(n => parseInt(n, 10) || 0);
+    const len = Math.max(pa.length, pb.length);
+    for (let i = 0; i < len; i++) {
+        const x = pa[i] || 0, y = pb[i] || 0;
+        if (x !== y) return x > y ? 1 : -1;
+    }
+    return 0;
+}
+
+// Ask Google's update service for the store's latest CRX. With redirect=manual
+// we read the Location header only (no CRX download) — the file name encodes the
+// latest version: <EXTID>_<major>_<minor>_<patch>_<build>.crx
+async function fetchStoreLatestVersion(extensionId) {
+    const url = 'https://clients2.google.com/service/update2/crx' +
+        '?response=redirect&prodversion=120.0.0.0&acceptformat=crx2,crx3' +
+        '&x=id%3D' + encodeURIComponent(extensionId) + '%26v%3D0.0.0.0%26uc';
+    const res = await fetch(url, { redirect: 'manual' });
+    if (!res) return null;
+    if (res.type === 'opaqueredirect') return null;
+    if (res.status >= 300 && res.status < 400) {
+        const loc = res.headers.get('location') || '';
+        const m = loc.match(/([A-Za-z0-9_-]+)_(\d+_\d+_\d+_\d+)\.crx$/i);
+        return m ? m[2].split('_').join('.') : null;
+    }
+    const text = await res.text();
+    if (text.includes('error-unknownApplication')) return null; // not published
+    const vm = text.match(/version="([0-9.]+)"/);
+    return vm ? vm[1] : null;
+}
+
+async function checkForUpdates(updatesBtn) {
+    const statusEl = document.getElementById('sfarc-update-status');
+    const installed = (window.chrome && chrome.runtime && chrome.runtime.getManifest)
+        ? (chrome.runtime.getManifest().version || '0')
+        : '0';
+    const extensionId = (window.chrome && chrome.runtime && chrome.runtime.id) || '';
+    const storeUrl = 'https://chromewebstore.google.com/detail/' + extensionId;
+    const setStatus = (msg, color) => {
+        if (!statusEl) return;
+        if (msg) {
+            statusEl.style.display = '';
+            statusEl.textContent = msg;
+            statusEl.style.color = color || 'inherit';
+        } else {
+            statusEl.style.display = 'none';
+            statusEl.textContent = '';
+        }
+    };
+    const setBtn = (label, disabled) => {
+        if (!updatesBtn) return;
+        updatesBtn.disabled = disabled;
+        updatesBtn.innerHTML = '<i class="fa-solid fa-rotate"></i> ' + label;
+    };
+
+    setStatus('');
+    setBtn('Checking…', true);
+
+    try {
+        const latest = await fetchStoreLatestVersion(extensionId);
+        if (!latest) {
+            setStatus('This extension is not published on the Chrome Web Store yet.');
+            showToast('Could not find the extension on the Chrome Web Store');
+            return;
+        }
+        const cmp = compareVersions(latest, installed);
+        if (cmp > 0) {
+            setStatus('Update available: v' + installed + ' → v' + latest + '  ', '#e11d48');
+            showToast('Update available: v' + installed + ' → v' + latest);
+            // Offer a direct link to the store listing
+            const link = document.createElement('a');
+            link.href = '#';
+            link.textContent = 'View in Store';
+            link.style.marginLeft = '4px';
+            link.style.color = '#2196f3';
+            link.style.fontWeight = '700';
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (window.chrome && chrome.tabs) {
+                    chrome.tabs.create({ url: storeUrl });
+                } else {
+                    window.open(storeUrl, '_blank');
+                }
+            });
+            statusEl.appendChild(link);
+        } else {
+            setStatus('✓ You are up to date (v' + installed + ')', '#10b981');
+            showToast('Salesforce Comet is up to date (v' + installed + ')');
+        }
+    } catch (err) {
+        console.warn('[UpdateCheck]', err);
+        setStatus('Update check failed — could not reach the Chrome Web Store.', '#d97706');
+        showToast('Update check failed');
+    } finally {
+        setBtn('Check for Updates', false);
+    }
+}
+
+async function fetchUserInfo() {
+    const nameEl = document.getElementById('sfarc-user-name');
+    const subEl = document.getElementById('sfarc-user-subtitle');
+    if (!nameEl) return;
+
+    function applyUserData(user) {
+        if (!user) return;
+        let displayName = user.name || user.userName;
+        if (!displayName || displayName === 'Salesforce Comet' || displayName === 'Salesforce Developer') {
+            if (user.username) {
+                const parts = user.username.split('@')[0].split('.');
+                displayName = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+            } else {
+                displayName = 'Salesforce Developer';
+            }
+        }
+        nameEl.textContent = displayName;
+        if (user.username || user.orgId) {
+            subEl.textContent = user.username ? user.username : `Salesforce Org: ${user.orgId}`;
+        }
+        const avatarEl = document.querySelector('.mac-avatar');
+        if (avatarEl && user.photoUrl) {
+            avatarEl.innerHTML = `<img src="${window.escapeHtml(user.photoUrl)}" alt="DP" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" onerror="this.outerHTML='<i class=\\'fa-solid fa-user-gear\\'></i>'">`;
+
+            if (!user.photoUrl.startsWith('data:image')) {
+                fetch(user.photoUrl)
+                    .then(r => r.blob())
+                    .then(blob => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                            if (reader.result && reader.result.startsWith('data:image')) {
+                                avatarEl.innerHTML = `<img src="${window.escapeHtml(reader.result)}" alt="DP" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+                                user.photoUrl = reader.result;
+                                if (window.chrome && chrome.storage && chrome.storage.local) {
+                                    chrome.storage.local.set({ sfarcLoggedInUser: user });
+                                }
+                            }
+                        };
+                        reader.readAsDataURL(blob);
+                    })
+                    .catch(() => {});
+            }
+        }
+    }
+
+    if (window.sfApi && window.sfApi.userInfo && window.sfApi.userInfo.name) {
+        applyUserData(window.sfApi.userInfo);
+        return;
+    }
+
+    if (window.chrome && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get(['sfarcLoggedInUser'], (res) => {
+            if (res && res.sfarcLoggedInUser && res.sfarcLoggedInUser.name) {
+                applyUserData(res.sfarcLoggedInUser);
+            } else {
+                fallbackFromLocalStorage();
+            }
+        });
+    } else {
+        fallbackFromLocalStorage();
+    }
+
+    function fallbackFromLocalStorage() {
+        try {
+            const raw = localStorage.getItem('sfarc_logged_in_user');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.name) applyUserData(parsed);
+            }
+        } catch(e){}
+    }
+}
+
+// Flow Scanner Rules Catalog & Renderer
+const defaultFlowScannerRules = [
+    { id: "action-in-loop", name: "Action Call In A Loop", desc: "Repeatedly invoking Apex actions inside a loop is a performance bottleneck.", severity: "warning", enabled: true },
+    { id: "dml-in-loop", name: "DML Statement In A Loop", desc: "Executing DML operations (insert, update, delete) inside a loop is a high-risk anti-pattern.", severity: "error", enabled: true },
+    { id: "duplicate-dml", name: "Duplicate DML Operation", desc: "When a Flow performs database operations on the same record multiple times.", severity: "warning", enabled: true },
+    { id: "cyclomatic-complexity", name: "Excessive Cyclomatic Complexity", desc: "High complexity makes Flow maintenance and debugging difficult.", severity: "info", enabled: true, hasThreshold: true, threshold: 25 },
+    { id: "flow-naming", name: "Flow Naming Convention", desc: "Using clear and consistent Flow naming conventions (Domain_Description).", severity: "error", enabled: true },
+    { id: "get-record-all-fields", name: "Get Record All Fields", desc: "Avoid using Get Records to retrieve all fields unnecessarily.", severity: "warning", enabled: true },
+    { id: "hardcoded-id", name: "Hardcoded Salesforce Id", desc: "Avoid hard-coding record IDs, as they are unique to a specific org.", severity: "error", enabled: true },
+    { id: "hardcoded-url", name: "Hardcoded Salesforce Url", desc: "Avoid hard-coding URLs, as they may change across environments.", severity: "error", enabled: true },
+    { id: "inactive-flow", name: "Inactive Flow", desc: "Inactive Flows should be deleted or archived to reduce clutter.", severity: "warning", enabled: true },
+    { id: "hardcoded-secret", name: "Hardcoded Secret / Token", desc: "Hardcoding sensitive passwords or API tokens inside Flow elements.", severity: "error", enabled: true },
+    { id: "soql-in-loop", name: "SOQL Query In Loop", desc: "Executing Get Records queries inside a loop risks hitting SOQL governor limits.", severity: "error", enabled: true },
+    { id: "unsafe-context", name: "Unsafe Running Context", desc: "Running Flows in System Mode Without Sharing bypasses object security.", severity: "warning", enabled: true },
+    { id: "missing-fault-path", name: "Missing Fault Path", desc: "DML and Apex action elements must specify a fault execution path.", severity: "warning", enabled: true },
+    { id: "missing-null-handler", name: "Missing Null Handler", desc: "Always verify that Get Records returns a non-null object before referencing.", severity: "error", enabled: true },
+    { id: "api-version", name: "API Version Outdated", desc: "Ensure Flow uses a supported and up-to-date Salesforce API version.", severity: "warning", enabled: true },
+    { id: "missing-filter-trigger", name: "Missing Filter Record Trigger", desc: "Record-triggered flows should define entry criteria filters.", severity: "warning", enabled: true },
+    { id: "same-record-updates", name: "Same Record Field Updates", desc: "Use Before-Save triggers instead of After-Save for same record updates.", severity: "warning", enabled: true },
+    { id: "cognitive-complexity", name: "Excessive Cognitive Complexity", desc: "Measures structural flow complexity and nested decision depth.", severity: "info", enabled: true, hasThreshold: true, threshold: 15 },
+    { id: "unused-variable", name: "Unused Variable", desc: "Unused Flow variables or resources add unnecessary memory overhead.", severity: "note", enabled: true },
+    { id: "flow-description", name: "Missing Flow Description", desc: "Flow descriptions are essential for documentation and maintainability.", severity: "note", enabled: true }
+];
+
+function renderFlowScannerRules() {
+    const container = document.getElementById('sfarc-flow-rules-list');
+    if (!container) return;
+
+    if (!currentSettings.flowScannerRules) currentSettings.flowScannerRules = {};
+
+    let html = '';
+    defaultFlowScannerRules.forEach(rule => {
+        const stored = currentSettings.flowScannerRules[rule.id] || {};
+        const enabled = stored.enabled !== undefined ? stored.enabled : rule.enabled;
+        const severity = stored.severity || rule.severity;
+        const threshold = stored.threshold !== undefined ? stored.threshold : rule.threshold;
+
+        const sevClass = `sev-${severity.toLowerCase()}`;
+
+        html += `
+            <div class="mac-setting-row ${enabled ? '' : 'disabled-rule'}" id="flow-rule-row-${rule.id}">
+                <div class="mac-setting-info">
+                    <label for="flow-rule-enable-${rule.id}">${rule.name}</label>
+                    <span class="desc">${rule.desc}</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    ${rule.hasThreshold ? `<input type="number" id="flow-rule-thresh-${rule.id}" value="${threshold}" min="1" max="100" class="mac-input" style="width: 65px; font-weight: 700;">` : ''}
+                    <select id="flow-rule-sev-${rule.id}" class="sfarc-sev-select ${sevClass}" data-rule-id="${rule.id}">
+                        <option value="error" ${severity.toLowerCase() === 'error' ? 'selected' : ''}>Error</option>
+                        <option value="warning" ${severity.toLowerCase() === 'warning' ? 'selected' : ''}>Warning</option>
+                        <option value="info" ${severity.toLowerCase() === 'info' ? 'selected' : ''}>Info</option>
+                        <option value="note" ${severity.toLowerCase() === 'note' ? 'selected' : ''}>Note</option>
+                    </select>
+                    <div class="mac-toggle-switch">
+                        <input type="checkbox" id="flow-rule-enable-${rule.id}" data-rule-id="${rule.id}" ${enabled ? 'checked' : ''}>
+                        <label for="flow-rule-enable-${rule.id}"></label>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    // Attach listeners
+    defaultFlowScannerRules.forEach(rule => {
+        const toggle = document.getElementById(`flow-rule-enable-${rule.id}`);
+        const sevSelect = document.getElementById(`flow-rule-sev-${rule.id}`);
+        const threshInput = document.getElementById(`flow-rule-thresh-${rule.id}`);
+        const row = document.getElementById(`flow-rule-row-${rule.id}`);
+
+        if (!currentSettings.flowScannerRules[rule.id]) {
+            currentSettings.flowScannerRules[rule.id] = { enabled: rule.enabled, severity: rule.severity, threshold: rule.threshold };
+        }
+
+        if (toggle) {
+            toggle.addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                currentSettings.flowScannerRules[rule.id].enabled = isChecked;
+                if (row) {
+                    if (isChecked) row.classList.remove('disabled-rule');
+                    else row.classList.add('disabled-rule');
+                }
+                autoSave();
+            });
+        }
+
+        if (sevSelect) {
+            sevSelect.addEventListener('change', (e) => {
+                const val = e.target.value;
+                currentSettings.flowScannerRules[rule.id].severity = val;
+                sevSelect.className = `sfarc-sev-select sev-${val.toLowerCase()}`;
+                autoSave();
+            });
+        }
+
+        if (threshInput) {
+            threshInput.addEventListener('input', (e) => {
+                currentSettings.flowScannerRules[rule.id].threshold = Number(e.target.value);
+                autoSave();
+            });
+        }
+    });
+}
+
+</script>
+</body>
+</html>

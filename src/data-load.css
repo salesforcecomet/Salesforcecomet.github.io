@@ -1,0 +1,109 @@
+.sfir-full-height {
+  height: 100%;
+}
+
+#result-table {
+  height: 100%;
+}
+
+#result-table table {
+  border: none;
+}
+
+#result-table table tr td:first-child {
+  border-left: none;
+  padding-left: 8px;
+}
+
+#result-table table tr:hover>td {
+  background-color: #F3F2F2;
+}
+
+.scrolltable-scrolled {
+  position: relative;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.scrolltable-scrolled table {
+  border-collapse: collapse;
+  position: absolute;
+}
+
+.scrolltable-cell {
+  border-bottom: 1px solid #e2e8f0;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding: 2px 12px;
+  background-color: #ffffff;
+  white-space: pre !important;
+  box-sizing: border-box;
+  position: relative;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 13px;
+  color: #333333;
+  line-height: 1.2;
+}
+
+.scrolltable-cell.header {
+  font-weight: 500;
+  background-color: #ffffff;
+  color: #64748b;
+  border-bottom: 1px solid #e2e8f0;
+  border-top: none;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 11px;
+}
+
+#result-table table {
+  border: none;
+}
+
+#result-table table tr td:first-child {
+  border-left: none;
+  padding-left: 12px;
+}
+
+#result-table table tr:hover>td {
+  background-color: #f8fafc;
+}
+
+/* Zebra striping for data-load result tables */
+#result-table table tr:nth-child(even) td {
+  background-color: #f5f7fa;
+}
+body.sfarc-dark-theme #result-table table tr:nth-child(even) td {
+  background-color: #252525;
+}
+body.sfarc-dark-theme #result-table table tr:hover>td {
+  background-color: #2d3748;
+}
+
+.scrolltable-scrolled {
+  position: relative;
+}
+
+.scrolltable-scrolled table {
+  border-collapse: collapse;
+  position: absolute;
+}
+
+.scrolltable-cell.skipped {
+  background-color: lightgrey;
+}
+
+.scrolltable-cell.prevent-line-wrap {
+  white-space: pre !important;
+}
+
+.pop-menu.saveOptions {
+  top: 0;
+  margin: 102px 232px 0 0;
+  z-index: 2;
+}

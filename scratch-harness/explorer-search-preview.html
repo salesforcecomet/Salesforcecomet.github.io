@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Explorer Search Bar — Fix Preview</title>
+<style>
+  body { margin: 0; background: #181818; font-family: 'Inter', system-ui, sans-serif; padding: 30px; }
+  .panel {
+    width: 280px;
+    background: #18181b;
+    border: 1px solid #27272a;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .pane-header { display: flex; align-items: center; gap: 8px; margin-bottom: 2px; }
+  .pane-header h3 { margin: 0; font-size: 14px; font-weight: 600; color: #f4f4f5; }
+
+  /* The exact sfir.css global rule that was clobbering the input */
+  select,
+  input[type="search"],
+  input[type="save"],
+  input[type="default"],
+  input[type="text"],
+  .query-history {
+    border-radius: 6px !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 4px 16px !important;
+    height: 32px !important;
+    font-size: 0.8rem !important;
+    background-color: #ffffff !important;
+    color: #334155 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+  }
+  body.sfarc-dark-theme { --sfarc-accent-glow: #38bdf8; --sfarc-accent-rgb: 33,150,243; }
+
+  /* The fixed metadata-exporter.css rules */
+  .explorer-search-wrapper { position: relative; display: flex; align-items: center; border-radius: 8px; }
+  .explorer-search-wrapper .explorer-search-input {
+    width: 100%; box-sizing: border-box;
+    height: 28px !important;
+    padding: 0 26px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    color: #1e293b !important;
+    outline: none;
+  }
+  .explorer-search-wrapper .explorer-search-input::placeholder { color: #94a3b8; }
+  .explorer-search-wrapper .explorer-search-input:focus {
+    background: #ffffff !important;
+    border-color: var(--sfarc-accent, #2196f3) !important;
+    box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.18) !important;
+  }
+  body.sfarc-dark-theme .explorer-search-wrapper .explorer-search-input { background: #27272a !important; border-color: #3f3f46 !important; color: #f4f4f5 !important; }
+  body.sfarc-dark-theme .explorer-search-wrapper .explorer-search-input::placeholder { color: #94a3b8; }
+  body.sfarc-dark-theme .explorer-search-wrapper .explorer-search-input:focus { background: #27272a !important; border-color: var(--sfarc-accent-glow, #38bdf8) !important; }
+  .explorer-search-icon {
+    position: absolute; left: 9px; top: 50%; transform: translateY(-50%);
+    pointer-events: none; color: #8b95a5; flex-shrink: 0;
+  }
+  .explorer-search-clear {
+    position: absolute; right: 5px; top: 50%; transform: translateY(-50%);
+    display: none; align-items: center; justify-content: center; width: 18px; height: 18px;
+    border-radius: 50%; background: transparent; border: none; color: #8b95a5; cursor: pointer; font-size: 11px; padding: 0;
+  }
+
+  .meta { margin-top: 16px; font-size: 12px; color: #a1a1aa; font-family: monospace; white-space: pre; }
+  .badge { color: #4ade80; font-weight: 700; }
+</style>
+</head>
+<body class="sfarc-dark-theme">
+  <div class="panel">
+    <div class="pane-header">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f4f4f5" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <h3>EXPLORER</h3>
+    </div>
+    <select style="width: 100%; font-size: 12px; background: #27272a; border-color: #3f3f46; color: #a1a1aa; height: 28px;">
+      <option>Compare With...</option>
+    </select>
+    <div id="explorer-search-wrapper" class="explorer-search-wrapper">
+      <svg class="explorer-search-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="explorer-search-input" class="explorer-search-input" placeholder="Search files..." autocomplete="off" spellcheck="false">
+      <button type="button" id="explorer-search-clear" class="explorer-search-clear" title="Clear search" aria-label="Clear search">✕</button>
+    </div>
+    <div style="height: 30px; background: #2563eb; border-radius: 6px; display: flex; align-items: center; padding: 0 10px; color: #dbeafe; font-size: 12px; font-weight: 600;">Bypass_Lead_Validation_Rules</div>
+  </div>
+  <div class="meta" id="meta">measuring…</div>
+  <script>
+    const input = document.getElementById('explorer-search-input');
+    const icon = document.querySelector('.explorer-search-icon');
+    const meta = document.getElementById('meta');
+    function measure() {
+      const cs = getComputedStyle(input);
+      const padLeft = parseFloat(cs.paddingLeft);
+      const iconRect = icon.getBoundingClientRect();
+      const inputRect = input.getBoundingClientRect();
+      const iconRight = iconRect.right - inputRect.left;   // where the icon ends
+      const textStart = padLeft;                            // where text begins
+      const clear = textStart - iconRight;
+      meta.textContent =
+        'padding-left: ' + cs.paddingLeft + '\n' +
+        'icon right edge: ' + iconRight.toFixed(1) + 'px\n' +
+        'text start: ' + textStart.toFixed(1) + 'px\n' +
+        'clearance: ' + clear.toFixed(1) + 'px  ' + (clear >= 2 ? '✓ no overlap' : '✗ OVERLAP') + '\n' +
+        'background: ' + cs.backgroundColor + '\n' +
+        'height: ' + cs.height;
+    }
+    requestAnimationFrame(measure);
+    window.addEventListener('resize', measure);
+  </script>
+</body>
+</html>

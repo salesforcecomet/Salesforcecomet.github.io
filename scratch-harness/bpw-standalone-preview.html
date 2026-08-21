@@ -1,0 +1,1797 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bulk Permission Wizard — Standalone Page Preview</title>
+<style>
+
+i.fa-solid { display: inline-block; width: 1em; height: 1em; background: currentColor; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; -webkit-mask-size: contain; }
+i.fa-magnifying-glass { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E"); }
+i.fa-xmark { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cline x1='6' y1='6' x2='18' y2='18'/%3E%3Cline x1='18' y1='6' x2='6' y2='18'/%3E%3C/svg%3E"); }
+i.fa-layer-group { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='12 2 2 7 12 12 22 7 12 2'/%3E%3Cpolyline points='2 12 12 17 22 12'/%3E%3Cpolyline points='2 17 12 22 22 17'/%3E%3C/svg%3E"); }
+i.fa-arrow-right { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='5' y1='12' x2='19' y2='12'/%3E%3Cpolyline points='12 5 19 12 12 19'/%3E%3C/svg%3E"); }
+i.fa-arrow-left { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='19' y1='12' x2='5' y2='12'/%3E%3Cpolyline points='12 19 5 12 12 5'/%3E%3C/svg%3E"); }
+i.fa-bolt { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linejoin='round'%3E%3Cpolygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'/%3E%3C/svg%3E"); }
+i.fa-spinner { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M21 12a9 9 0 1 1-6.2-8.56'/%3E%3C/svg%3E"); }
+i.fa-circle-check { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'/%3E%3Cpolyline points='22 4 12 14.01 9 11.01'/%3E%3C/svg%3E"); }
+i.fa-circle-exclamation { -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cline x1='12' y1='8' x2='12' y2='12'/%3E%3Cline x1='12' y1='16' x2='12.01' y2='16'/%3E%3C/svg%3E"); }
+.fa-spin { animation: fa-spin 1s linear infinite; }
+@keyframes fa-spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   Bulk Permission Wizard — standalone page (opened in its own browser tab)
+   Light theme is the default; dark overrides live under body.sfarc-dark-theme
+   (theme-manager.js toggles that class, matching every other standalone page).
+   ========================================================================== */
+
+/* ---------- Page shell ---------- */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #eef1f5;
+  color: #1e293b;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+#bpw-root {
+  height: 100%;
+}
+
+.bpw-root {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px 16px;
+  gap: 12px;
+  background: linear-gradient(180deg, #eef1f5 0%, #e7ebf0 100%);
+}
+
+/* ---------- Header ---------- */
+.bpw-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bpw-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bpw-header-title > i {
+  font-size: 18px;
+  color: var(--sfarc-accent, #2196f3);
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+  border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.26);
+  border-radius: 9px;
+  padding: 8px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.bpw-header-text h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.bpw-header-text p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.bpw-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Stepper ---------- */
+.bpw-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #d8dde6;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.bpw-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.bpw-step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #eef2f7;
+  border: 1px solid #d8dde6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.bpw-step.active .bpw-step-circle {
+  background: var(--sfarc-accent, #2196f3);
+  border-color: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.16);
+}
+
+.bpw-step.active .bpw-step-label {
+  color: var(--sfarc-accent, #2196f3);
+  font-weight: 600;
+}
+
+.bpw-step-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.bpw-step-line {
+  flex: 1;
+  height: 2px;
+  min-width: 22px;
+  background: #d8dde6;
+  border-radius: 2px;
+  transition: background-color 0.25s ease;
+}
+
+.bpw-step-line.active {
+  background: var(--sfarc-accent, #2196f3);
+}
+
+/* ---------- Body / panels ---------- */
+.bpw-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.bpw-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  animation: bpwPanelIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes bpwPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Controls row ---------- */
+.bpw-controls {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.bpw-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bpw-control-group .bpw-permset {
+  width: 280px;
+}
+
+.bpw-control-group.bpw-target-search {
+  flex: 1;
+  min-width: 220px;
+}
+
+.bpw-control-group.bpw-object-search {
+  flex: 1;
+  min-width: 240px;
+}
+
+/* ---------- Tool controls (label / input / select / button) ---------- */
+.tool-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.tool-input,
+.tool-select {
+  background: #ffffff;
+  border: 1px solid #cdd4dd;
+  border-radius: 8px;
+  color: #1e293b;
+  font-size: 12.5px;
+  padding: 0 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  height: 30px;
+  min-height: 30px;
+  line-height: 1;
+}
+
+.tool-input::placeholder {
+  color: #94a3b8;
+}
+
+.tool-input:hover:not(:focus),
+.tool-select:hover:not(:focus) {
+  border-color: #b6bfca;
+}
+
+.tool-input:focus,
+.tool-select:focus {
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.14);
+  background: #ffffff;
+}
+
+.tool-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 30px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tool-select option {
+  background: #ffffff;
+  color: #1e293b;
+}
+
+/* ---------- Search bars (Target Name + Select Objects) ---------- */
+/* The icon is a plain inline <svg class="bpw-search-icon"> — unlike
+   <i class="fa-solid">, Font Awesome's JS never rewrites it, so the DOM and
+   this positioning are identical in every environment. */
+.bpw-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bpw-search-wrap > .bpw-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.15s ease;
+}
+
+.bpw-search-wrap:focus-within > .bpw-search-icon {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+.bpw-search-wrap .tool-input {
+  padding-left: 30px;
+  padding-right: 30px;
+  font-family: inherit;
+  font-size: 12.5px;
+}
+
+.bpw-search-clear {
+  position: absolute;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.bpw-search-clear:hover {
+  background: rgba(100, 116, 139, 0.16);
+  color: #334155;
+}
+
+.bpw-search-wrap.has-text .bpw-search-clear {
+  display: flex;
+}
+
+/* ---------- List box ---------- */
+.bpw-list-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #ffffff;
+  border: 1px solid #d8dde6;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.bpw-list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #d8dde6;
+  background: #f8fafc;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.bpw-select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.bpw-select-all input[type="checkbox"],
+.bpw-object-check input[type="checkbox"],
+.bpw-rt-row input[type="checkbox"],
+.bpw-field-toggle input[type="checkbox"] {
+  accent-color: var(--sfarc-accent, #2196f3);
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+
+.bpw-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.08);
+  border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.24);
+  color: var(--sfarc-accent, #2196f3);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bpw-list-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #d8dde6;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.bpw-list-check {
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.bpw-list-name {
+  flex: 1.2;
+  min-width: 0;
+}
+
+.bpw-list-desc {
+  flex: 1;
+  min-width: 0;
+}
+
+.bpw-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.bpw-object-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #eef2f7;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.bpw-object-row:hover {
+  background: #f8fafc;
+}
+
+.bpw-object-row.selected {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.06);
+}
+
+.bpw-object-row.selected .bpw-object-name {
+  color: var(--sfarc-accent, #2196f3);
+  font-weight: 600;
+}
+
+.bpw-object-check {
+  width: 22px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.bpw-object-name {
+  flex: 1.2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  color: #1e293b;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpw-object-desc {
+  flex: 1;
+  font-size: 12px;
+  color: #64748b;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpw-empty {
+  padding: 26px 14px;
+  text-align: center;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+/* ---------- Footer / buttons ---------- */
+.bpw-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 4px 2px 2px;
+  flex-shrink: 0;
+}
+
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 30px;
+  background: #ffffff;
+  border: 1px solid #cdd4dd;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.tool-btn:hover {
+  background: #f1f5f9;
+  border-color: #b6bfca;
+}
+
+.tool-btn.primary {
+  background: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  border-color: var(--sfarc-accent, #2196f3);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+}
+
+.tool-btn.primary:hover {
+  background: #0266b8;
+  border-color: #0266b8;
+  color: #ffffff;
+}
+
+.tool-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bpw-back {
+  background: transparent;
+  border-color: #cdd4dd;
+}
+
+/* ---------- Record types ---------- */
+.bpw-rt-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+}
+
+.bpw-rt-group {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-rt-object {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sfarc-accent, #2196f3);
+  margin-bottom: 5px;
+}
+
+.bpw-rt-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bpw-rt-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #d8dde6;
+  font-size: 11.5px;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.bpw-rt-row:hover {
+  border-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.4);
+}
+
+/* ---------- Fields ---------- */
+.bpw-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-field-name {
+  flex: 1.4;
+  min-width: 0;
+  font-size: 12.5px;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpw-field-api {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  color: #64748b;
+  margin-left: 6px;
+}
+
+.bpw-field-type {
+  flex: 0.6;
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bpw-field-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.12s ease;
+}
+
+.bpw-field-toggle:has(input:checked) {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+/* ---------- Verify ---------- */
+.bpw-verify-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.bpw-verify-row strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.bpw-verify-object {
+  padding: 8px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-verify-objhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: #1e293b;
+}
+
+.bpw-verify-objhead span {
+  color: #64748b;
+  font-size: 11.5px;
+}
+
+.bpw-verify-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.bpw-verify-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.bpw-verify-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-verify-result.ok {
+  color: #059669;
+}
+
+.bpw-verify-result.err {
+  color: #dc2626;
+}
+
+.bpw-verify-result > i {
+  font-size: 20px;
+}
+
+.bpw-verify-result div {
+  display: flex;
+  flex-direction: column;
+}
+
+.bpw-verify-result strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bpw-verify-result span {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.bpw-verify-fail {
+  padding: 6px 14px;
+  font-size: 11.5px;
+  color: #dc2626;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* ==========================================================================
+   Dark theme (theme-manager.js adds .sfarc-dark-theme to <body>)
+   ========================================================================== */
+body.sfarc-dark-theme {
+  background: #0b0e13;
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .bpw-root {
+  background: linear-gradient(180deg, #0d1117 0%, #0a0d12 100%);
+}
+
+body.sfarc-dark-theme .bpw-header-title > i {
+  color: var(--sfarc-accent-glow, #38bdf8);
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.12);
+  border: 1px solid rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.28);
+}
+
+body.sfarc-dark-theme .bpw-header-text h2 {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-header-text p {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-stepper {
+  background: #17181c;
+  border-color: #27282e;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.sfarc-dark-theme .bpw-step {
+  color: #6b7686;
+}
+
+body.sfarc-dark-theme .bpw-step-circle {
+  background: #21262d;
+  border-color: #30363d;
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-step.active .bpw-step-circle {
+  background: var(--sfarc-accent-glow, #38bdf8);
+  border-color: var(--sfarc-accent-glow, #38bdf8);
+  color: #082f49;
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.16);
+}
+
+body.sfarc-dark-theme .bpw-step.active .bpw-step-label {
+  color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .bpw-step-line {
+  background: #27282e;
+}
+
+body.sfarc-dark-theme .bpw-step-line.active {
+  background: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .tool-label {
+  color: #9aa6b6;
+}
+
+body.sfarc-dark-theme .tool-input,
+body.sfarc-dark-theme .tool-select {
+  background: #0e0f12;
+  border-color: #30323a;
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .tool-input::placeholder {
+  color: #6b7686;
+}
+
+body.sfarc-dark-theme .tool-input:hover:not(:focus),
+body.sfarc-dark-theme .tool-select:hover:not(:focus) {
+  border-color: #3e4148;
+}
+
+body.sfarc-dark-theme .tool-input:focus,
+body.sfarc-dark-theme .tool-select:focus {
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.18);
+  background: #0e0f12;
+}
+
+body.sfarc-dark-theme .tool-select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+body.sfarc-dark-theme .tool-select option {
+  background: #17181c;
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .bpw-search-wrap > .bpw-search-icon {
+  color: #6b7686;
+}
+
+body.sfarc-dark-theme .bpw-search-wrap:focus-within > .bpw-search-icon {
+  color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .bpw-search-clear {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-search-clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .bpw-list-box {
+  background: #17181c;
+  border-color: #27282e;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.sfarc-dark-theme .bpw-list-toolbar {
+  background: #1a1c21;
+  border-bottom-color: #27282e;
+}
+
+body.sfarc-dark-theme .bpw-select-all {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-select-all input[type="checkbox"],
+body.sfarc-dark-theme .bpw-object-check input[type="checkbox"],
+body.sfarc-dark-theme .bpw-rt-row input[type="checkbox"],
+body.sfarc-dark-theme .bpw-field-toggle input[type="checkbox"] {
+  accent-color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .bpw-count-badge {
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.14);
+  border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.3);
+  color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .bpw-list-head {
+  background: #1a1c21;
+  border-bottom-color: #27282e;
+  color: #9aa6b6;
+}
+
+body.sfarc-dark-theme .bpw-object-row {
+  border-bottom-color: rgba(33, 38, 45, 0.6);
+}
+
+body.sfarc-dark-theme .bpw-object-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body.sfarc-dark-theme .bpw-object-row.selected {
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.1);
+}
+
+body.sfarc-dark-theme .bpw-object-row.selected .bpw-object-name {
+  color: #bae6fd;
+}
+
+body.sfarc-dark-theme .bpw-object-name {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-object-desc,
+body.sfarc-dark-theme .bpw-empty {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .tool-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #30363d;
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .tool-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+body.sfarc-dark-theme .tool-btn.primary {
+  background: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+body.sfarc-dark-theme .tool-btn.primary:hover {
+  background: #1f6feb;
+  border-color: #1f6feb;
+}
+
+body.sfarc-dark-theme .bpw-back {
+  background: transparent;
+  border-color: #30363d;
+}
+
+body.sfarc-dark-theme .bpw-rt-title {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-rt-object {
+  color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .bpw-rt-row {
+  background: #161b22;
+  border-color: #30363d;
+  color: #c9d1d9;
+}
+
+body.sfarc-dark-theme .bpw-rt-row:hover {
+  border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.4);
+}
+
+body.sfarc-dark-theme .bpw-field-row,
+body.sfarc-dark-theme .bpw-verify-row,
+body.sfarc-dark-theme .bpw-verify-object,
+body.sfarc-dark-theme .bpw-verify-result,
+body.sfarc-dark-theme .bpw-verify-fail {
+  border-bottom-color: rgba(33, 38, 45, 0.6);
+}
+
+body.sfarc-dark-theme .bpw-field-name,
+body.sfarc-dark-theme .bpw-verify-objhead,
+body.sfarc-dark-theme .bpw-verify-row strong {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-field-api,
+body.sfarc-dark-theme .bpw-field-type,
+body.sfarc-dark-theme .bpw-field-toggle,
+body.sfarc-dark-theme .bpw-verify-row,
+body.sfarc-dark-theme .bpw-verify-objhead span,
+body.sfarc-dark-theme .bpw-verify-sub,
+body.sfarc-dark-theme .bpw-verify-result span {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-field-toggle:has(input:checked) {
+  color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .bpw-verify-result.ok {
+  color: #34d399;
+}
+
+body.sfarc-dark-theme .bpw-verify-result.err {
+  color: #f85149;
+}
+
+body.sfarc-dark-theme .bpw-verify-fail {
+  color: #f87171;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .bpw-root {
+    padding: 10px 12px 12px;
+  }
+
+  .bpw-control-group .bpw-permset {
+    width: 100%;
+  }
+
+  .bpw-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .bpw-control-group.bpw-target-search,
+  .bpw-control-group.bpw-object-search {
+    min-width: 0;
+  }
+
+  .bpw-step-label {
+    display: none;
+  }
+}
+
+/* harness extras */
+body { transition: none; }
+.theme-toggle {
+    position: fixed; right: 14px; top: 14px; z-index: 99;
+    padding: 6px 12px; border-radius: 8px; border: 1px solid #cdd4dd;
+    background: #fff; color: #1e293b; font-size: 12px; cursor: pointer; font-family: inherit;
+}
+body.sfarc-dark-theme .theme-toggle { background: #17181c; border-color: #30363d; color: #e6e9ef; }
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="theme-toggle" onclick="document.body.classList.toggle('sfarc-dark-theme')">Toggle theme</button>
+<div id="bpw-root"></div>
+<script>
+
+window.escapeHtml = function (str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>"']/g, function (m) {
+        switch (m) { case '&': return '&amp;'; case '<': return '&lt;'; case '>': return '&gt;'; case '"': return '&quot;'; case "'": return '&#039;'; default: return m; }
+    });
+};
+window.toast = {
+    success: (m) => console.log('[toast success]', m),
+    error: (m) => console.log('[toast error]', m),
+    info: (m) => console.log('[toast info]', m),
+    warning: (m) => console.log('[toast warn]', m)
+};
+const FAKE_OBJECTS = [
+    { name: 'Account', label: 'Accounts' },
+    { name: 'Contact', label: 'Contacts' },
+    { name: 'Opportunity', label: 'Opportunities' },
+    { name: 'Case', label: 'Cases' },
+    { name: 'Lead', label: 'Leads' },
+    { name: 'Order', label: 'Orders' },
+    { name: 'Product2', label: 'Products' },
+    { name: 'Quote', label: 'Quotes' },
+    { name: 'Campaign', label: 'Campaigns' },
+    { name: 'Event', label: 'Events' },
+    { name: 'Task', label: 'Tasks' },
+    { name: 'User', label: 'Users' },
+    { name: 'AccountShare', label: 'Account Shares' },
+    { name: 'CustomObject__c', label: 'Custom Object' },
+    { name: 'OpportunityChangeEvent', label: 'Opportunity Change Events' },
+    { name: 'AccountHistory', label: 'Account History' },
+    { name: 'Asset', label: 'Assets' },
+    { name: 'Contract', label: 'Contracts' },
+    { name: 'Entitlement', label: 'Entitlements' },
+    { name: 'Solution', label: 'Solutions' },
+    { name: 'Idea', label: 'Ideas' },
+    { name: 'Note', label: 'Notes' },
+    { name: 'Pricebook2', label: 'Price Books' },
+    { name: 'RecordType', label: 'Record Types' },
+    { name: 'SObject', label: 'SObjects' }
+];
+window.sfApi = {
+    sessionId: '00D000000000000!FAKE',
+    apiVersion: '60.0',
+    init: async () => { console.log('sfApi.init()'); },
+    query: async (soql, isTooling) => {
+        if (soql.includes('PermissionSet')) {
+            return { records: [
+                { Id: '0PS000000000001', Name: 'Sales_User_PS', Label: 'Sales User Permission Set' },
+                { Id: '0PS000000000002', Name: 'Service_User_PS', Label: 'Service User Permission Set' },
+                { Id: '0PS000000000003', Name: 'Marketing_User_PS', Label: 'Marketing User Permission Set' },
+                { Id: '0PS000000000004', Name: 'Analyst_PS', Label: 'Analyst Permission Set' }
+            ]};
+        }
+        if (soql.includes('RecordType')) {
+            return { records: [
+                { Id: '012000000000001', Name: 'Person Account', DeveloperName: 'PersonAccount', SobjectType: 'Account', IsActive: true },
+                { Id: '012000000000002', Name: 'Business Account', DeveloperName: 'BusinessAccount', SobjectType: 'Account', IsActive: true },
+                { Id: '012000000000003', Name: 'Standard Opportunity', DeveloperName: 'StandardOpportunity', SobjectType: 'Opportunity', IsActive: true }
+            ]};
+        }
+        return { records: [] };
+    },
+    describeGlobal: async () => ({ sobjects: FAKE_OBJECTS }),
+    describeSObject: async () => ({
+        fields: [
+            { name: 'Id', label: 'Record ID', type: 'id', updateable: false, createable: false },
+            { name: 'Name', label: 'Name', type: 'string', updateable: true, createable: true },
+            { name: 'OwnerId', label: 'Owner ID', type: 'reference', updateable: true, createable: true },
+            { name: 'CreatedDate', label: 'Created Date', type: 'datetime', updateable: false, createable: false },
+            { name: 'AnnualRevenue', label: 'Annual Revenue', type: 'currency', updateable: true, createable: true },
+            { name: 'Description', label: 'Description', type: 'textarea', updateable: true, createable: true }
+        ]
+    }),
+    fetch: async () => ({ json: async () => ({ compositeResponse: [] }) })
+};
+
+</script>
+<script>
+// bulk-permission-wizard.js — standalone page (own browser tab).
+// 4-step guided flow: Target & Objects → Objects & Record Types →
+// Fields & Perms → Verify & Execute. Reads real org metadata via the
+// Tooling/Data APIs and writes ObjectPermissions + FieldPermissions
+// through the composite endpoint (same mechanism as bulk-field-builder).
+(function () {
+    if (window.__bpwLoaded) return;
+    window.__bpwLoaded = true;
+
+    const st = {
+        step: 1,
+        permissionSetId: '',
+        targetName: '',
+        objectSearch: '',
+        selectedObjects: [],
+        allObjects: [],
+        recordTypes: {},
+        selectedRecordTypes: {},
+        fieldPerms: {},
+        crudPerms: {}
+    };
+
+    // ── Small query cache + request coalescing (mirrors code-editor) ──
+    const sfQueryCache = new Map();
+    const inFlightQueryMap = new Map();
+
+    async function cachedSfApiQuery(soql, isTooling = true) {
+        if (!window.sfApi) throw new Error('Salesforce API session unavailable.');
+        const cacheKey = `${isTooling ? 'tooling:' : 'data:'}${soql}`;
+        if (inFlightQueryMap.has(cacheKey)) {
+            return inFlightQueryMap.get(cacheKey);
+        }
+        if (sfQueryCache.has(cacheKey)) {
+            return sfQueryCache.get(cacheKey);
+        }
+        const requestPromise = (async () => {
+            try {
+                const res = await window.sfApi.query(soql, isTooling);
+                if (res && res.records) sfQueryCache.set(cacheKey, res);
+                return res;
+            } finally {
+                inFlightQueryMap.delete(cacheKey);
+            }
+        })();
+        inFlightQueryMap.set(cacheKey, requestPromise);
+        return requestPromise;
+    }
+
+    // ── Markup (matches the code editor's wizard view) ──
+    function wizardMarkup() {
+        return `
+            <div class="bpw-root">
+                <div class="bpw-header">
+                    <div class="bpw-header-title">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <div class="bpw-header-text">
+                            <h2>Bulk Permission Wizard</h2>
+                            <p>Guided setup to grant bulk permissions.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bpw-stepper">
+                    <div class="bpw-step ${st.step >= 1 ? 'active' : ''}" data-bpw-step="1">
+                        <div class="bpw-step-circle">1</div>
+                        <div class="bpw-step-label">Target &amp; Objects</div>
+                    </div>
+                    <div class="bpw-step-line ${st.step >= 2 ? 'active' : ''}"></div>
+                    <div class="bpw-step ${st.step >= 2 ? 'active' : ''}" data-bpw-step="2">
+                        <div class="bpw-step-circle">2</div>
+                        <div class="bpw-step-label">Objects &amp; Record Types</div>
+                    </div>
+                    <div class="bpw-step-line ${st.step >= 3 ? 'active' : ''}"></div>
+                    <div class="bpw-step ${st.step >= 3 ? 'active' : ''}" data-bpw-step="3">
+                        <div class="bpw-step-circle">3</div>
+                        <div class="bpw-step-label">Fields &amp; Perms</div>
+                    </div>
+                    <div class="bpw-step-line ${st.step >= 4 ? 'active' : ''}"></div>
+                    <div class="bpw-step ${st.step >= 4 ? 'active' : ''}" data-bpw-step="4">
+                        <div class="bpw-step-circle">4</div>
+                        <div class="bpw-step-label">Verify &amp; Execute</div>
+                    </div>
+                </div>
+
+                <div class="bpw-body">
+                    <div class="bpw-panel" data-bpw-panel="1" ${st.step === 1 ? '' : 'style="display:none;"'}>
+                        <div class="bpw-controls">
+                            <div class="bpw-control-group">
+                                <label class="tool-label" for="bpw-permset">Permission Set</label>
+                                <select id="bpw-permset" class="tool-select bpw-permset"><option value="">Loading permission sets...</option></select>
+                            </div>
+                            <div class="bpw-control-group bpw-target-search">
+                                <label class="tool-label" for="bpw-target-name">Target Name</label>
+                                <div class="bpw-search-wrap">
+                                    <svg class="bpw-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                    <input type="text" id="bpw-target-name" class="tool-input" placeholder="Enter target Name (e.g. Sales_User_PS)..." value="${escapeHtml(st.targetName || '')}" autocomplete="off" spellcheck="false">
+                                </div>
+                            </div>
+                            <div class="bpw-control-group bpw-object-search">
+                                <label class="tool-label" for="bpw-object-search">Select Objects</label>
+                                <div class="bpw-search-wrap">
+                                    <svg class="bpw-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                    <input type="text" id="bpw-object-search" class="tool-input" placeholder="Search objects..." value="${escapeHtml(st.objectSearch || '')}" autocomplete="off" spellcheck="false">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bpw-list-box">
+                            <div class="bpw-list-toolbar">
+                                <label class="bpw-select-all">
+                                    <input type="checkbox" id="bpw-select-all">
+                                    <span>Select All</span>
+                                </label>
+                                <span class="bpw-count-badge" id="bpw-count-badge">0 objects</span>
+                            </div>
+                            <div class="bpw-list-head">
+                                <span class="bpw-list-check"></span>
+                                <span class="bpw-list-name">Object API Name</span>
+                                <span class="bpw-list-desc">Description</span>
+                            </div>
+                            <div class="bpw-list-scroll" id="bpw-object-list"></div>
+                        </div>
+
+                        <div class="bpw-footer">
+                            <button class="tool-btn primary bpw-next" id="bpw-next-1"><i class="fa-solid fa-arrow-right"></i> Next</button>
+                        </div>
+                    </div>
+
+                    <div class="bpw-panel" data-bpw-panel="2" ${st.step === 2 ? '' : 'style="display:none;"'}>
+                        <div class="bpw-list-box bpw-rt-box">
+                            <div class="bpw-list-toolbar">
+                                <span class="bpw-rt-title">Select Record Types to Include</span>
+                                <label class="bpw-select-all">
+                                    <input type="checkbox" id="bpw-rt-all">
+                                    <span>All Record Types</span>
+                                </label>
+                            </div>
+                            <div class="bpw-list-scroll bpw-rt-scroll" id="bpw-rt-list"></div>
+                        </div>
+                        <div class="bpw-footer">
+                            <button class="tool-btn bpw-back" id="bpw-back-2"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button class="tool-btn primary bpw-next" id="bpw-next-2"><i class="fa-solid fa-arrow-right"></i> Next</button>
+                        </div>
+                    </div>
+
+                    <div class="bpw-panel" data-bpw-panel="3" ${st.step === 3 ? '' : 'style="display:none;"'}>
+                        <div class="bpw-list-box bpw-fields-box">
+                            <div class="bpw-list-toolbar">
+                                <span class="bpw-rt-title">Field-Level Security — Read / Edit per selected object</span>
+                                <label class="bpw-select-all">
+                                    <input type="checkbox" id="bpw-fields-all">
+                                    <span>All Fields</span>
+                                </label>
+                            </div>
+                            <div class="bpw-list-scroll bpw-fields-scroll" id="bpw-fields-list"></div>
+                        </div>
+                        <div class="bpw-footer">
+                            <button class="tool-btn bpw-back" id="bpw-back-3"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button class="tool-btn primary bpw-next" id="bpw-next-3"><i class="fa-solid fa-arrow-right"></i> Next</button>
+                        </div>
+                    </div>
+
+                    <div class="bpw-panel" data-bpw-panel="4" ${st.step === 4 ? '' : 'style="display:none;"'}>
+                        <div class="bpw-list-box bpw-verify-box">
+                            <div class="bpw-list-toolbar"><span class="bpw-rt-title">Review Summary</span></div>
+                            <div class="bpw-verify-body" id="bpw-verify-summary"></div>
+                        </div>
+                        <div class="bpw-footer">
+                            <button class="tool-btn bpw-back" id="bpw-back-4"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                            <button class="tool-btn primary bpw-execute" id="bpw-execute"><i class="fa-solid fa-bolt"></i> Execute Permissions</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ── Logic (adapted from code-editor.js's bindBulkPermissionWizardTabListeners) ──
+    function bindBulkPermissionWizardListeners() {
+        const permSetSelect = document.getElementById('bpw-permset');
+        const targetNameInput = document.getElementById('bpw-target-name');
+        const objectSearchInput = document.getElementById('bpw-object-search');
+        const selectAllCb = document.getElementById('bpw-select-all');
+        const countBadge = document.getElementById('bpw-count-badge');
+        const objectList = document.getElementById('bpw-object-list');
+        const rtList = document.getElementById('bpw-rt-list');
+        const rtAllCb = document.getElementById('bpw-rt-all');
+        const fieldsList = document.getElementById('bpw-fields-list');
+        const fieldsAllCb = document.getElementById('bpw-fields-all');
+        const verifySummary = document.getElementById('bpw-verify-summary');
+        const executeBtn = document.getElementById('bpw-execute');
+
+        let permissionSets = [];
+        let filteredObjects = [];
+        let currentObjectName = ''; // object whose fields are shown in step 3
+
+        function goToStep(n) {
+            st.step = n;
+            document.querySelectorAll('.bpw-panel').forEach(p => {
+                p.style.display = p.dataset.bpwPanel === String(n) ? '' : 'none';
+            });
+            document.querySelectorAll('.bpw-step').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.bpwStep, 10) <= n);
+            });
+            document.querySelectorAll('.bpw-step-line').forEach((l, i) => {
+                l.classList.toggle('active', n > i + 1);
+            });
+            if (n === 4) renderVerifySummary();
+        }
+
+        function renderObjectList() {
+            const q = (objectSearchInput?.value || '').toLowerCase().trim();
+            const tq = (targetNameInput?.value || '').toLowerCase().trim();
+            filteredObjects = st.allObjects.filter(o => {
+                const nameMatch = !q || o.name.toLowerCase().includes(q);
+                const targetMatch = !tq || o.name.toLowerCase().includes(tq);
+                return nameMatch && targetMatch;
+            });
+
+            if (countBadge) countBadge.innerText = `${filteredObjects.length} object${filteredObjects.length === 1 ? '' : 's'}`;
+
+            if (!objectList) return;
+            objectList.innerHTML = '';
+            if (filteredObjects.length === 0) {
+                objectList.innerHTML = '<div class="bpw-empty">No objects found</div>';
+                return;
+            }
+
+            filteredObjects.forEach(o => {
+                const row = document.createElement('div');
+                row.className = 'bpw-object-row' + (st.selectedObjects.includes(o.name) ? ' selected' : '');
+                row.innerHTML = `
+                    <label class="bpw-object-check">
+                        <input type="checkbox" ${st.selectedObjects.includes(o.name) ? 'checked' : ''}>
+                    </label>
+                    <span class="bpw-object-name">${escapeHtml(o.name)}</span>
+                    <span class="bpw-object-desc">${escapeHtml(o.label || '')}</span>
+                `;
+                const cb = row.querySelector('input[type="checkbox"]');
+                cb.addEventListener('change', () => {
+                    if (cb.checked) {
+                        if (!st.selectedObjects.includes(o.name)) st.selectedObjects.push(o.name);
+                    } else {
+                        st.selectedObjects = st.selectedObjects.filter(n => n !== o.name);
+                    }
+                    renderObjectList();
+                });
+                objectList.appendChild(row);
+            });
+            renderPillsAndSelectAll();
+        }
+
+        function renderPillsAndSelectAll() {
+            // Selected-object pills were removed by design; keep the select-all
+            // checkbox state in sync with the currently visible objects.
+            if (selectAllCb) {
+                const visible = filteredObjects.length > 0;
+                const allChecked = visible && filteredObjects.every(o => st.selectedObjects.includes(o.name));
+                selectAllCb.checked = allChecked;
+            }
+        }
+
+        async function loadPermissionSets() {
+            if (!permSetSelect) return;
+            permSetSelect.innerHTML = '<option value="">Loading permission sets...</option>';
+            try {
+                const res = await cachedSfApiQuery(`SELECT Id, Name, Label FROM PermissionSet WHERE IsOwnedByProfile = false ORDER BY Label ASC LIMIT 500`, true);
+                permissionSets = (res && res.records) || [];
+                if (permissionSets.length === 0) {
+                    permSetSelect.innerHTML = '<option value="">No permission sets found</option>';
+                    return;
+                }
+                permSetSelect.innerHTML = permissionSets.map(ps =>
+                    `<option value="${ps.Id}">${escapeHtml(ps.Label)} (${escapeHtml(ps.Name)})</option>`
+                ).join('');
+                if (st.permissionSetId) permSetSelect.value = st.permissionSetId;
+            } catch (e) {
+                permSetSelect.innerHTML = `<option value="">Error loading: ${escapeHtml(e.message)}</option>`;
+                if (window.toast) toast.error('Bulk Permission Wizard: failed to load permission sets — ' + e.message);
+            }
+        }
+
+        async function loadObjects() {
+            const listEl = objectList;
+            if (!listEl) return;
+            if (st.allObjects.length > 0) {
+                renderObjectList();
+                return;
+            }
+            listEl.innerHTML = '<div class="bpw-empty"><span class="comet-loader-inline"></span> Loading objects...</div>';
+            try {
+                const res = await window.sfApi.describeGlobal();
+                const sobjects = (res && res.sobjects) || [];
+                st.allObjects = sobjects
+                    .filter(s => s.queryable !== false && !!s.name)
+                    .map(s => ({ name: s.name, label: s.label || '' }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                st.allObjects = st.allObjects.filter(o => {
+                    if (/__ChangeEvent$|__History$|__Share$/.test(o.name)) return false;
+                    return true;
+                });
+                renderObjectList();
+            } catch (e) {
+                listEl.innerHTML = `<div class="bpw-empty">Failed to load objects: ${escapeHtml(e.message)}</div>`;
+                if (window.toast) toast.error('Bulk Permission Wizard: failed to load objects — ' + e.message);
+            }
+        }
+
+        async function loadRecordTypes() {
+            if (!rtList) return;
+            rtList.innerHTML = '<div class="bpw-empty"><span class="comet-loader-inline"></span> Loading record types...</div>';
+            try {
+                const names = st.selectedObjects;
+                const res = await cachedSfApiQuery(`SELECT Id, Name, SobjectType, IsActive FROM RecordType WHERE SobjectType IN (${names.map(n => `'${n}'`).join(',')}) AND IsActive = true`, true);
+                const records = (res && res.records) || [];
+                st.recordTypes = {};
+                records.forEach(r => {
+                    if (!st.recordTypes[r.SobjectType]) st.recordTypes[r.SobjectType] = [];
+                    st.recordTypes[r.SobjectType].push(r);
+                });
+                if (records.length === 0) {
+                    rtList.innerHTML = '<div class="bpw-empty">No active record types found for the selected objects.</div>';
+                    return;
+                }
+                rtList.innerHTML = '';
+                names.forEach(objName => {
+                    const rts = st.recordTypes[objName] || [];
+                    if (rts.length === 0) return;
+                    const group = document.createElement('div');
+                    group.className = 'bpw-rt-group';
+                    group.innerHTML = `<div class="bpw-rt-object">${escapeHtml(objName)}</div><div class="bpw-rt-items"></div>`;
+                    const items = group.querySelector('.bpw-rt-items');
+                    rts.forEach(rt => {
+                        const selected = !st.selectedRecordTypes[objName] || st.selectedRecordTypes[objName].includes(rt.Id);
+                        const row = document.createElement('label');
+                        row.className = 'bpw-rt-row';
+                        row.innerHTML = `<input type="checkbox" data-rt-id="${rt.Id}" ${selected ? 'checked' : ''}> <span>${escapeHtml(rt.Name || rt.DeveloperName || rt.Id)}</span>`;
+                        const cb = row.querySelector('input');
+                        cb.addEventListener('change', () => {
+                            if (!st.selectedRecordTypes[objName]) st.selectedRecordTypes[objName] = [];
+                            if (cb.checked) {
+                                if (!st.selectedRecordTypes[objName].includes(rt.Id)) st.selectedRecordTypes[objName].push(rt.Id);
+                            } else {
+                                st.selectedRecordTypes[objName] = st.selectedRecordTypes[objName].filter(id => id !== rt.Id);
+                            }
+                        });
+                        items.appendChild(row);
+                    });
+                    rtList.appendChild(group);
+                });
+            } catch (e) {
+                rtList.innerHTML = `<div class="bpw-empty">Failed to load record types: ${escapeHtml(e.message)}</div>`;
+                if (window.toast) toast.error('Bulk Permission Wizard: failed to load record types — ' + e.message);
+            }
+        }
+
+        async function loadFields() {
+            if (!fieldsList) return;
+            if (!currentObjectName) return;
+            fieldsList.innerHTML = '<div class="bpw-empty"><span class="comet-loader-inline"></span> Loading fields...</div>';
+            try {
+                const desc = await window.sfApi.describeSObject(currentObjectName);
+                const fields = (desc && desc.fields) || [];
+                st.fieldPerms[currentObjectName] = {};
+                const stateEntry = st.fieldPerms[currentObjectName];
+                fields.forEach(f => {
+                    stateEntry[f.name] = { read: true, edit: f.updateable === true && f.createable === true };
+                });
+                if (fields.length === 0) {
+                    fieldsList.innerHTML = '<div class="bpw-empty">No fields found.</div>';
+                    return;
+                }
+                fieldsList.innerHTML = '';
+                fields.forEach(f => {
+                    const fp = stateEntry[f.name];
+                    const row = document.createElement('div');
+                    row.className = 'bpw-field-row';
+                    row.innerHTML = `
+                        <span class="bpw-field-name">${escapeHtml(f.label)} <span class="bpw-field-api">${escapeHtml(f.name)}</span></span>
+                        <span class="bpw-field-type">${escapeHtml(f.type || '')}</span>
+                        <label class="bpw-field-toggle"><input type="checkbox" data-fld="${escapeHtml(f.name)}" data-perm="read" ${fp.read ? 'checked' : ''}> Read</label>
+                        <label class="bpw-field-toggle"><input type="checkbox" data-fld="${escapeHtml(f.name)}" data-perm="edit" ${fp.edit ? 'checked' : ''}> Edit</label>
+                    `;
+                    row.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                        cb.addEventListener('change', () => {
+                            const perm = cb.dataset.perm;
+                            if (perm === 'edit' && cb.checked) {
+                                const readCb = row.querySelector('input[data-perm="read"]');
+                                if (readCb) readCb.checked = true;
+                                stateEntry[cb.dataset.fld].read = true;
+                            }
+                            stateEntry[cb.dataset.fld][perm] = cb.checked;
+                        });
+                    });
+                    fieldsList.appendChild(row);
+                });
+            } catch (e) {
+                fieldsList.innerHTML = `<div class="bpw-empty">Failed to load fields: ${escapeHtml(e.message)}</div>`;
+                if (window.toast) toast.error('Bulk Permission Wizard: failed to load fields — ' + e.message);
+            }
+        }
+
+        function renderVerifySummary() {
+            if (!verifySummary) return;
+            const ps = permissionSets.find(p => p.Id === st.permissionSetId);
+            let html = `
+                <div class="bpw-verify-row"><span>Permission Set</span><strong>${escapeHtml(ps ? `${ps.Label} (${ps.Name})` : st.permissionSetId || '—')}</strong></div>
+                <div class="bpw-verify-row"><span>Objects</span><strong>${st.selectedObjects.length}</strong></div>
+            `;
+            st.selectedObjects.forEach(objName => {
+                const fields = st.fieldPerms[objName] || {};
+                const fieldCount = Object.keys(fields).length;
+                const rts = st.recordTypes[objName] || [];
+                html += `
+                    <div class="bpw-verify-object">
+                        <div class="bpw-verify-objhead"><strong>${escapeHtml(objName)}</strong><span>${fieldCount} fields</span></div>
+                        <div class="bpw-verify-sub">Record Types: ${rts.length > 0 ? rts.length : 'All'}</div>
+                    </div>
+                `;
+            });
+            verifySummary.innerHTML = html;
+        }
+
+        async function executePermissions() {
+            if (!executeBtn) return;
+            if (!st.permissionSetId) {
+                if (window.toast) toast.error('Please select a permission set first.');
+                return;
+            }
+            if (st.selectedObjects.length === 0) {
+                if (window.toast) toast.error('Please select at least one object.');
+                return;
+            }
+
+            executeBtn.disabled = true;
+            const orig = executeBtn.innerHTML;
+            executeBtn.innerHTML = `<span class="comet-loader-inline"></span> Executing...`;
+
+            const psId = st.permissionSetId;
+            let success = 0, failed = 0;
+            const failures = [];
+
+            try {
+                // 1. ObjectPermissions (CRUD) per selected object
+                const objPerms = st.selectedObjects.map(objName => {
+                    const crud = st.crudPerms[objName] || {};
+                    return {
+                        attributes: { type: 'ObjectPermissions' },
+                        ParentId: psId,
+                        SobjectType: objName,
+                        PermissionsCreate: !!crud.create,
+                        PermissionsRead: !!crud.read || !Object.keys(crud).length,
+                        PermissionsEdit: !!crud.edit,
+                        PermissionsDelete: !!crud.delete,
+                        PermissionsViewAllRecords: false,
+                        PermissionsModifyAllRecords: false
+                    };
+                });
+
+                for (let i = 0; i < objPerms.length; i += 25) {
+                    const chunk = objPerms.slice(i, i + 25);
+                    const res = await window.sfApi.fetch(`/services/data/${window.sfApi.apiVersion}/composite`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            allOrNone: false,
+                            compositeRequest: chunk.map((p, idx) => ({
+                                method: 'POST',
+                                url: `/services/data/${window.sfApi.apiVersion}/sobjects/ObjectPermissions`,
+                                referenceId: `obj${idx}`,
+                                body: p
+                            }))
+                        })
+                    });
+                    const json = await res.json();
+                    (json.compositeResponse || []).forEach((cr, idx) => {
+                        if (cr.httpStatusCode === 201 || cr.httpStatusCode === 200) success++;
+                        else {
+                            failed++;
+                            const msg = cr.body && cr.body[0] && cr.body[0].message ? cr.body[0].message : (cr.body && cr.body.message ? cr.body.message : 'Object permission failed');
+                            failures.push(`${chunk[idx].SobjectType}: ${msg}`);
+                        }
+                    });
+                }
+
+                // 2. FieldPermissions (FLS) per selected object + field
+                const fieldPerms = [];
+                st.selectedObjects.forEach(objName => {
+                    const fields = st.fieldPerms[objName] || {};
+                    Object.keys(fields).forEach(fieldName => {
+                        const fp = fields[fieldName];
+                        if (fp.read || fp.edit) {
+                            fieldPerms.push({
+                                attributes: { type: 'FieldPermissions' },
+                                ParentId: psId,
+                                SobjectType: objName,
+                                Field: `${objName}.${fieldName}`,
+                                PermissionsRead: !!fp.read,
+                                PermissionsEdit: !!fp.edit
+                            });
+                        }
+                    });
+                });
+
+                for (let i = 0; i < fieldPerms.length; i += 25) {
+                    const chunk = fieldPerms.slice(i, i + 25);
+                    const res = await window.sfApi.fetch(`/services/data/${window.sfApi.apiVersion}/composite`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            allOrNone: false,
+                            compositeRequest: chunk.map((p, idx) => ({
+                                method: 'POST',
+                                url: `/services/data/${window.sfApi.apiVersion}/sobjects/FieldPermissions`,
+                                referenceId: `fld${idx}`,
+                                body: p
+                            }))
+                        })
+                    });
+                    const json = await res.json();
+                    (json.compositeResponse || []).forEach((cr, idx) => {
+                        if (cr.httpStatusCode === 201 || cr.httpStatusCode === 200) success++;
+                        else {
+                            failed++;
+                            const msg = cr.body && cr.body[0] && cr.body[0].message ? cr.body[0].message : (cr.body && cr.body.message ? cr.body.message : 'Field permission failed');
+                            failures.push(`${chunk[idx].SobjectType}.${chunk[idx].Field}: ${msg}`);
+                        }
+                    });
+                }
+
+                if (verifySummary) {
+                    verifySummary.innerHTML = `
+                        <div class="bpw-verify-result ${failed === 0 ? 'ok' : 'err'}">
+                            <i class="fa-solid ${failed === 0 ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
+                            <div><strong>${failed === 0 ? 'All permissions granted!' : 'Completed with errors'}</strong>
+                            <span>${success} succeeded, ${failed} failed</span></div>
+                        </div>
+                        ${failures.slice(0, 20).map(f => `<div class="bpw-verify-fail">${escapeHtml(f)}</div>`).join('')}
+                    `;
+                }
+                if (window.toast) toast.success(`Bulk Permission Wizard: ${success} permissions granted, ${failed} failed`);
+            } catch (e) {
+                console.error('Bulk Permission Wizard execute error:', e);
+                if (window.toast) toast.error('Execution failed: ' + e.message);
+                if (verifySummary) {
+                    verifySummary.innerHTML = `<div class="bpw-verify-result err"><i class="fa-solid fa-circle-exclamation"></i><div><strong>Execution failed</strong><span>${escapeHtml(e.message)}</span></div></div>`;
+                }
+            } finally {
+                executeBtn.disabled = false;
+                executeBtn.innerHTML = orig;
+            }
+        }
+
+        // ── Clear buttons inside both search bars (UX) ──
+        function addClearButton(wrap, input, onClear) {
+            if (!wrap) return;
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'bpw-search-clear';
+            btn.setAttribute('aria-label', 'Clear search');
+            btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            wrap.appendChild(btn);
+            const update = () => wrap.classList.toggle('has-text', input.value.length > 0);
+            input.addEventListener('input', update);
+            btn.addEventListener('click', () => {
+                input.value = '';
+                wrap.classList.remove('has-text');
+                if (onClear) onClear();
+                input.focus();
+            });
+            update();
+        }
+
+        const targetWrap = targetNameInput ? targetNameInput.closest('.bpw-search-wrap') : null;
+        const objectWrap = objectSearchInput ? objectSearchInput.closest('.bpw-search-wrap') : null;
+        addClearButton(targetWrap, targetNameInput, renderObjectList);
+        addClearButton(objectWrap, objectSearchInput, renderObjectList);
+
+        // ── Event wiring ──
+        if (permSetSelect) permSetSelect.addEventListener('change', () => { st.permissionSetId = permSetSelect.value; });
+        if (targetNameInput) targetNameInput.addEventListener('input', renderObjectList);
+        if (objectSearchInput) objectSearchInput.addEventListener('input', renderObjectList);
+        if (selectAllCb) {
+            selectAllCb.addEventListener('change', () => {
+                if (selectAllCb.checked) {
+                    filteredObjects.forEach(o => {
+                        if (!st.selectedObjects.includes(o.name)) st.selectedObjects.push(o.name);
+                    });
+                } else {
+                    const visibleNames = filteredObjects.map(o => o.name);
+                    st.selectedObjects = st.selectedObjects.filter(n => !visibleNames.includes(n));
+                }
+                renderObjectList();
+            });
+        }
+        if (rtAllCb) {
+            rtAllCb.addEventListener('change', () => {
+                if (rtAllCb.checked) st.selectedRecordTypes = {};
+                else {
+                    st.selectedRecordTypes = {};
+                    Object.keys(st.recordTypes).forEach(objName => {
+                        st.selectedRecordTypes[objName] = [];
+                    });
+                }
+                loadRecordTypes();
+            });
+        }
+        if (fieldsAllCb) {
+            fieldsAllCb.addEventListener('change', () => {
+                if (!currentObjectName) return;
+                const entry = st.fieldPerms[currentObjectName] || {};
+                Object.keys(entry).forEach(f => {
+                    entry[f].read = fieldsAllCb.checked;
+                    entry[f].edit = fieldsAllCb.checked;
+                });
+                loadFields();
+            });
+        }
+
+        const next1 = document.getElementById('bpw-next-1');
+        const next2 = document.getElementById('bpw-next-2');
+        const next3 = document.getElementById('bpw-next-3');
+        const back2 = document.getElementById('bpw-back-2');
+        const back3 = document.getElementById('bpw-back-3');
+        const back4 = document.getElementById('bpw-back-4');
+
+        if (next1) next1.addEventListener('click', () => {
+            if (!st.permissionSetId) { if (window.toast) toast.error('Select a permission set first.'); return; }
+            if (st.selectedObjects.length === 0) { if (window.toast) toast.error('Select at least one object.'); return; }
+            loadRecordTypes();
+            goToStep(2);
+        });
+        if (next2) next2.addEventListener('click', () => {
+            currentObjectName = st.selectedObjects[0] || '';
+            loadFields();
+            goToStep(3);
+        });
+        if (next3) next3.addEventListener('click', () => goToStep(4));
+        if (back2) back2.addEventListener('click', () => goToStep(1));
+        if (back3) back3.addEventListener('click', () => goToStep(2));
+        if (back4) back4.addEventListener('click', () => goToStep(3));
+        if (executeBtn) executeBtn.addEventListener('click', executePermissions);
+
+        // Init
+        loadPermissionSets();
+        loadObjects();
+    }
+
+    // ── Boot ──
+    async function init() {
+        const root = document.getElementById('bpw-root');
+        if (!root) return;
+        root.innerHTML = wizardMarkup();
+
+        // Establish a Salesforce session first so API calls have credentials.
+        try {
+            if (window.sfApi && !window.sfApi.sessionId) {
+                await window.sfApi.init();
+            }
+        } catch (e) {
+            console.error('Bulk Permission Wizard: session init failed', e);
+            const listEl = document.getElementById('bpw-object-list');
+            if (listEl) listEl.innerHTML = `<div class="bpw-empty">Session unavailable: ${escapeHtml(e.message)}</div>`;
+        }
+
+        bindBulkPermissionWizardListeners();
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { background: #1a1b1e; color: #fff; font-family: sans-serif; padding: 24px; }
+.section { margin-bottom: 28px; }
+.section h3 { color: #94a3b8; font-size: 12px; margin: 0 0 8px; }
+/* query tab active */
+.query-tab.active {
+    background-color: var(--sfarc-accent, #2196f3) !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    font-weight: 600 !important;
+    border: 1px solid var(--sfarc-accent, #2196f3) !important;
+    border-bottom: none !important;
+    border-top-left-radius: 7px !important;
+    border-top-right-radius: 7px !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    margin-bottom: -1px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    z-index: 2 !important;
+    align-self: flex-end !important;
+}
+/* header btn */
+.sfir-header-btn {
+    background: linear-gradient(135deg, var(--sfarc-accent, #2196f3) 0%, var(--sfarc-accent-dark, #1976d2) 100%) !important;
+    border: none !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    border-radius: 9999px !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    height: 26px !important;
+    padding: 0 14px !important;
+    line-height: 26px !important;
+    margin-left: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.25) !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+}
+/* save-query is-saved */
+.sfir-save-query-btn.is-saved {
+    background-color: var(--sfarc-accent, #2196f3) !important;
+    border-color: var(--sfarc-accent, #2196f3) !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3) !important;
+}
+/* history item load hover */
+.sfir-history-item-load-btn:hover {
+    background-color: var(--sfarc-accent, #2196f3) !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3) !important;
+}
+/* funnel active */
+.sfir-funnel-btn.active {
+    background-color: var(--sfarc-accent, #2196f3) !important;
+    border-color: var(--sfarc-accent, #2196f3) !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3) !important;
+}
+/* status bar */
+.status-bar {
+            height: 22px;
+            background: var(--primary);
+            color: var(--sfarc-accent-contrast, white);
+            padding: 0 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            flex-shrink: 0;
+            overflow: hidden;
+            z-index: 10;
+        }
+/* btn blue */
+.btn-blue {
+            background-color: var(--sfarc-accent, #2196f3) !important;
+            color: var(--sfarc-accent-contrast, #ffffff) !important;
+            border: 1px solid var(--sfarc-accent, #2196f3) !important;
+            font-weight: 600 !important;
+        }
+.sfir-header-btn, .sfir-save-query-btn, .sfir-history-item-load-btn { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
+.sfir-funnel-btn { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 6px; font-size: 12px; }
+.status-bar { display: inline-flex; align-items: center; padding: 8px 16px; font-size: 12px; border-radius: 4px; }
+.btn-blue { display: inline-flex; align-items: center; padding: 6px 12px; font-size: 12px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <div class="section" id="lime" style="--sfarc-accent: #D2FF59; --sfarc-accent-contrast: #69802d; --primary: #D2FF59;">
+    <h3>Light accent (lime) — text must be dark olive:</h3>
+    <span class="query-tab active">Query 1</span>
+    <button class="sfir-header-btn">Run Export</button>
+    <button class="sfir-save-query-btn is-saved">Save Query</button>
+    <button class="sfir-history-item-load-btn">Load</button>
+    <button class="sfir-funnel-btn active">Funnel</button>
+    <div class="status-bar">Status Bar</div>
+    <button class="btn-blue">Blue Btn</button>
+  </div>
+  <div class="section" id="blue" style="--sfarc-accent: #2196f3; --sfarc-accent-contrast: #ffffff; --primary: #2196f3;">
+    <h3>Dark accent (blue) — text stays white:</h3>
+    <span class="query-tab active">Query 1</span>
+    <button class="sfir-header-btn">Run Export</button>
+    <button class="sfir-save-query-btn is-saved">Save Query</button>
+    <div class="status-bar">Status Bar</div>
+  </div>
+  <script>
+    window.__measure = () => {
+      const txt = (sel, root) => getComputedStyle(root.querySelector(sel)).color;
+      const lime = document.getElementById('lime');
+      const blue = document.getElementById('blue');
+      return {
+        lime: {
+          queryTab: txt('.query-tab', lime),
+          headerBtn: txt('.sfir-header-btn', lime),
+          saveQuery: txt('.sfir-save-query-btn', lime),
+          loadBtn: txt('.sfir-history-item-load-btn', lime),
+          statusBar: txt('.status-bar', lime),
+          btnBlue: txt('.btn-blue', lime),
+        },
+        blue: {
+          queryTab: txt('.query-tab', blue),
+          headerBtn: txt('.sfir-header-btn', blue),
+          statusBar: txt('.status-bar', blue),
+        },
+      };
+    };
+  </script>
+</body>
+</html>

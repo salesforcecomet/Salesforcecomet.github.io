@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Data Import — Button Styles Preview</title>
+  <style>
+/* ==========================================================================
+   Salesforce Comet — Data Import (redesigned UI)
+   Everything below the shared top bar. The top bar keeps its SLDS styles.
+   ========================================================================== */
+
+/* ---------- Design tokens ---------- */
+:root {
+  --sfarc-i-accent: var(--sfarc-accent, #0176d3);
+  --sfarc-i-accent-strong: var(--sfarc-accent, #014486);
+  --sfarc-i-page-bg: linear-gradient(180deg, #f4f6fb 0%, #e9eef6 100%);
+  --sfarc-i-card-bg: #ffffff;
+  --sfarc-i-card-border: #e3e8ef;
+  --sfarc-i-card-shadow: 0 8px 28px rgba(16, 42, 67, 0.07), 0 1px 3px rgba(16, 42, 67, 0.05);
+  --sfarc-i-text: #1a2233;
+  --sfarc-i-muted: #64748b;
+  --sfarc-i-faint: #94a3b8;
+  --sfarc-i-input-bg: #f8fafc;
+  --sfarc-i-input-border: #d6dde6;
+  --sfarc-i-input-hover-border: #b6c2d1;
+  --sfarc-i-chip-bg: #f1f5f9;
+  --sfarc-i-table-head: #f6f8fb;
+  --sfarc-i-row-hover: rgba(1, 118, 211, 0.045);
+  --sfarc-i-btn-bg: #ffffff;
+  --sfarc-i-btn-border: #d8dde6;
+  --sfarc-i-btn-text: #334155;
+  --sfarc-i-btn-hover-bg: #f4f6f9;
+  --sfarc-i-btn-hover-border: #c3cdd9;
+  --sfarc-i-danger: #dc2626;
+  --sfarc-i-warning: #d97706;
+  --sfarc-i-success: #059669;
+  --sfarc-i-info: #0284c7;
+  --sfarc-i-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sfarc-i-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body.sfarc-dark-theme,
+.sfarc-dark-theme {
+  --sfarc-i-accent: var(--sfarc-accent, #2f81f7);
+  --sfarc-i-accent-strong: var(--sfarc-accent, #1f6feb);
+  --sfarc-i-page-bg: linear-gradient(180deg, #0d1117 0%, #0a0d12 100%);
+  --sfarc-i-card-bg: #151a22;
+  --sfarc-i-card-border: #232b37;
+  --sfarc-i-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --sfarc-i-text: #e6e9ef;
+  --sfarc-i-muted: #9aa6b6;
+  --sfarc-i-faint: #6b7686;
+  --sfarc-i-input-bg: #0e1319;
+  --sfarc-i-input-border: #2c3542;
+  --sfarc-i-input-hover-border: #3d4a5c;
+  --sfarc-i-chip-bg: #1c232e;
+  --sfarc-i-table-head: #171e28;
+  --sfarc-i-row-hover: rgba(47, 129, 247, 0.07);
+  --sfarc-i-btn-bg: #222b36;
+  --sfarc-i-btn-border: #333f4e;
+  --sfarc-i-btn-text: #d7dee8;
+  --sfarc-i-btn-hover-bg: #2a3542;
+  --sfarc-i-btn-hover-border: #46566a;
+  --sfarc-i-danger: #f87171;
+  --sfarc-i-warning: #fbbf24;
+  --sfarc-i-success: #34d399;
+  --sfarc-i-info: #38bdf8;
+}
+
+/* ---------- Page shell ---------- */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sfarc-i-page-bg);
+  color: var(--sfarc-i-text);
+  font-family: var(--sfarc-i-font);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+.sfarc-import-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The page wrapper is the shared sfir-page-container (top bar cleared with its own margin);
+   restyle it for the new design. Scoped to this page because data-import.css loads here only. */
+.sfarc-import-root .sfir-page-container {
+  padding: 5px !important;
+  gap: 5px !important;
+  background: transparent !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ---------- Workspace: Configure + Mapping ---------- */
+.sfarc-import-workspace {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 56%;
+  display: grid;
+  grid-template-columns: minmax(400px, 2fr) minmax(0, 3fr);
+  gap: 5px;
+}
+
+.sfarc-import-card {
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 12px;
+  box-shadow: var(--sfarc-i-card-shadow);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sfarc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 12px;
+  border-bottom: 1px solid var(--sfarc-i-card-border);
+}
+
+.sfarc-card-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+
+.sfarc-card-kicker {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sfarc-i-accent);
+  white-space: nowrap;
+}
+
+.sfarc-card-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--sfarc-i-text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.sfarc-card-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 12px 10px;
+}
+
+/* ---------- Form ---------- */
+.sfarc-config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sfarc-form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.sfarc-form-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sfarc-form-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sfarc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sfarc-field-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sfarc-i-muted);
+}
+
+/* Form controls — compact 22px. The !important values beat sfir.css's global
+   select/input rule (height 32px, padding 4px 16px, inset shadow, white bg). */
+input.sfarc-input,
+select.sfarc-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--sfarc-i-input-border) !important;
+  border-radius: 6px !important;
+  background: var(--sfarc-i-input-bg) !important;
+  color: var(--sfarc-i-text) !important;
+  font-family: var(--sfarc-i-font);
+  font-size: 12px;
+  outline: none;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+select.sfarc-input {
+  padding-right: 30px !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+}
+
+.sfarc-input:hover:not(:disabled) {
+  border-color: var(--sfarc-i-input-hover-border) !important;
+}
+
+input.sfarc-input:focus,
+select.sfarc-input:focus {
+  border-color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.16) !important;
+  background: var(--sfarc-i-card-bg) !important;
+}
+
+/* Keep the accent focus ring in dark mode too (sfir.css's dark input:focus
+   would otherwise paint its own ring). */
+body.sfarc-dark-theme input.sfarc-input:focus,
+body.sfarc-dark-theme select.sfarc-input:focus {
+  border-color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.18) !important;
+}
+
+.sfarc-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sfarc-input::placeholder {
+  color: var(--sfarc-i-faint);
+}
+
+.sfarc-input.is-error {
+  border-color: var(--sfarc-i-danger);
+}
+
+.sfarc-input.is-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+textarea.sfarc-input-area {
+  height: auto;
+  min-height: 40px;
+  line-height: 1.45;
+  font-family: var(--sfarc-i-mono);
+  font-size: 12px;
+  resize: vertical;
+}
+
+.sfarc-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Hide Chrome's native × clear button inside type="search" fields (Object search) */
+.sfarc-input-wrap input[type="search"]::-webkit-search-cancel-button,
+.sfarc-input-wrap input[type="search"]::-webkit-search-decoration,
+.sfarc-input-wrap input[type="search"]::-webkit-search-results-button,
+.sfarc-input-wrap input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.sfarc-input-wrap .sfarc-input {
+  padding-left: 32px !important;
+}
+
+/* The Object field already renders an inline SVG search icon — strip the global
+   input[type="search"] magnifying-glass background from sfir.css so there is no double icon. */
+.sfarc-input-wrap input[type="search"] {
+  background-image: none !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 12px 0 32px !important;
+}
+
+.sfarc-input-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--sfarc-i-faint);
+  pointer-events: none;
+}
+
+.sfarc-field-error {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sfarc-i-danger);
+}
+
+.sfarc-field-hint {
+  font-size: 10.5px;
+  color: var(--sfarc-i-faint);
+}
+
+/* Data paste drop area */
+.sfarc-data-drop {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--sfarc-i-input-border);
+  border-radius: 12px;
+  background: var(--sfarc-i-input-bg);
+  color: var(--sfarc-i-muted);
+  font-family: var(--sfarc-i-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.sfarc-data-drop:hover {
+  border-color: var(--sfarc-i-input-hover-border);
+  background: var(--sfarc-i-card-bg);
+}
+
+.sfarc-data-drop:focus {
+  border-color: var(--sfarc-i-accent);
+  box-shadow: 0 0 0 2px rgba(1, 118, 211, 0.09);
+}
+
+.sfarc-data-drop.is-error {
+  border-color: var(--sfarc-i-danger);
+}
+
+/* Import file drop area (side-by-side with the paste area) */
+.sfarc-file-drop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--sfarc-i-input-border);
+  border-radius: 12px;
+  background: var(--sfarc-i-input-bg);
+  color: var(--sfarc-i-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+}
+
+.sfarc-file-drop:hover,
+.sfarc-file-drop.is-dragging {
+  border-color: var(--sfarc-i-accent);
+  background: var(--sfarc-i-card-bg);
+}
+
+.sfarc-file-drop.has-file {
+  border-style: solid;
+  border-color: var(--sfarc-i-accent);
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-file-drop.is-error {
+  border-color: var(--sfarc-i-danger);
+}
+
+.sfarc-file-drop-icon {
+  flex-shrink: 0;
+  color: var(--sfarc-i-accent);
+}
+
+.sfarc-file-drop-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Field mapping ---------- */
+/* The mapping table sits flush against the card — no body gutter */
+.sfarc-mapping-card .sfarc-card-body {
+  padding: 0;
+}
+
+.sfarc-mapping-card .sfarc-mapping-warning {
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.25);
+  font-size: 11.5px;
+  color: var(--sfarc-i-warning);
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.sfarc-mapping-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sfarc-mapping-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 1px 0;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sfarc-i-muted);
+  background: var(--sfarc-i-table-head);
+  border-bottom: 1px solid var(--sfarc-i-card-border);
+}
+
+.sfarc-mapping-table td {
+  padding: 0;
+  border-bottom: 1px solid var(--sfarc-i-card-border);
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+/* No padding between columns — only a slim outer gutter so text never
+   touches the card border (first/last cells). The 1% width + nowrap on the
+   first/last columns shrinks them to content, so the input column absorbs
+   all remaining width and the input sits flush against the label. */
+.sfarc-mapping-table th:first-child,
+.sfarc-mapping-table td:first-child {
+  padding-left: 8px;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.sfarc-mapping-table th:last-child,
+.sfarc-mapping-table td:last-child {
+  padding-right: 8px;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.sfarc-mapping-tr:last-child td {
+  border-bottom: none;
+}
+
+.sfarc-mapping-tr:hover td {
+  background: var(--sfarc-i-row-hover);
+}
+
+.sfarc-mapping-tr.is-error td {
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.sfarc-mapping-tr.is-skipped td {
+  opacity: 0.55;
+}
+
+.sfarc-mapping-label-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--sfarc-i-mono);
+  font-size: 10.5px;
+  color: var(--sfarc-i-text);
+}
+
+input.sfarc-mapping-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 18px !important;
+  min-height: 18px !important;
+  padding: 0 !important;
+  border: 1px solid var(--sfarc-i-input-border) !important;
+  border-radius: 4px !important;
+  background: var(--sfarc-i-input-bg) !important;
+  color: var(--sfarc-i-text) !important;
+  font-family: var(--sfarc-i-mono);
+  font-size: 11px;
+  outline: none;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input.sfarc-mapping-input:focus {
+  border-color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.14) !important;
+}
+
+body.sfarc-dark-theme input.sfarc-mapping-input:focus {
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.18) !important;
+}
+
+input.sfarc-mapping-input.is-error {
+  border-color: var(--sfarc-i-danger) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
+
+input.sfarc-mapping-input.is-skipped {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.sfarc-mapping-td-action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sfarc-mapping-ok-badge,
+.sfarc-mapping-skipped-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.sfarc-mapping-ok-badge {
+  color: var(--sfarc-i-success);
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.sfarc-mapping-skipped-badge {
+  color: var(--sfarc-i-muted);
+  background: var(--sfarc-i-chip-bg);
+}
+
+.sfarc-mapping-error-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sfarc-mapping-error-badge {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--sfarc-i-danger);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.sfarc-mapping-skip-btn {
+  border: none;
+  background: transparent;
+  color: var(--sfarc-i-accent);
+  font-size: 10.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 1px 5px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.sfarc-mapping-skip-btn:hover {
+  background: rgba(1, 118, 211, 0.1);
+}
+
+/* ---------- Action bar ---------- */
+.sfarc-import-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 10px;
+  box-shadow: var(--sfarc-i-card-shadow);
+}
+
+.sfarc-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sfarc-status-pills {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Buttons — light surfaces, subtle borders, small radii (matches the debug-log page look) */
+.sfarc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-family: var(--sfarc-i-font);
+  font-size: 12.5px;
+  font-weight: 600;
+  border: 1px solid var(--sfarc-i-btn-border);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.sfarc-btn:active {
+  transform: translateY(1px);
+}
+
+.sfarc-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sfarc-btn-primary {
+  color: #ffffff;
+  background: var(--sfarc-i-accent);
+  border-color: var(--sfarc-i-accent);
+  box-shadow: 0 1px 3px rgba(1, 118, 211, 0.25);
+}
+
+.sfarc-btn-primary:hover:not(:disabled) {
+  background: var(--sfarc-i-accent-strong);
+  border-color: var(--sfarc-i-accent-strong);
+  box-shadow: 0 2px 6px rgba(1, 118, 211, 0.3);
+}
+
+.sfarc-btn-secondary {
+  background: var(--sfarc-i-btn-bg);
+  color: var(--sfarc-i-btn-text);
+  border-color: var(--sfarc-i-btn-border);
+}
+
+.sfarc-btn-secondary:hover:not(:disabled) {
+  background: var(--sfarc-i-btn-hover-bg);
+  border-color: var(--sfarc-i-btn-hover-border);
+}
+
+.sfarc-btn-icon {
+  width: 34px;
+  padding: 0;
+  background: var(--sfarc-i-btn-bg);
+  color: var(--sfarc-i-muted);
+  border-color: var(--sfarc-i-btn-border);
+}
+
+.sfarc-btn-icon:hover:not(:disabled) {
+  color: var(--sfarc-i-accent);
+  border-color: var(--sfarc-i-accent);
+}
+
+.sfarc-btn-icon-svg {
+  display: block;
+}
+
+/* Status pills (StatusBox keeps this class scheme) — squarer, lighter tinted chips */
+.status-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: var(--sfarc-ctl-h, 24px);
+  box-sizing: border-box;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid var(--sfarc-i-card-border);
+  background: var(--sfarc-i-chip-bg);
+  color: var(--sfarc-i-muted);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-stat-pill:hover {
+  transform: translateY(-1px);
+}
+
+.status-stat-pill .stat-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status colour is enabled only while the import is in that phase (count > 0) */
+.status-stat-pill.stat-queued.stat-live {
+  background: rgba(2, 132, 199, 0.12);
+  color: var(--sfarc-i-info);
+  border-color: rgba(2, 132, 199, 0.28);
+}
+
+.status-stat-pill.stat-queued.stat-live.stat-checked {
+  background: rgba(2, 132, 199, 0.2);
+  color: var(--sfarc-i-info);
+  border-color: rgba(2, 132, 199, 0.45);
+}
+
+.status-stat-pill.stat-processing.stat-live {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--sfarc-i-warning);
+  border-color: rgba(217, 119, 6, 0.28);
+}
+
+.status-stat-pill.stat-processing.stat-live.stat-checked {
+  background: rgba(217, 119, 6, 0.2);
+  color: var(--sfarc-i-warning);
+  border-color: rgba(217, 119, 6, 0.45);
+}
+
+.status-stat-pill.stat-succeeded.stat-live {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--sfarc-i-success);
+  border-color: rgba(5, 150, 105, 0.28);
+}
+
+.status-stat-pill.stat-succeeded.stat-live.stat-checked {
+  background: rgba(5, 150, 105, 0.2);
+  color: var(--sfarc-i-success);
+  border-color: rgba(5, 150, 105, 0.45);
+}
+
+.status-stat-pill.stat-failed.stat-live {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--sfarc-i-danger);
+  border-color: rgba(220, 38, 38, 0.28);
+}
+
+.status-stat-pill.stat-failed.stat-live.stat-checked {
+  background: rgba(220, 38, 38, 0.2);
+  color: var(--sfarc-i-danger);
+  border-color: rgba(220, 38, 38, 0.45);
+}
+
+/* ---------- Help panel ---------- */
+.sfarc-help-panel {
+  flex: 0 0 auto;
+  max-height: 40%;
+  overflow-y: auto;
+  padding: 14px 18px;
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-left: 3px solid var(--sfarc-i-accent);
+  border-radius: 14px;
+  box-shadow: var(--sfarc-i-card-shadow);
+}
+
+.sfarc-help-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-help-text {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: var(--sfarc-i-muted);
+}
+
+.sfarc-help-list,
+.sfarc-help-sublist {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--sfarc-i-muted);
+}
+
+.sfarc-help-list li,
+.sfarc-help-sublist li {
+  margin: 2px 0;
+}
+
+.sfarc-help-list a {
+  color: var(--sfarc-i-accent);
+  text-decoration: none;
+}
+
+.sfarc-help-list a:hover {
+  text-decoration: underline;
+}
+
+.sfarc-help-note {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--sfarc-i-warning);
+  background: rgba(217, 119, 6, 0.1);
+}
+
+/* ---------- Results table ---------- */
+.sfarc-import-results {
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 16px;
+  box-shadow: var(--sfarc-i-card-shadow);
+  overflow: hidden;
+}
+
+.sfarc-results-scroller {
+  border-radius: 16px;
+  background: var(--sfarc-i-card-bg);
+  overflow: auto !important;
+}
+
+/* Blend the shared virtual-scroll cells into the new design */
+.scrolltable-cell {
+  background-color: var(--sfarc-i-card-bg) !important;
+  color: var(--sfarc-i-text) !important;
+  border-bottom-color: var(--sfarc-i-card-border) !important;
+  font-family: var(--sfarc-i-font) !important;
+}
+
+.scrolltable-cell.header {
+  background-color: var(--sfarc-i-table-head) !important;
+  color: var(--sfarc-i-muted) !important;
+  border-bottom-color: var(--sfarc-i-card-border) !important;
+}
+
+.scrolltable-cell.skipped {
+  background-color: var(--sfarc-i-chip-bg) !important;
+}
+
+.sfir-table-header-row {
+  background: transparent !important;
+}
+
+/* ---------- Scrollbars ---------- */
+.sfarc-card-body::-webkit-scrollbar,
+.sfarc-help-panel::-webkit-scrollbar,
+.sfarc-results-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.sfarc-card-body::-webkit-scrollbar-thumb,
+.sfarc-help-panel::-webkit-scrollbar-thumb,
+.sfarc-results-scroller::-webkit-scrollbar-thumb {
+  background: rgba(120, 135, 156, 0.35);
+  border-radius: 8px;
+}
+
+/* ---------- Compact confirmation dialog ---------- */
+.sfarc-import-results .slds-modal .slds-modal__container {
+  width: 380px !important;
+  max-width: 92vw !important;
+  min-width: 0 !important;
+}
+
+.sfarc-import-results .slds-modal__content.slds-modal__content_headless {
+  padding: 14px 16px 6px !important;
+}
+
+.sfarc-import-results .slds-modal__content br {
+  display: none;
+}
+
+.sfarc-import-results .slds-modal__content .slds-notify.slds-notify_toast {
+  margin: 0 0 10px !important;
+  padding: 7px 12px !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  border-radius: 8px !important;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.sfarc-import-results .slds-modal__content .slds-notify__content .slds-text-heading_small {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 600;
+}
+
+.sfarc-import-results .slds-modal__content .slds-notify .slds-icon_container {
+  margin-right: 8px !important;
+}
+
+.sfarc-import-results .slds-modal__content .slds-text-heading_medium {
+  font-size: 15px;
+  line-height: 1.3;
+  margin: 2px 0 0;
+}
+
+.sfarc-import-results .slds-modal__footer {
+  padding: 8px 16px 10px !important;
+}
+
+.sfarc-import-results .slds-modal__footer .slds-button {
+  height: 28px;
+  min-height: 28px;
+  line-height: 1;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .sfarc-import-workspace {
+    grid-template-columns: 1fr;
+    max-height: none;
+  }
+
+  .sfarc-import-actions {
+    justify-content: center;
+  }
+}
+
+/* (from src/styles/sfir.css - global button compaction, control classes excluded) */
+.slds-button:not(.slds-button_icon),
+button:not(.slds-button_icon):not(.sfir-funnel-btn):not(.sfir-history-drawer-btn):not(.sfarc-btn):not(.sfarc-debug-btn):not(.sfarc-debug-icon-btn):not(.sfarc-dropdown-plus-btn):not(.sfarc-icon-btn):not(.icon-btn):not(.viewer-btn):not(.search-action-btn):not(.sfarc-action-icon):not(.primary-icon-btn):not(.sfarc-mapping-skip-btn) {
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  font-size: 11px !important;
+  padding: 0 8px !important;
+  height: 22px !important;
+  line-height: 20px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+/* ============================================================================
+   Salesforce Comet — Universal Control System
+   ----------------------------------------------------------------------------
+   One design language for search inputs, selects/dropdowns, icon buttons and
+   toggles across every page of the extension, matching the reference UI
+   (the header's segmented nav pill proportions):
+     • Uniform control height  — 24px
+     • Search inputs & selects — 6px radius on light #e8edf2 / #e5e8ed
+     • Icon / "+" buttons      — 24x24 with 6px radius on light #e5e8ed
+     • Toggles                 — iOS green (#4cd964) when checked
+   Dark-theme variants are provided via tokens so pages using
+   body.sfarc-dark-theme / .sfarc-dark-theme stay coherent.
+
+   Load this file LAST in every page so it wins the cascade (the codebase
+   relies on !important; equal-specificity rules resolve by load order).
+
+   Top-bar chrome (.sfir-header-select, .sfir-header-icon-btn,
+   .sfir-badge-action-btn) is intentionally untouched — the compact header
+   keeps its approved size.
+   ========================================================================== */
+
+:root {
+    --sfarc-ctl-h: 24px;
+    --sfarc-ctl-radius-pill: 6px;
+    --sfarc-ctl-radius-box: 6px;
+    --sfarc-ctl-bg: #e5e8ed;         /* selects, icon buttons */
+    --sfarc-ctl-bg-search: #e8edf2;  /* search fields */
+    --sfarc-ctl-border: #d8dde6;
+    --sfarc-ctl-text: #1e293b;
+    --sfarc-ctl-muted: #64748b;
+    --sfarc-ctl-primary: #0070d2;
+    --sfarc-ctl-primary-hover: #005fb2;
+    --sfarc-ctl-toggle-on: #4cd964;
+    --sfarc-ctl-toggle-off: #e9e9ea;
+    --sfarc-ctl-hover: rgba(0, 0, 0, 0.06);
+    --sfarc-ctl-focus-ring: rgba(0, 112, 210, 0.18);
+}
+
+/* Dark-theme tokens */
+body.sfarc-dark-theme,
+.sfarc-dark-theme {
+    --sfarc-ctl-bg: rgba(255, 255, 255, 0.09);
+    --sfarc-ctl-bg-search: rgba(255, 255, 255, 0.1);
+    --sfarc-ctl-border: rgba(255, 255, 255, 0.16);
+    --sfarc-ctl-text: #f1f5f9;
+    --sfarc-ctl-muted: #94a3b8;
+    --sfarc-ctl-toggle-off: #555555;
+    --sfarc-ctl-hover: rgba(255, 255, 255, 0.12);
+    --sfarc-ctl-focus-ring: rgba(56, 189, 248, 0.28);
+}
+
+/* ── Search inputs ─────────────────────────────────────────────────────── */
+.sfarc-debug-search-input,
+.sfarc-search-input,
+.sfir-search-input-pill,
+input[type="text"].sfir-search-pill,
+input[type="search"].sfir-search-pill,
+.sfir-col-search-input,
+.sfarc-field-search-input,
+.sfarc-table-filter,
+.feed-search,
+.cc-search-box input,
+.mac-search-wrapper input,
+.sidebar-search-box input,
+.viewer-search-wrapper input,
+.sfir-history-drawer-search-wrapper input,
+.fs-search-wrapper input,
+.search-box input[type="text"],
+.search-box input[type="search"],
+.search-bar input[type="text"],
+.search-bar input[type="search"],
+input[type="text"].input-small,
+input[type="search"].input-small,
+.sfarc-raycast-search {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-bg-search) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Search containers that draw the pill themselves */
+.sfarc-debug-search-wrapper,
+.mac-search-wrapper,
+.sidebar-search-container,
+.sfir-history-drawer-search-wrapper,
+.fs-search-wrapper,
+.sfarc-search-container,
+.viewer-search-wrapper,
+.sfarc-local-search-container {
+    background: var(--sfarc-ctl-bg-search) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep inputs inside glassy local-search surfaces transparent */
+.sfarc-local-search-container .sfarc-debug-search-input {
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* Custom dropdown containers must never paint their own chevron — the trigger
+   already renders one, and some pages' native-select arrow-fix rules would
+   otherwise show a duplicate chevron through the translucent pill. */
+.sfarc-custom-dropdown-container,
+html body .sfarc-custom-dropdown-container,
+body.sfarc-dark-theme .sfarc-custom-dropdown-container,
+.sfarc-dark-theme .sfarc-custom-dropdown-container {
+    background-image: none !important;
+    padding-right: 0 !important;
+}
+
+/* Search focus — lift the pill to white + soft blue ring */
+.sfarc-debug-search-input:focus,
+.sfarc-search-input:focus,
+.sfir-search-input-pill:focus,
+input[type="text"].sfir-search-pill:focus,
+input[type="search"].sfir-search-pill:focus,
+.sfir-col-search-input:focus,
+.sfarc-field-search-input:focus,
+.sfarc-table-filter:focus,
+.feed-search:focus,
+.cc-search-box input:focus,
+.mac-search-wrapper input:focus,
+.sidebar-search-box input:focus,
+.viewer-search-wrapper input:focus,
+.sfir-history-drawer-search-wrapper input:focus,
+.fs-search-wrapper input:focus,
+.search-box input[type="text"]:focus,
+.search-box input[type="search"]:focus,
+.search-bar input[type="text"]:focus,
+.search-bar input[type="search"]:focus,
+.sfarc-raycast-search:focus {
+    background-color: var(--sfarc-ctl-bg-search) !important;
+    border-color: var(--sfarc-ctl-primary) !important;
+    box-shadow: 0 0 0 3px var(--sfarc-ctl-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ── Selects / dropdowns ───────────────────────────────────────────────── */
+.sfarc-debug-select,
+.sfarc-custom-dropdown-trigger,
+.sub-select,
+.mac-select,
+.object-select,
+.sfir-select,
+.sfarc-table-rows-select,
+.feed-select {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-bg) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.sfarc-debug-select:hover,
+.sfarc-custom-dropdown-trigger:hover,
+.sub-select:hover,
+.mac-select:hover,
+.object-select:hover,
+.sfir-select:hover {
+    background-color: var(--sfarc-ctl-hover) !important;
+}
+
+.sfarc-debug-select:focus,
+.sub-select:focus,
+.mac-select:focus,
+.object-select:focus,
+.sfir-select:focus {
+    border-color: var(--sfarc-ctl-primary) !important;
+    box-shadow: 0 0 0 3px var(--sfarc-ctl-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ── Icon buttons (incl. "+" add buttons) ──────────────────────────────── */
+.sfarc-debug-icon-btn,
+.sfarc-dropdown-plus-btn,
+.sfarc-action-icon,
+.sfarc-icon-btn,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save),
+.viewer-btn.icon-btn,
+.search-action-btn {
+    width: var(--sfarc-ctl-h) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-width: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    max-width: var(--sfarc-ctl-h) !important;
+    max-height: var(--sfarc-ctl-h) !important;
+    flex: 0 0 var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-box) !important;
+    background-color: var(--sfarc-ctl-bg) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sfarc-debug-icon-btn:hover,
+.sfarc-dropdown-plus-btn:hover,
+.sfarc-action-icon:hover,
+.sfarc-icon-btn:hover,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save):hover,
+.viewer-btn.icon-btn:hover,
+.search-action-btn:hover {
+    background-color: var(--sfarc-ctl-hover) !important;
+}
+
+.sfarc-debug-icon-btn:active,
+.sfarc-dropdown-plus-btn:active,
+.sfarc-action-icon:active,
+.sfarc-icon-btn:active,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save):active,
+.viewer-btn.icon-btn:active,
+.search-action-btn:active {
+    transform: scale(0.92) !important;
+}
+
+/* ── Primary / action buttons ──────────────────────────────────────────── */
+.sfarc-debug-btn.primary,
+.sfarc-btn-primary,
+.sfir-btn-primary,
+.sfarc-primary-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-primary) !important;
+    border: 1px solid var(--sfarc-ctl-primary) !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+.sfarc-debug-btn.primary:hover,
+.sfarc-btn-primary:hover,
+.sfir-btn-primary:hover,
+.sfarc-primary-btn:hover {
+    background-color: var(--sfarc-ctl-primary-hover) !important;
+    border-color: var(--sfarc-ctl-primary-hover) !important;
+}
+
+/* Secondary .sfarc-debug-btn — same pill height, light surface */
+.sfarc-debug-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    box-sizing: border-box !important;
+}
+
+/* Generic .sfarc-btn (data pages) — universal height, keep page colors */
+.sfarc-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+}
+
+/* ── Toggles — iOS green when checked ──────────────────────────────────── */
+.sfarc-slider,
+.sfir-header-toggle-switch {
+    background-color: var(--sfarc-ctl-toggle-off) !important;
+}
+
+.sfarc-switch input:checked + .sfarc-slider,
+.sfarc-toggle-switch input:checked + .sfarc-slider,
+input:checked + .sfir-header-toggle-switch,
+#sfarc-header-icons-toggle.active .sfarc-apple-switch {
+    background-color: var(--sfarc-ctl-toggle-on) !important;
+    border-color: var(--sfarc-ctl-toggle-on) !important;
+}
+
+  </style>
+  <style>
+    body {
+      margin: 0;
+      padding: 5px;
+      background: #f0f2f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    h2 { margin: 0 0 4px; color: #1a2233; font-size: 15px; }
+    p.note { margin: 0 0 16px; color: #64748b; font-size: 12px; }
+    .sfarc-import-root {
+      height: auto;
+      display: block;
+    }
+    .sfarc-import-actions {
+      max-width: 1100px;
+      margin-bottom: 24px;
+    }
+    .preview-section { margin-bottom: 28px; }
+    .preview-section > h3 {
+      margin: 0 0 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    .preview-section .sfarc-import-workspace {
+      grid-template-columns: 1fr 1fr;
+      max-height: none;
+    }
+    .sfarc-import-card .sfarc-card-body { background: var(--sfarc-i-card-bg); }
+    .ctl-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+    }
+    .sfarc-dark-theme .ctl-row {
+      background: transparent;
+      border-color: transparent;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <h2>Data Import — Action Bar (light, low-radius buttons)</h2>
+  <p class="note">Renders the real <code>src/data-import.css</code> classes (inlined) exactly as the extension page uses them.</p>
+
+  <div class="sfarc-import-root">
+    <div class="sfarc-import-actions">
+      <div class="sfarc-action-group">
+        <button class="sfarc-btn sfarc-btn-primary">Run Insert</button>
+        <button class="sfarc-btn sfarc-btn-secondary" disabled>Resume Queued</button>
+        <button class="sfarc-btn sfarc-btn-secondary" disabled>Retry Failed</button>
+        <button class="sfarc-btn sfarc-btn-icon" title="Hide Configuration">
+          <svg class="sfarc-btn-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+        </button>
+      </div>
+      <div class="sfarc-status-pills">
+        <div class="status-stat-pill stat-queued stat-unchecked"><span class="stat-count">0</span><span>Queued</span></div>
+        <div class="status-stat-pill stat-processing stat-unchecked"><span class="stat-count">0</span><span>Processing</span></div>
+        <div class="status-stat-pill stat-succeeded stat-unchecked"><span class="stat-count">0</span><span>Succeeded</span></div>
+        <div class="status-stat-pill stat-failed stat-unchecked"><span class="stat-count">0</span><span>Failed</span></div>
+      </div>
+      <div class="sfarc-action-group">
+        <button class="sfarc-btn sfarc-btn-secondary" disabled>Copy (Excel)</button>
+        <button class="sfarc-btn sfarc-btn-secondary" disabled>Copy (CSV)</button>
+        <button class="sfarc-btn sfarc-btn-secondary">Copy Options</button>
+        <button class="sfarc-btn sfarc-btn-secondary" disabled>Skip all unknown fields</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h3>Status pills — checked (active) state</h3>
+    <div class="sfarc-status-pills">
+      <div class="status-stat-pill stat-queued stat-live stat-checked"><span class="stat-count">12</span><span>Queued</span></div>
+      <div class="status-stat-pill stat-processing stat-live stat-checked"><span class="stat-count">3</span><span>Processing</span></div>
+      <div class="status-stat-pill stat-succeeded stat-live stat-checked"><span class="stat-count">87</span><span>Succeeded</span></div>
+      <div class="status-stat-pill stat-failed stat-live stat-checked"><span class="stat-count">2</span><span>Failed</span></div>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h3>Buttons — primary &amp; secondary (enabled)</h3>
+    <div class="sfarc-action-group">
+      <button class="sfarc-btn sfarc-btn-primary">Run Update</button>
+      <button class="sfarc-btn sfarc-btn-secondary">Resume Queued</button>
+      <button class="sfarc-btn sfarc-btn-secondary">Retry Failed</button>
+      <button class="sfarc-btn sfarc-btn-icon" title="Refresh">
+        <svg class="sfarc-btn-icon-svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+      </button>
+    </div>
+  </div>
+
+
+  <div class="preview-section">
+    <h3>Column Mapping table — compact (dark theme)</h3>
+    <div class="sfarc-dark-theme" style="background:#0f172a;border:1px solid #1e293b;border-radius:14px;padding:4px;max-width:760px;">
+      <section class="sfarc-import-card sfarc-mapping-card">
+        <header class="sfarc-card-header">
+          <div class="sfarc-card-heading"><span class="sfarc-card-kicker">Column Mapping</span></div>
+        </header>
+        <div class="sfarc-card-body">
+          <table class="sfarc-mapping-table">
+            <thead>
+              <tr>
+                <th style="width:35%;">CSV Header Column</th>
+                <th style="width:45%;">Mapped Salesforce Field</th>
+                <th style="width:20%;text-align:right;">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="sfarc-mapping-tr is-skipped">
+                <td class="sfarc-mapping-td-label"><span class="sfarc-mapping-label-text">_actions</span></td>
+                <td class="sfarc-mapping-td-input"><input type="text" class="sfarc-mapping-input is-skipped" value="_actions" disabled></td>
+                <td class="sfarc-mapping-td-action"><span class="sfarc-mapping-skipped-badge">Skipped</span></td>
+              </tr>
+              <tr class="sfarc-mapping-tr is-skipped">
+                <td class="sfarc-mapping-td-label"><span class="sfarc-mapping-label-text">-</span></td>
+                <td class="sfarc-mapping-td-input"><input type="text" class="sfarc-mapping-input is-skipped" value="-" disabled></td>
+                <td class="sfarc-mapping-td-action"><span class="sfarc-mapping-skipped-badge">Skipped</span></td>
+              </tr>
+              <tr class="sfarc-mapping-tr">
+                <td class="sfarc-mapping-td-label"><span class="sfarc-mapping-label-text">Id</span></td>
+                <td class="sfarc-mapping-td-input"><input type="text" class="sfarc-mapping-input" value="Id"></td>
+                <td class="sfarc-mapping-td-action"><span class="sfarc-mapping-ok-badge">✓ Mapped</span></td>
+              </tr>
+              <tr class="sfarc-mapping-tr">
+                <td class="sfarc-mapping-td-label"><span class="sfarc-mapping-label-text">Name</span></td>
+                <td class="sfarc-mapping-td-input"><input type="text" class="sfarc-mapping-input" value="Name"></td>
+                <td class="sfarc-mapping-td-action"><span class="sfarc-mapping-ok-badge">✓ Mapped</span></td>
+              </tr>
+              <tr class="sfarc-mapping-tr is-error">
+                <td class="sfarc-mapping-td-label"><span class="sfarc-mapping-label-text">CreatedDate</span></td>
+                <td class="sfarc-mapping-td-input"><input type="text" class="sfarc-mapping-input is-error" value="CreatedDate"></td>
+                <td class="sfarc-mapping-td-action"><div class="sfarc-mapping-error-group"><span class="sfarc-mapping-error-badge">Unknown field</span><button type="button" class="sfarc-mapping-skip-btn">Skip</button></div></td>
+              </tr>
+              <tr class="sfarc-mapping-tr is-error">
+                <td class="sfarc-mapping-td-label"><span class="sfarc-mapping-label-text">LastModifiedDate</span></td>
+                <td class="sfarc-mapping-td-input"><input type="text" class="sfarc-mapping-input is-error" value="LastModifiedDate"></td>
+                <td class="sfarc-mapping-td-action"><div class="sfarc-mapping-error-group"><span class="sfarc-mapping-error-badge">Unknown field</span><button type="button" class="sfarc-mapping-skip-btn">Skip</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="preview-section">
+    <h3>Step card top bars — minimized height</h3>
+    <div class="sfarc-import-workspace" style="max-height:none;margin-bottom:16px;">
+      <section class="sfarc-import-card sfarc-config-card">
+        <header class="sfarc-card-header">
+          <div class="sfarc-card-heading">
+            <span class="sfarc-card-kicker">Import Configuration</span>
+            
+          </div>
+          
+        </header>
+        <div class="sfarc-card-body sfarc-config-form">
+          <div class="sfarc-form-grid sfarc-form-grid-2">
+            <div class="sfarc-field">
+              <label class="sfarc-field-label" for="data-paste">Data</label>
+              <textarea id="data-paste" class="sfarc-data-drop" rows="1" style="height:26px;resize:none;">Paste data here</textarea>
+              <span class="sfarc-field-hint">Paste CSV or Excel data — the first row must contain field API names</span>
+            </div>
+            <div class="sfarc-field">
+              <label class="sfarc-field-label" for="import-file">Import File</label>
+              <label class="sfarc-file-drop" for="import-file" title="Choose a file or drag &amp; drop it here">
+                <svg class="sfarc-file-drop-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span class="sfarc-file-drop-text">Choose or drop a file</span>
+                <input id="import-file" type="file" accept=".csv,.tsv,.txt,.xml,.json" style="display:none;">
+              </label>
+              <span class="sfarc-field-hint">Import CSV, TSV, XML, JSON or TXT file</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="sfarc-import-card sfarc-mapping-card">
+        <header class="sfarc-card-header">
+          <div class="sfarc-card-heading">
+            <span class="sfarc-card-kicker">Column Mapping</span>
+            
+          </div>
+          
+        </header>
+        <div class="sfarc-card-body" style="min-height:110px;">
+          <div style="font-size:12px;color:#94a3b8;">CSV Header &middot; Salesforce Field &middot; Action table</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+
+  <div class="preview-section">
+    <h3>Form fields — matching control height (24px / 6px)</h3>
+    <div style="display:flex;gap:14px;align-items:flex-start;max-width:560px;">
+      <div class="sfarc-field" style="flex:1;">
+        <label class="sfarc-field-label" for="form-search-object">Object</label>
+        <div class="sfarc-input-wrap">
+          <svg class="sfarc-input-icon" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="form-search-object" class="sfarc-input" type="search" value="Account" placeholder="Search object...">
+        </div>
+      </div>
+      <div class="sfarc-field" style="flex:1;">
+        <label class="sfarc-field-label" for="form-api-type">API Type</label>
+        <select class="sfarc-input" id="form-api-type">
+          <option>SOAP API</option>
+          <option>Bulk API 1.0</option>
+          <option>Bulk API 2.0</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="preview-section">
+    <h3>Universal controls — light theme (matches reference UI)</h3>
+    <div class="ctl-row">
+      <div class="sfarc-debug-search-wrapper" style="width: 260px;">
+        <input type="text" class="sfarc-debug-search-input" placeholder="Search inside logs..." value="">
+      </div>
+      <select class="sfarc-debug-select">
+        <option>Active TraceFlag</option>
+        <option>All TraceFlags</option>
+      </select>
+      <button class="sfarc-dropdown-plus-btn" title="New Trace Flag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+      <button class="sfarc-debug-btn primary">Add Current User</button>
+      <button class="sfarc-debug-icon-btn" title="Refresh">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      </button>
+      <label class="sfarc-header-toggle-container" style="display:inline-flex;align-items:center;gap:8px;color:#334155;font-size:12px;font-weight:600;cursor:pointer;user-select:none;">
+        Hide Icons
+        <input type="checkbox" checked style="position:absolute;opacity:0;width:0;height:0;">
+        <span class="sfir-header-toggle-switch" style="position:relative;display:inline-block;width:36px;height:20px;border-radius:9999px;transition:background-color .2s;vertical-align:middle;"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="preview-section sfarc-dark-theme" style="background:#0f172a;border:1px solid #1e293b;border-radius:10px;padding:12px 14px;">
+    <h3 style="color:#64748b;">Universal controls — dark theme</h3>
+    <div class="ctl-row">
+      <div class="sfarc-debug-search-wrapper" style="width: 260px;">
+        <input type="text" class="sfarc-debug-search-input" placeholder="Search inside logs..." value="">
+      </div>
+      <select class="sfarc-debug-select">
+        <option>Active TraceFlag</option>
+        <option>All TraceFlags</option>
+      </select>
+      <button class="sfarc-dropdown-plus-btn" title="New Trace Flag">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </button>
+      <button class="sfarc-debug-btn primary">Add Current User</button>
+      <button class="sfarc-debug-icon-btn" title="Refresh">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>

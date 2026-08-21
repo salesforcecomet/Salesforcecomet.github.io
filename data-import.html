@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="src/theme-manager.js"></script>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+        const url = new URL(window.location.href);
+        window.location.replace("src/data-import.html" + url.search + url.hash);
+    </script>
+    <link rel="icon" href="icons/icon-48.png?v=2" type="image/png">
+</head>
+
+<body>
+    Redirecting to Salesforce Comet Data Import...
+</body>
+
+</html>

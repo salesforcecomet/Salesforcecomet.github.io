@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="theme-manager.js"></script>
+  <meta charset="utf-8">
+  <title>Anonymous Apex - salesforce comet</title>
+  <script src="lib/font-awesome.min.js" defer></script>
+  <script src="custom-tooltip.js" defer></script>
+  <link rel="stylesheet" href="anonymous-apex.css">
+  <link rel="stylesheet" href="glass-toast.css">
+        <script src="favicon-glyphs.js"></script>
+  <script src="colored-favicon.js" defer></script>
+  <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+
+<body>
+  <div class="split-layout">
+    <!-- Left Pane: Editor -->
+    <div class="editor-pane">
+      <div class="pane-header">
+        <div class="header-left">
+          <span class="app-title"><i class="fa-solid fa-bolt" style="color:var(--sfarc-accent, #2196f3);"></i> Anonymous Apex</span>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn" title="Script History (Ctrl+H)" id="btn-history">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </button>
+          <button class="icon-btn" title="Help & Shortcuts" id="btn-help">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+          </button>
+          <button class="icon-btn" title="Copy Code" id="btn-copy">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+          </button>
+          <button class="icon-btn" title="Format Code" id="btn-format">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="21" y1="10" x2="3" y2="10"></line>
+              <line x1="21" y1="6" x2="3" y2="6"></line>
+              <line x1="21" y1="14" x2="3" y2="14"></line>
+              <line x1="21" y1="18" x2="3" y2="18"></line>
+            </svg>
+          </button>
+          <div class="font-size-control" id="font-size-control">
+            <button class="icon-btn" title="Font Size" id="btn-font-size">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none">
+                <text x="3" y="18" font-size="16" font-weight="700" font-family="sans-serif">A</text>
+                <text x="14" y="18" font-size="11" font-weight="500" font-family="sans-serif">a</text>
+              </svg>
+            </button>
+            <div class="font-size-dropdown" id="font-size-dropdown">
+              <div class="font-size-dropdown-header">
+                <span class="font-size-label">Font Size</span>
+                <span class="font-size-value" id="font-size-value">13px</span>
+              </div>
+              <div class="font-size-slider-row">
+                <span class="font-size-min">9</span>
+                <input type="range" id="font-size-slider" min="9" max="36" value="13" step="1">
+                <span class="font-size-max">36</span>
+              </div>
+              <div class="font-size-presets">
+                <button class="font-size-preset" data-size="11">S</button>
+                <button class="font-size-preset active" data-size="13">M</button>
+                <button class="font-size-preset" data-size="16">L</button>
+                <button class="font-size-preset" data-size="20">XL</button>
+              </div>
+            </div>
+          </div>
+          <button class="run-btn" id="btn-run" title="Execute Code (Cmd/Ctrl + Enter)">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="currentColor"
+              stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg> Run
+          </button>
+        </div>
+      </div>
+      <div class="editor-container" id="editor-container"></div>
+    </div>
+
+    <!-- Vertical Resizer -->
+    <div class="resizer" id="resizer"></div>
+
+    <!-- Right Pane: Output -->
+    <div class="output-pane">
+      <div class="pane-header output-header">
+        <div class="header-left" style="display: flex; align-items: center; gap: 16px;">
+          <span class="console-title"><i class="fa-solid fa-terminal"
+              style="font-size:12px;color:#94a3b8;margin-right:6px;"></i> Output Console</span>
+          <div style="display: flex; align-items: center; gap: 12px; margin-left: 8px;">
+            <label
+              style="display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--sfarc-accent, #2196f3); font-size: 11px; font-weight: 500; user-select: none;"
+              title="Automatically fetch and display System.debug output in real-time">
+              <input type="checkbox" id="realtime-debug-chk" checked style="accent-color: var(--sfarc-accent, #2196f3); cursor: pointer;">
+              <span>Real-Time System.debug</span>
+            </label>
+            <div id="tabs-bar" style="display: none; align-items: center; gap: 6px;">
+              <button id="tab-debug" class="tab-btn active"><i class="fa-solid fa-terminal"
+                  style="margin-right: 4px;"></i>System.debug</button>
+              <button id="tab-summary" class="tab-btn"><i class="fa-solid fa-list-check"
+                  style="margin-right: 4px;"></i>Summary</button>
+              <button id="tab-raw" class="tab-btn"><i class="fa-solid fa-file-code" style="margin-right: 4px;"></i>Raw
+                Log</button>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <button class="icon-btn" title="Swap Editor &amp; Output Positions" id="btn-swap-panes">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 16V4m0 0L3 8m4-4l4 4" />
+              <path d="M17 8v12m0 0l4-4m-4 4l-4-4" />
+            </svg>
+          </button>
+          <button class="icon-btn" title="Clear Console" id="btn-clear">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 17l6-6-6-6"></path>
+              <path d="M12 19h8"></path>
+              <line x1="18" y1="9" x2="22" y2="13"></line>
+              <line x1="22" y1="9" x2="18" y2="13"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="output-container" id="output-container"></div>
+    </div>
+  </div>
+
+  <!-- History Drawer -->
+  <div class="drawer" id="history-drawer">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <i class="fa-solid fa-clock-rotate-left" style="color: var(--sfarc-accent, #2196f3);"></i>
+        <span>Script History</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <button id="btn-clear-history" class="text-btn" title="Clear All History">Clear</button>
+        <button id="btn-close-history" class="icon-btn-small" title="Close">&times;</button>
+      </div>
+    </div>
+    <div style="padding: 10px 14px; border-bottom: 1px solid #1e293b;">
+      <input type="text" id="history-search" placeholder="Search history..."
+        style="width: 100%; padding: 6px 10px; background: #0f172a; border: 1px solid #334155; border-radius: 4px; color: #f8fafc; font-size: 12px; outline: none;">
+    </div>
+    <div class="drawer-body" id="history-list"></div>
+  </div>
+
+  <!-- Help Modal -->
+  <div class="modal" id="help-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 style="margin:0;"><i class="fa-solid fa-circle-question" style="color:var(--sfarc-accent, #2196f3);margin-right:8px;"></i> Help &
+          Shortcuts</h3>
+        <button id="btn-close-help" class="icon-btn-small">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="shortcut-group">
+          <h4 style="color:var(--sfarc-accent, #2196f3);margin-bottom:8px;font-size:13px;">Keyboard Shortcuts</h4>
+          <div class="shortcut-row"><span>Run Code</span><kbd>Cmd / Ctrl + Enter</kbd></div>
+          <div class="shortcut-row"><span>Format Code</span><kbd>Cmd / Ctrl + Shift + F</kbd></div>
+          <div class="shortcut-row"><span>Toggle History Drawer</span><kbd>Cmd / Ctrl + H</kbd></div>
+        </div>
+        <div class="shortcut-group" style="margin-top: 16px;">
+          <h4 style="color:var(--sfarc-accent, #2196f3);margin-bottom:8px;font-size:13px;">Apex Quick Tips</h4>
+          <p style="font-size:12px;color:#94a3b8;line-height:1.6;margin:0;">
+            • Use <code>System.debug('output');</code> to print log messages to the console.<br>
+            • Code is executed via the Salesforce Tooling REST API.<br>
+            • Executed scripts are automatically saved to your local History drawer.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/monaco-editor/min/vs/loader.js"></script>
+  <script src="glass-toast.js"></script>
+  <script type="module" src="anonymous-apex.js"></script>
+    <script src="custom-dropdown.js"></script>
+    <script src="close-on-outside.js"></script>
+</body>
+
+</html>

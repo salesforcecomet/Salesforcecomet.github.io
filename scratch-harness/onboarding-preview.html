@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Onboarding Preview</title>
+<style>
+html, body { margin: 0; height: 100%; background: #f3f2f2; }
+.bg { position: fixed; inset: 0; display: flex; flex-direction: column; font-family: Inter, sans-serif; }
+.bg .top { height: 48px; background: #fff; border-bottom: 1px solid #d8dde6; display: flex; align-items: center; padding: 0 16px; font-weight: 600; color: #16325c; }
+.bg .row { background: #fff; padding: 10px 16px; border-bottom: 1px solid #d8dde6; color: #16325c; font-size: 13px; }
+.bg table { width: 100%; border-collapse: collapse; background: #fff; }
+.bg td, .bg th { padding: 8px 16px; border-bottom: 1px solid #eceff1; font-size: 12px; color: #16325c; text-align: left; }
+.bg th { color: #3e3e3c; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+<div class="bg">
+  <div class="top">Opportunities &#9662; &nbsp; &#128204;</div>
+  <div class="row">Viewed by Stage &#8226; Updated a few seconds ago</div>
+  <table><tr><th>Account Name</th><th>Stage</th><th>Close Date</th><th>Amount</th></tr>
+  <tr><td>United Oil &amp; Gas Corp.</td><td>Negotiation/Review</td><td>09/05/2021</td><td>USD 1,250,000</td></tr>
+  <tr><td>University of Arizona</td><td>Proposal/Price Quote</td><td>05/04/2021</td><td>USD 1,000,000</td></tr>
+  </table>
+</div>
+<div id="sfarc-onboarding-overlay" style="position: fixed; inset: 0; background: rgba(7, 10, 15, 0.88); z-index: 99999999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(16px); font-family: Inter, -apple-system, sans-serif; color: #f8fafc; overflow: hidden;">
+<style>
+
+                @keyframes sfarcAmbientIn {
+                    from { opacity: 0; transform: translate(-50%, -50%) scale(0.86); }
+                    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                }
+                @keyframes sfarcSurfaceIn {
+                    from { opacity: 0; transform: scale(0.97); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+                @keyframes sfarcContentIn {
+                    from { opacity: 0; transform: translateY(12px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes sfarcLogoFloat {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-4px); }
+                }
+                @keyframes sfarcCursorBlink {
+                    0%, 45% { opacity: 1; }
+                    50%, 100% { opacity: 0; }
+                }
+                .sfarc-welcome-ambient {
+                    position: absolute;
+                    inset: 0;
+                    pointer-events: none;
+                }
+                .sfarc-welcome-ambient::before {
+                    content: "";
+                    position: absolute;
+                    width: 620px;
+                    height: 620px;
+                    left: 50%;
+                    top: 47%;
+                    transform: translate(-50%, -50%);
+                    border-radius: 50%;
+                    background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0.02) 30%, transparent 68%);
+                    filter: blur(18px);
+                    animation: sfarcAmbientIn 1.6s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+                }
+                .sfarc-welcome-surface {
+                    position: absolute;
+                    width: min(760px, 88vw);
+                    height: min(560px, 82vh);
+                    border-radius: 42px;
+                    background: transparent;
+                    border: none;
+                    box-shadow: none;
+                    backdrop-filter: none;
+                    -webkit-backdrop-filter: none;
+                    animation: sfarcSurfaceIn 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                }
+                .sfarc-welcome-content {
+                    position: relative;
+                    z-index: 5;
+                    width: min(700px, 90vw);
+                    padding: 34px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    text-align: center;
+                    animation: sfarcContentIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.25s forwards;
+                }
+                .sfarc-brand-mark {
+                    position: relative;
+                    width: 68px;
+                    height: 68px;
+                    margin-bottom: 22px;
+                    display: grid;
+                    place-items: center;
+                    background: transparent;
+                    border: none;
+                    box-shadow: none;
+                    animation: sfarcLogoFloat 5s ease-in-out infinite;
+                }
+                .sfarc-brand-mark::before {
+                    content: "";
+                    position: absolute;
+                    inset: -24px;
+                    border-radius: 50%;
+                    background: conic-gradient(from 0deg, transparent 0deg, rgba(56,189,248,0.5) 42deg, transparent 95deg, transparent 175deg, rgba(45,212,191,0.42) 225deg, transparent 275deg, transparent 360deg);
+                    -webkit-mask-image: radial-gradient(circle, transparent 58%, #000 64%, #000 76%, transparent 80%);
+                    mask-image: radial-gradient(circle, transparent 58%, #000 64%, #000 76%, transparent 80%);
+                    animation: sfarcRingSpin 7s linear infinite;
+                    opacity: 0.9;
+                    pointer-events: none;
+                }
+                .sfarc-brand-mark::after {
+                    content: "";
+                    position: absolute;
+                    width: 96px;
+                    height: 96px;
+                    border-radius: 50%;
+                    background: radial-gradient(circle, rgba(56, 189, 248, 0.3), transparent 65%);
+                    filter: blur(8px);
+                    animation: sfarcLogoGlow 3.2s ease-in-out infinite;
+                    pointer-events: none;
+                }
+                .sfarc-brand-mark img {
+                    position: relative;
+                    z-index: 2;
+                    width: 64px;
+                    height: 64px;
+                    object-fit: contain;
+                    filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.45));
+                }
+                @keyframes sfarcRingSpin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                @keyframes sfarcLogoGlow {
+                    0%, 100% { opacity: 0.65; transform: scale(0.95); }
+                    50% { opacity: 1; transform: scale(1.06); }
+                }
+                .sfarc-title-container {
+                    min-height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: clamp(32px, 4.5vw, 46px);
+                    font-weight: 300 !important;
+                    letter-spacing: -0.5px;
+                    color: #ffffff;
+                }
+                #sfarc-typewriter-text {
+                    font-weight: 300 !important;
+                    background: linear-gradient(110deg, #ffffff 18%, #dff7ff 42%, #7dd3fc 62%, #ffffff 84%);
+                    background-size: 220% auto;
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    animation: sfarcTitleShimmer 7s linear infinite;
+                }
+                @keyframes sfarcTitleShimmer {
+                    0% { background-position: 120% center; }
+                    100% { background-position: -80% center; }
+                }
+                .sfarc-cursor {
+                    width: 2px;
+                    height: 38px;
+                    margin-left: 6px;
+                    background: #38bdf8;
+                    box-shadow: 0 0 14px rgba(56, 189, 248, 0.55);
+                    animation: sfarcCursorBlink 0.85s ease-in-out infinite;
+                }
+                .sfarc-secondary {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-top: 24px;
+                    opacity: 0;
+                    transform: translateY(12px);
+                    transition: opacity 0.8s ease, transform 0.8s ease;
+                }
+                .sfarc-secondary.visible {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+                .sfarc-shortcut-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    margin-bottom: 12px;
+                }
+                .sfarc-key-box {
+                    width: 108px;
+                    height: 70px;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 6px;
+                    border-radius: 14px;
+                    background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.03) 72%, rgba(0,0,0,0.1));
+                    border: 1px solid rgba(255, 255, 255, 0.14);
+                    box-shadow: 0 3px 0 rgba(0,0,0,0.32), 0 12px 30px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+                    transition: all 0.2s ease;
+                }
+                .sfarc-key-box.active {
+                    transform: translateY(-3px) scale(1.02);
+                    border-color: rgba(56, 189, 248, 0.7);
+                    background: linear-gradient(180deg, rgba(56, 189, 248, 0.22), rgba(45, 212, 191, 0.1) 72%, rgba(0,0,0,0.12));
+                    box-shadow: 0 1px 0 rgba(56,189,248,0.3), 0 12px 38px rgba(56, 189, 248, 0.22), inset 0 1px 0 rgba(255,255,255,0.15);
+                }
+                .sfarc-key-symbol {
+                    display: grid;
+                    place-items: center;
+                    color: #e2e8f0;
+                    line-height: 1;
+                }
+                .sfarc-key-symbol svg {
+                    display: block;
+                }
+                .sfarc-key-label {
+                    color: #64748b;
+                    font-size: 9px;
+                    font-weight: 700;
+                    letter-spacing: 1.5px;
+                    text-transform: uppercase;
+                }
+                .sfarc-key-box.active .sfarc-key-symbol {
+                    color: #ffffff;
+                }
+                .sfarc-key-box.active .sfarc-key-label {
+                    color: #93c5fd;
+                }
+                .sfarc-plus {
+                    color: #475569;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                .sfarc-bottom-row {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 16px;
+                    margin-top: 30px;
+                }
+                .sfarc-status {
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    padding: 7px 14px;
+                    border-radius: 999px;
+                    background: rgba(52, 211, 153, 0.08);
+                    border: 1px solid rgba(52, 211, 153, 0.18);
+                    color: #6ee7b7;
+                    font-size: 10px;
+                    font-weight: 600;
+                    letter-spacing: 0.8px;
+                    text-transform: uppercase;
+                }
+                .sfarc-status-dot {
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 50%;
+                    background: #34d399;
+                    box-shadow: 0 0 10px rgba(52, 211, 153, 0.65);
+                    animation: sfarcDotPulse 2s ease-in-out infinite;
+                }
+                @keyframes sfarcDotPulse {
+                    0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(52,211,153,0.55); }
+                    50% { opacity: 0.55; box-shadow: 0 0 14px rgba(52,211,153,0.85); }
+                }
+                .sfarc-divider {
+                    width: 1px;
+                    height: 16px;
+                    background: rgba(255,255,255,0.1);
+                }
+                
+</style>
+
+
+                <div class="sfarc-welcome-ambient"></div>
+                <div class="sfarc-welcome-surface"></div>
+
+                <div class="sfarc-welcome-content">
+                    <div class="sfarc-brand-mark">
+                        <img src="icons/icon-128.png" alt="Salesforce Comet">
+                    </div>
+
+                    <div class="sfarc-title-container">
+                        <span id="sfarc-typewriter-text"></span>
+                        <span class="sfarc-cursor" id="sfarc-typewriter-cursor"></span>
+                    </div>
+
+                    <div class="sfarc-secondary" id="sfarc-secondary-content">
+                        <p style="margin-bottom: 24px; color: #94a3b8; font-size: 14px; line-height: 1.6;">
+                            Your faster workspace for <span style="color: #e2e8f0; font-weight: 400;">Salesforce development, inspection &amp; debugging.</span>
+                        </p>
+
+                        <div class="sfarc-shortcut-row">
+                            <div class="sfarc-key-box" id="sfarc-key-shift">
+                                <span class="sfarc-key-symbol">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                                </span>
+                                <span class="sfarc-key-label">Shift</span>
+                            </div>
+                            <span class="sfarc-plus">+</span>
+                            <div class="sfarc-key-box" id="sfarc-key-space">
+                                <span class="sfarc-key-symbol">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/></svg>
+                                </span>
+                                <span class="sfarc-key-label">Space</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 28px; color: #475569; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;">
+                            Press to launch Comet
+                        </div>
+
+                        <div class="sfarc-bottom-row">
+                            <div class="sfarc-status">
+                                <span class="sfarc-status-dot"></span>
+                                Ready to launch
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+<script>
+setTimeout(() => {
+  const t = document.getElementById('sfarc-typewriter-text');
+  if (t) t.textContent = 'Welcome to Salesforce Comet';
+  const c = document.getElementById('sfarc-typewriter-cursor');
+  if (c) c.style.display = 'none';
+  const s = document.getElementById('sfarc-secondary-content');
+  if (s) s.classList.add('visible');
+}, 400);
+</script>
+</body>
+</html>

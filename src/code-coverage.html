@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <script src="theme-manager.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code Coverage - salesforce comet</title>
+  <link rel="stylesheet" href="glass-toast.css">
+        <script src="favicon-glyphs.js"></script>
+  <script src="colored-favicon.js" defer></script>
+  <link rel="icon" href="../icons/icon-48.png" type="image/png">
+  <style>
+    @import url('local-fonts.css');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --cc-bg: #f8fafc;
+      --cc-surface: #ffffff;
+      --cc-surface-hover: #f1f5f9;
+      --cc-border: #e2e8f0;
+      --cc-text: #0f172a;
+      --cc-text-secondary: #64748b;
+      --cc-accent: var(--sfarc-accent, #2196f3);
+      --cc-accent-light: #e0f2fe;
+      --cc-green: #10b981;
+      --cc-green-bg: #d1fae5;
+      --cc-yellow: #f59e0b;
+      --cc-yellow-bg: #fef3c7;
+      --cc-red: #ef4444;
+      --cc-red-bg: #fee2e2;
+      --cc-radius: 12px;
+      --cc-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --cc-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.06), 0 4px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    body.sfarc-dark-theme {
+      --cc-bg: #0a0a0a;
+      --cc-surface: #141416;
+      --cc-surface-hover: #1e1e22;
+      --cc-border: #2a2a2e;
+      --cc-text: #f1f5f9;
+      --cc-text-secondary: #94a3b8;
+      --cc-accent: var(--sfarc-accent-glow, #38bdf8);
+      --cc-accent-light: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.12);
+      --cc-green-bg: rgba(16, 185, 129, 0.15);
+      --cc-yellow-bg: rgba(245, 158, 11, 0.15);
+      --cc-red-bg: rgba(239, 68, 68, 0.15);
+      --cc-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --cc-shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: var(--cc-bg);
+      color: var(--cc-text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ─── Header ─── */
+    .cc-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: var(--cc-surface);
+      border-bottom: 1px solid var(--cc-border);
+      flex-shrink: 0;
+    }
+
+    .cc-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .cc-header-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--sfarc-accent, #2196f3), var(--sfarc-accent-glow, #38bdf8));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--sfarc-accent-contrast, white);
+      box-shadow: 0 2px 8px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+    }
+
+    .cc-header-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--cc-text);
+      letter-spacing: -0.3px;
+    }
+
+    .cc-header-subtitle {
+      font-size: 11px;
+      color: var(--cc-text-secondary);
+      font-weight: 500;
+    }
+
+    .cc-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cc-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 16px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+      font-family: inherit;
+    }
+
+    .cc-btn-primary {
+      background: var(--sfarc-accent, #2196f3);
+      color: var(--sfarc-accent-contrast, white);
+      box-shadow: 0 2px 8px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+    }
+
+    .cc-btn-primary:hover {
+      background: var(--sfarc-accent-dark, #1976d2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.4);
+    }
+
+    .cc-btn-secondary {
+      background: var(--cc-surface);
+      color: var(--cc-text);
+      border: 1px solid var(--cc-border);
+    }
+
+    .cc-btn-secondary:hover {
+      background: var(--cc-surface-hover);
+      border-color: var(--cc-accent);
+      color: var(--cc-accent);
+    }
+
+    .cc-btn-icon {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cc-surface);
+      border: 1px solid var(--cc-border);
+      color: var(--cc-text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .cc-btn-icon:hover {
+      background: var(--cc-surface-hover);
+      color: var(--cc-accent);
+      border-color: var(--cc-accent);
+    }
+
+    /* ─── Stats Bar ─── */
+    .cc-stats-bar {
+      display: flex;
+      gap: 16px;
+      padding: 16px 24px;
+      background: var(--cc-surface);
+      border-bottom: 1px solid var(--cc-border);
+      flex-shrink: 0;
+    }
+
+    .cc-stat-card {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: var(--cc-radius);
+      border: 1px solid var(--cc-border);
+      background: var(--cc-bg);
+      transition: all 0.2s ease;
+    }
+
+    .cc-stat-card:hover {
+      box-shadow: var(--cc-shadow-lg);
+      transform: translateY(-1px);
+    }
+
+    .cc-stat-donut {
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+    }
+
+    .cc-stat-donut svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .cc-stat-donut .donut-track {
+      fill: none;
+      stroke: var(--cc-border);
+      stroke-width: 5;
+    }
+
+    .cc-stat-donut .donut-fill {
+      fill: none;
+      stroke-width: 5;
+      stroke-linecap: round;
+      transition: stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cc-stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--cc-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .cc-stat-value {
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--cc-text);
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .cc-stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .cc-stat-badge.good {
+      background: var(--cc-green-bg);
+      color: var(--cc-green);
+    }
+
+    .cc-stat-badge.warning {
+      background: var(--cc-yellow-bg);
+      color: var(--cc-yellow);
+    }
+
+    .cc-stat-badge.danger {
+      background: var(--cc-red-bg);
+      color: var(--cc-red);
+    }
+
+    /* ─── Toolbar ─── */
+    .cc-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: var(--cc-surface);
+      border-bottom: 1px solid var(--cc-border);
+      flex-shrink: 0;
+    }
+
+    .cc-toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cc-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 28px;
+      min-height: 28px;
+      padding: 0 10px;
+      background: var(--cc-bg);
+      border: 1px solid var(--cc-border);
+      border-radius: 8px;
+      width: 300px;
+      box-sizing: border-box;
+      transition: all 0.15s ease;
+    }
+
+    .cc-search-box:focus-within {
+      border-color: var(--cc-accent);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    .cc-search-box svg {
+      flex-shrink: 0;
+      color: var(--cc-text-secondary);
+    }
+
+    .cc-search-box input,
+    #cc-search,
+    input#cc-search {
+      border: none !important;
+      outline: none !important;
+      background: transparent !important;
+      background-color: transparent !important;
+      box-shadow: none !important;
+      height: 100% !important;
+      min-height: 0 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      font-size: 12.5px !important;
+      font-family: inherit !important;
+      color: var(--cc-text) !important;
+      width: 100% !important;
+    }
+
+    .cc-search-box input::placeholder {
+      color: var(--cc-text-secondary);
+    }
+
+    .cc-filter-pills {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      height: 30px;
+      min-height: 30px;
+      box-sizing: border-box;
+      background: var(--cc-bg);
+      border-radius: 8px;
+      border: 1px solid var(--cc-border);
+    }
+
+    .cc-filter-pill {
+      padding: 0 14px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--cc-text-secondary);
+      font-family: inherit;
+    }
+
+    .cc-filter-pill:hover {
+      background: var(--cc-accent-light);
+      color: var(--cc-accent);
+    }
+
+    .cc-filter-pill.active {
+      background: var(--cc-accent);
+      color: #ffffff;
+      border-color: var(--cc-accent);
+    }
+
+    body.sfarc-dark-theme .cc-filter-pill.active {
+      background: var(--sfarc-accent-glow, #38bdf8);
+      color: #000000;
+    }
+
+    .cc-toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cc-class-count {
+      font-size: 11.5px;
+      color: var(--cc-text-secondary);
+      font-weight: 500;
+    }
+
+    /* ─── Table ─── */
+    .cc-table-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px 24px;
+      background: var(--cc-bg);
+    }
+
+    .cc-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin-top: 12px;
+    }
+
+    .cc-table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: var(--cc-bg);
+      padding: 10px 16px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--cc-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      text-align: left;
+      border-bottom: 2px solid var(--cc-border);
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.15s ease;
+    }
+
+    .cc-table thead th:hover {
+      color: var(--cc-accent);
+    }
+
+    .cc-table thead th .sort-arrow {
+      display: inline-block;
+      margin-left: 4px;
+      opacity: 0.4;
+      transition: opacity 0.15s ease;
+    }
+
+    .cc-table thead th.sorted .sort-arrow {
+      opacity: 1;
+      color: var(--cc-accent);
+    }
+
+    .cc-table tbody tr {
+      transition: background 0.12s ease;
+    }
+
+    .cc-table tbody tr:nth-child(even) {
+      background: var(--cc-surface-stripe, rgba(128, 128, 128, 0.06));
+    }
+
+    .cc-table tbody tr:hover {
+      background: var(--cc-surface-hover);
+    }
+
+    .cc-table tbody td {
+      padding: 12px 16px;
+      font-size: 12.5px;
+      border-bottom: 1px solid var(--cc-border);
+      vertical-align: middle;
+    }
+
+    .cc-class-name {
+      font-weight: 500;
+      color: var(--cc-text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cc-class-type-badge {
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      background: var(--cc-accent-light);
+      color: var(--cc-accent);
+    }
+
+    /* Progress bar cell */
+    .cc-progress-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 200px;
+    }
+
+    .cc-progress-track {
+      flex: 1;
+      height: 6px;
+      border-radius: 9999px;
+      background: var(--cc-border);
+      overflow: hidden;
+    }
+
+    .cc-progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cc-progress-fill.high {
+      background: linear-gradient(90deg, #10b981, #34d399);
+    }
+
+    .cc-progress-fill.medium {
+      background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    }
+
+    .cc-progress-fill.low {
+      background: linear-gradient(90deg, #ef4444, #f87171);
+    }
+
+    .cc-percent-text {
+      font-size: 12px;
+      font-weight: 500;
+      min-width: 38px;
+      text-align: right;
+    }
+
+    .cc-percent-text.high {
+      color: var(--cc-green);
+    }
+
+    .cc-percent-text.medium {
+      color: var(--cc-yellow);
+    }
+
+    .cc-percent-text.low {
+      color: var(--cc-red);
+    }
+
+    .cc-line-count {
+      font-variant-numeric: tabular-nums;
+      color: var(--cc-text-secondary);
+      font-weight: 500;
+    }
+
+    .cc-uncovered-count {
+      font-variant-numeric: tabular-nums;
+      font-weight: 500;
+    }
+
+    .cc-uncovered-count.has-uncovered {
+      color: var(--cc-red);
+    }
+
+    .cc-uncovered-count.none {
+      color: var(--cc-green);
+    }
+
+    /* ─── Empty & Loading States ─── */
+    .cc-empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 20px;
+      color: var(--cc-text-secondary);
+      text-align: center;
+    }
+
+    .cc-empty-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: var(--cc-accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .cc-empty-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--cc-text);
+      margin-bottom: 6px;
+    }
+
+    .cc-empty-desc {
+      font-size: 12.5px;
+      max-width: 360px;
+      line-height: 1.5;
+    }
+
+    .cc-loading-skeleton {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px 0;
+    }
+
+    .cc-skeleton-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      background: var(--cc-surface);
+      animation: cc-pulse 1.5s ease-in-out infinite;
+    }
+
+    .cc-skeleton-bar {
+      height: 12px;
+      border-radius: 6px;
+      background: var(--cc-border);
+    }
+
+    @keyframes cc-pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* ─── Dark theme adjustments for table ─── */
+    body.sfarc-dark-theme .cc-stat-card {
+      background: var(--cc-surface);
+    }
+
+    /* ─── Scrollbar ─── */
+    .cc-table-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .cc-table-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .cc-table-container::-webkit-scrollbar-thumb {
+      background: var(--cc-border);
+      border-radius: 9999px;
+    }
+
+    .cc-table-container::-webkit-scrollbar-thumb:hover {
+      background: var(--cc-text-secondary);
+    }
+
+    @keyframes cc-spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .rotating {
+      animation: cc-spin 1s linear infinite;
+    }
+  </style>
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+
+<body>
+  <!-- Header -->
+  <div class="cc-header">
+    <div class="cc-header-left">
+      <div class="cc-header-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </div>
+      <div>
+        <div class="cc-header-title">Code Coverage</div>
+        <div class="cc-header-subtitle" id="cc-org-info">Loading org info...</div>
+      </div>
+    </div>
+    <div class="cc-header-right">
+      <button class="cc-btn cc-btn-secondary" id="cc-export-csv-btn" title="Export as CSV">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Export CSV
+      </button>
+      <button class="cc-btn cc-btn-primary" id="cc-refresh-btn" title="Refresh Coverage Data">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 2v6h-6"></path>
+          <path d="M3 12a9 9 0 0 1 15-6.7L21 8"></path>
+          <path d="M3 22v-6h6"></path>
+          <path d="M21 12a9 9 0 0 1-15 6.7L3 16"></path>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="cc-stats-bar">
+    <div class="cc-stat-card" id="cc-stat-avg">
+      <div class="cc-stat-donut" id="cc-donut-avg">
+        <svg viewBox="0 0 36 36">
+          <circle class="donut-track" cx="18" cy="18" r="15.5"></circle>
+          <circle class="donut-fill" cx="18" cy="18" r="15.5" stroke="var(--sfarc-accent, #2196f3)" stroke-dasharray="0 97.4"
+            id="cc-donut-avg-fill"></circle>
+        </svg>
+      </div>
+      <div>
+        <div class="cc-stat-label">Avg Coverage</div>
+        <div class="cc-stat-value" id="cc-avg-value">—</div>
+        <div class="cc-stat-badge good" id="cc-avg-badge" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="cc-stat-card">
+      <div class="cc-stat-donut" id="cc-donut-pass">
+        <svg viewBox="0 0 36 36">
+          <circle class="donut-track" cx="18" cy="18" r="15.5"></circle>
+          <circle class="donut-fill" cx="18" cy="18" r="15.5" stroke="#10b981" stroke-dasharray="0 97.4"
+            id="cc-donut-pass-fill"></circle>
+        </svg>
+      </div>
+      <div>
+        <div class="cc-stat-label">Passing (≥75%)</div>
+        <div class="cc-stat-value" id="cc-pass-value">—</div>
+      </div>
+    </div>
+    <div class="cc-stat-card">
+      <div class="cc-stat-donut" id="cc-donut-fail">
+        <svg viewBox="0 0 36 36">
+          <circle class="donut-track" cx="18" cy="18" r="15.5"></circle>
+          <circle class="donut-fill" cx="18" cy="18" r="15.5" stroke="#ef4444" stroke-dasharray="0 97.4"
+            id="cc-donut-fail-fill"></circle>
+        </svg>
+      </div>
+      <div>
+        <div class="cc-stat-label">Failing (&lt;75%)</div>
+        <div class="cc-stat-value" id="cc-fail-value">—</div>
+      </div>
+    </div>
+    <div class="cc-stat-card">
+      <div>
+        <div class="cc-stat-label">Total Classes</div>
+        <div class="cc-stat-value" id="cc-total-value">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="cc-toolbar">
+    <div class="cc-toolbar-left">
+      <div class="cc-search-box">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="cc-search" placeholder="Search Apex classes..." autocomplete="off">
+      </div>
+      <div class="cc-filter-pills">
+        <button class="cc-filter-pill active" data-filter="all">All</button>
+        <button class="cc-filter-pill" data-filter="passing">Passing</button>
+        <button class="cc-filter-pill" data-filter="warning">Warning</button>
+        <button class="cc-filter-pill" data-filter="failing">Failing</button>
+      </div>
+    </div>
+    <div class="cc-toolbar-right">
+      <span class="cc-class-count" id="cc-showing-count">Showing 0 classes</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="cc-table-container" id="cc-table-container">
+    <table class="cc-table">
+      <thead>
+        <tr>
+          <th data-sort="name" class="sorted">Apex Class <span class="sort-arrow">↑</span></th>
+          <th data-sort="percent">Coverage <span class="sort-arrow">↕</span></th>
+          <th data-sort="covered">Covered Lines <span class="sort-arrow">↕</span></th>
+          <th data-sort="uncovered">Uncovered Lines <span class="sort-arrow">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="cc-table-body">
+        <!-- Loading skeleton -->
+      </tbody>
+    </table>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="glass-toast.js"></script>
+  <script src="code-coverage.js"></script>
+    <script src="custom-dropdown.js"></script>
+</body>
+
+</html>

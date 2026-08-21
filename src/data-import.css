@@ -1,0 +1,1764 @@
+/* ==========================================================================
+   Salesforce Comet — Data Import (redesigned UI)
+   Everything below the shared top bar. The top bar keeps its SLDS styles.
+   ========================================================================== */
+
+/* ---------- Design tokens ---------- */
+:root {
+  --sfarc-i-accent: var(--sfarc-accent, var(--sfarc-accent, #2196f3));
+  --sfarc-i-accent-strong: var(--sfarc-accent, var(--sfarc-accent-dark, #1976d2));
+  --sfarc-i-page-bg: linear-gradient(180deg, #f4f6fb 0%, #e9eef6 100%);
+  --sfarc-i-card-bg: #ffffff;
+  --sfarc-i-card-border: #e3e8ef;
+  --sfarc-i-card-shadow: 0 8px 28px rgba(16, 42, 67, 0.07), 0 1px 3px rgba(16, 42, 67, 0.05);
+  --sfarc-i-text: #1a2233;
+  --sfarc-i-muted: #64748b;
+  --sfarc-i-faint: #94a3b8;
+  --sfarc-i-input-bg: #f8fafc;
+  --sfarc-i-input-border: #d6dde6;
+  --sfarc-i-input-hover-border: #b6c2d1;
+  --sfarc-i-chip-bg: #f1f5f9;
+  --sfarc-i-table-head: #f6f8fb;
+  --sfarc-i-row-stripe: #f6f8fb;
+  --sfarc-i-row-hover: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.045);
+  --sfarc-i-btn-bg: #ffffff;
+  --sfarc-i-btn-border: #d8dde6;
+  --sfarc-i-btn-text: #334155;
+  --sfarc-i-btn-hover-bg: #f4f6f9;
+  --sfarc-i-btn-hover-border: #c3cdd9;
+  --sfarc-i-danger: #dc2626;
+  --sfarc-i-warning: #d97706;
+  --sfarc-i-success: #059669;
+  --sfarc-i-info: #0284c7;
+  --sfarc-i-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --sfarc-i-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+body.sfarc-dark-theme {
+  --sfarc-i-accent: var(--sfarc-accent, #2196f3);
+  --sfarc-i-accent-strong: var(--sfarc-accent, #1f6feb);
+  --sfarc-i-page-bg: linear-gradient(180deg, #0d1117 0%, #0a0d12 100%);
+  --sfarc-i-card-bg: #17181c;
+  --sfarc-i-card-border: #27282e;
+  --sfarc-i-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --sfarc-i-text: #e6e9ef;
+  --sfarc-i-muted: #9aa6b6;
+  --sfarc-i-faint: #6b7686;
+  --sfarc-i-input-bg: #0e0f12;
+  --sfarc-i-input-border: #30323a;
+  --sfarc-i-input-hover-border: #3e4148;
+  --sfarc-i-chip-bg: #1e2025;
+  --sfarc-i-table-head: #1a1c21;
+  --sfarc-i-row-stripe: #1e2025;
+  --sfarc-i-row-hover: rgba(47, 129, 247, 0.07);
+  --sfarc-i-btn-bg: #222b36;
+  --sfarc-i-btn-border: #333f4e;
+  --sfarc-i-btn-text: #d7dee8;
+  --sfarc-i-btn-hover-bg: #2a3542;
+  --sfarc-i-btn-hover-border: #46566a;
+  --sfarc-i-danger: #f87171;
+  --sfarc-i-warning: #fbbf24;
+  --sfarc-i-success: #34d399;
+  --sfarc-i-info: var(--sfarc-accent-glow, #38bdf8);
+}
+
+/* ---------- Page shell ---------- */
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sfarc-i-page-bg);
+  color: var(--sfarc-i-text);
+  font-family: var(--sfarc-i-font);
+  font-size: 13px;
+  overflow: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+.sfarc-import-root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* The page wrapper is the shared sfir-page-container (top bar cleared with its own margin);
+   restyle it for the new design. Scoped to this page because data-import.css loads here only. */
+.sfarc-import-root .sfir-page-container {
+  padding: 5px !important;
+  gap: 5px !important;
+  background: transparent !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ---------- Workspace: Configure + Mapping ---------- */
+.sfarc-import-workspace {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 44%;
+  display: grid;
+  /* Cap the row to the workspace's own height so the cards never grow with
+     content — the mapping table scrolls inside its card instead. */
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(400px, 2fr) minmax(0, 3fr);
+  gap: 5px;
+}
+
+.sfarc-import-card {
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 12px;
+  box-shadow: var(--sfarc-i-card-shadow);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sfarc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 3px 12px;
+  border-bottom: 1px solid var(--sfarc-i-card-border);
+}
+
+.sfarc-card-heading {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 7px;
+  min-width: 0;
+}
+
+.sfarc-card-kicker {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sfarc-i-accent);
+  white-space: nowrap;
+}
+
+.sfarc-card-title {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--sfarc-i-text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+.sfarc-card-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 12px 10px;
+}
+
+/* ---------- Form ---------- */
+.sfarc-config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sfarc-form-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.sfarc-form-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sfarc-form-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sfarc-form-grid-object-row {
+  grid-template-columns: 1fr 95px 70px 60px;
+  align-items: end;
+}
+
+#form-batch-size,
+#form-threads {
+  text-align: center !important;
+  font-weight: 500 !important;
+}
+
+.sfarc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sfarc-field-label {
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sfarc-i-muted);
+  margin-bottom: 2px;
+}
+
+/* Form controls — universal 24px (matches the custom dropdowns beside
+   them). The !important values beat sfir.css's global select/input rule
+   (height 32px, padding 4px 16px, inset shadow, white bg). */
+input.sfarc-input,
+select.sfarc-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 24px !important;
+  min-height: 24px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--sfarc-i-input-border) !important;
+  border-radius: 6px !important;
+  background: var(--sfarc-i-input-bg) !important;
+  color: var(--sfarc-i-text) !important;
+  font-family: var(--sfarc-i-font);
+  font-size: 12px;
+  outline: none;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+select.sfarc-input {
+  /* Centered label with balanced gutters: the chevron takes 30px on the
+     right, so the left padding mirrors it — the text sits dead-center
+     between the left edge and the chevron (native selects otherwise
+     left-align, which read as off-center next to short neighbors). */
+  padding-right: 30px !important;
+  padding-left: 30px !important;
+  text-align: center !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 10px center !important;
+}
+
+.sfarc-input:hover:not(:disabled) {
+  border-color: var(--sfarc-i-input-hover-border) !important;
+}
+
+input.sfarc-input:focus,
+select.sfarc-input:focus {
+  border-color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.16) !important;
+  background: var(--sfarc-i-card-bg) !important;
+}
+
+/* Keep the accent focus ring in dark mode too (sfir.css's dark input:focus
+   would otherwise paint its own ring). */
+body.sfarc-dark-theme input.sfarc-input:focus,
+body.sfarc-dark-theme select.sfarc-input:focus {
+  border-color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.18) !important;
+}
+
+.sfarc-input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.sfarc-input::placeholder {
+  color: var(--sfarc-i-faint);
+}
+
+.sfarc-input.is-error {
+  border-color: var(--sfarc-i-danger);
+}
+
+.sfarc-input.is-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+textarea.sfarc-input-area {
+  height: auto;
+  min-height: 24px;
+  padding: 2px 12px !important;
+  line-height: 1.3;
+  font-family: var(--sfarc-i-mono);
+  font-size: 12px;
+  resize: vertical;
+  border-radius: 6px !important;
+}
+
+.sfarc-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Hide Chrome's native × clear button inside type="search" fields (Object search) */
+.sfarc-input-wrap input[type="search"]::-webkit-search-cancel-button,
+.sfarc-input-wrap input[type="search"]::-webkit-search-decoration,
+.sfarc-input-wrap input[type="search"]::-webkit-search-results-button,
+.sfarc-input-wrap input[type="search"]::-webkit-search-results-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.sfarc-input-wrap .sfarc-input {
+  padding-left: 32px !important;
+}
+
+/* The Object field already renders an inline SVG search icon — strip the global
+   input[type="search"] magnifying-glass background from sfir.css so there is no double icon. */
+.sfarc-input-wrap input[type="search"] {
+  background-image: none !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 12px 0 32px !important;
+}
+
+.sfarc-input-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--sfarc-i-faint);
+  pointer-events: none;
+}
+
+.sfarc-field-error {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sfarc-i-danger);
+}
+
+.sfarc-field-hint {
+  font-size: 10.5px;
+  color: var(--sfarc-i-faint);
+}
+
+/* Data paste drop area */
+.sfarc-data-drop {
+  width: 100%;
+  box-sizing: border-box;
+  height: 80px !important;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--sfarc-i-input-border);
+  border-radius: 12px;
+  background: var(--sfarc-i-input-bg);
+  color: var(--sfarc-i-muted);
+  font-family: var(--sfarc-i-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+
+.sfarc-data-drop:hover {
+  border-color: var(--sfarc-i-input-hover-border);
+  background: var(--sfarc-i-card-bg);
+}
+
+.sfarc-data-drop:focus {
+  border-color: var(--sfarc-i-accent);
+  box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.09);
+}
+
+.sfarc-data-drop-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  text-align: center;
+  flex: 1;
+}
+
+.sfarc-file-drop-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  text-align: center;
+}
+
+.sfarc-data-drop svg {
+  color: var(--sfarc-i-success, #10b981);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sfarc-file-drop svg {
+  color: var(--sfarc-i-success, #10b981);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sfarc-data-drop.is-error {
+  border-color: var(--sfarc-i-danger);
+}
+
+/* Import file drop area (side-by-side with the paste area) */
+.sfarc-file-drop {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 80px !important;
+  padding: 10px 14px;
+  border: 1.5px dashed var(--sfarc-i-input-border);
+  border-radius: 12px;
+  background: var(--sfarc-i-input-bg);
+  color: var(--sfarc-i-muted);
+  font-size: 12px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+}
+
+.sfarc-file-drop:hover,
+.sfarc-file-drop.is-dragging {
+  border-color: var(--sfarc-i-accent);
+  background: var(--sfarc-i-card-bg);
+}
+
+.sfarc-file-drop.has-file {
+  border-style: solid;
+  border-color: var(--sfarc-i-accent);
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-file-drop.is-error {
+  border-color: var(--sfarc-i-danger);
+}
+
+.sfarc-file-drop-icon {
+  flex-shrink: 0;
+  color: var(--sfarc-i-accent);
+}
+
+.sfarc-file-drop-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ---------- Field mapping ---------- */
+/* Rebuilt from scratch: the table sits flush against the card (no body gutter)
+   and rows are defined solely by the 18px input. Every sizing value that
+   sfir.css's global input rule would override is forced with !important, so
+   rows stay ~19px in the real page in BOTH themes. */
+.sfarc-mapping-card .sfarc-card-body {
+  padding: 0;
+}
+
+.sfarc-mapping-card .sfarc-mapping-warning {
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 0;
+  border: none;
+  border-bottom: 1px solid rgba(217, 119, 6, 0.25);
+  font-size: 11px;
+  color: var(--sfarc-i-warning);
+  background: rgba(217, 119, 6, 0.1);
+}
+
+.sfarc-mapping-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.sfarc-mapping-table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  padding: 1px 0;
+  text-align: left;
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sfarc-i-muted);
+  background: var(--sfarc-i-table-head);
+  border-bottom: 1px solid var(--sfarc-i-card-border);
+}
+
+.sfarc-mapping-table td {
+  padding: 0;
+  border-bottom: 1px solid var(--sfarc-i-card-border);
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+/* No padding between columns — only a slim outer gutter so text never
+   touches the card border (first/last cells). The 1% width + nowrap on the
+   first/last columns shrinks them to content, so the input column absorbs
+   all remaining width and the input sits flush against the label. */
+.sfarc-mapping-table th:first-child,
+.sfarc-mapping-table td:first-child {
+  padding-left: 8px;
+  width: 40%;
+  white-space: nowrap;
+}
+
+.sfarc-mapping-table th:nth-child(2),
+.sfarc-mapping-table td:nth-child(2) {
+  width: 40%;
+}
+
+.sfarc-mapping-table th:last-child,
+.sfarc-mapping-table td:last-child {
+  padding-right: 8px;
+  width: 20%;
+  white-space: nowrap;
+}
+
+.sfarc-mapping-tr:last-child td {
+  border-bottom: none;
+}
+
+.sfarc-mapping-tr:hover td {
+  background: var(--sfarc-i-row-hover);
+}
+
+.sfarc-mapping-tr.is-error td {
+  background: rgba(220, 38, 38, 0.05);
+}
+
+.sfarc-mapping-tr.is-skipped td {
+  opacity: 0.55;
+}
+
+/* Make mapping dropdown triggers transparent for better visibility */
+.sfarc-mapping-td-input .sfarc-custom-dropdown-container {
+  width: 100%;
+}
+
+.sfarc-mapping-td-input .sfarc-custom-dropdown-trigger {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  height: 22px !important;
+  min-height: 22px !important;
+  padding: 0 6px !important;
+  font-size: 11px !important;
+}
+
+.sfarc-mapping-td-input .sfarc-custom-dropdown-trigger:hover {
+  background: rgba(0, 0, 0, 0.04) !important;
+  border-color: var(--sfarc-i-input-border) !important;
+}
+
+.sfarc-mapping-td-input .sfarc-custom-dropdown-icon {
+  color: #94a3b8 !important;
+}
+
+.sfarc-mapping-label-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--sfarc-i-mono);
+  font-size: 10.5px;
+  color: var(--sfarc-i-text);
+}
+
+input.sfarc-mapping-input,
+select.sfarc-mapping-input {
+  width: 100%;
+  box-sizing: border-box;
+  height: 24px !important;
+  min-height: 24px !important;
+  padding: 0 6px !important;
+  border: 1px solid var(--sfarc-i-input-border) !important;
+  border-radius: 4px !important;
+  background: var(--sfarc-i-input-bg) !important;
+  font-size: 12px !important;
+}
+  color: var(--sfarc-i-text) !important;
+  font-family: var(--sfarc-i-mono);
+  font-size: 11px;
+  outline: none;
+  box-shadow: none !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input.sfarc-mapping-input:focus,
+select.sfarc-mapping-input:focus {
+  border-color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.14) !important;
+}
+
+body.sfarc-dark-theme input.sfarc-mapping-input:focus {
+  box-shadow: 0 0 0 3px rgba(47, 129, 247, 0.18) !important;
+}
+
+input.sfarc-mapping-input.is-error,
+select.sfarc-mapping-input.is-error {
+  border-color: var(--sfarc-i-danger) !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12) !important;
+}
+
+input.sfarc-mapping-input.is-skipped,
+select.sfarc-mapping-input.is-skipped {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.sfarc-mapping-td-action {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.sfarc-mapping-ok-badge,
+.sfarc-mapping-skipped-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.sfarc-mapping-ok-badge {
+  color: var(--sfarc-i-success);
+  background: rgba(5, 150, 105, 0.1);
+}
+
+.sfarc-mapping-skipped-badge {
+  color: var(--sfarc-i-muted);
+  background: var(--sfarc-i-chip-bg);
+}
+
+.sfarc-mapping-error-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sfarc-mapping-error-badge {
+  display: inline-block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--sfarc-i-danger);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.sfarc-mapping-skip-btn {
+  border: none;
+  background: transparent;
+  color: var(--sfarc-i-accent);
+  font-size: 10.5px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 1px 5px;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.sfarc-mapping-skip-btn:hover {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+}
+
+/* ---------- Action bar ---------- */
+.sfarc-import-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 10px;
+  box-shadow: var(--sfarc-i-card-shadow);
+  overflow-x: auto;
+  container-type: inline-size;
+  container-name: sfarc-import-actions;
+}
+
+.sfarc-action-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+}
+
+.sfarc-status-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+  justify-content: center;
+}
+
+.sfarc-status-pills .status-stat-pill {
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Buttons — light surfaces, subtle borders, small radii (matches the debug-log page look) */
+.sfarc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-family: var(--sfarc-i-font);
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid var(--sfarc-i-btn-border);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  white-space: nowrap;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.sfarc-btn:active {
+  transform: translateY(1px);
+}
+
+.sfarc-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.sfarc-btn-primary {
+  color: #ffffff;
+  background: var(--sfarc-i-accent);
+  border-color: var(--sfarc-i-accent);
+  box-shadow: 0 1px 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.25);
+}
+
+.sfarc-btn-primary:hover:not(:disabled) {
+  background: var(--sfarc-i-accent-strong);
+  border-color: var(--sfarc-i-accent-strong);
+  box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+}
+
+.sfarc-btn-secondary {
+  background: var(--sfarc-i-btn-bg);
+  color: var(--sfarc-i-btn-text);
+  border-color: var(--sfarc-i-btn-border);
+}
+
+.sfarc-btn-secondary:hover:not(:disabled) {
+  background: var(--sfarc-i-btn-hover-bg);
+  border-color: var(--sfarc-i-btn-hover-border);
+}
+
+.sfarc-btn-icon {
+  width: 30px;
+  min-width: 30px;
+  padding: 0;
+  background: var(--sfarc-i-btn-bg);
+  color: var(--sfarc-i-muted);
+  border-color: var(--sfarc-i-btn-border);
+}
+
+/* Icon buttons that carry a text label: auto-size so the label fits.
+   Collapsed to icon-only when the action bar is narrow (container query). */
+.sfarc-btn-icon-label {
+  width: auto;
+  min-width: 30px;
+  padding: 0 10px;
+  color: var(--sfarc-i-btn-text);
+  background: var(--sfarc-i-btn-bg);
+  border-color: var(--sfarc-i-btn-border);
+}
+
+.sfarc-btn-icon-label:hover:not(:disabled) {
+  background: var(--sfarc-i-btn-hover-bg);
+  border-color: var(--sfarc-i-btn-hover-border);
+}
+
+.sfarc-btn-icon-label .sfarc-btn-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@container sfarc-import-actions (max-width: 620px) {
+  .sfarc-btn-icon-label {
+    width: 24px;
+    min-width: 24px;
+    padding: 0;
+  }
+  .sfarc-btn-icon-label .sfarc-btn-label {
+    display: none;
+  }
+  /* The primary "Run …" button collapses to a square icon too */
+  .sfarc-import-actions .sfarc-action-group .sfarc-btn-primary {
+    width: 24px;
+    min-width: 24px;
+    padding: 0;
+  }
+  .sfarc-import-actions .sfarc-action-group .sfarc-btn-primary .sfarc-btn-label {
+    display: none;
+  }
+}
+
+/* Action-row buttons (Run / Copy / etc.) follow the universal 24px
+   control height (controls.css forces 24px globally with equal
+   specificity, so this selector goes one class deeper to win). */
+.sfarc-import-actions .sfarc-action-group .sfarc-btn {
+  height: 24px !important;
+  min-height: 24px !important;
+}
+
+/* Icon-only buttons in the action bar stay square (24px) to match the 24px
+   row height instead of the 30px base width. Label-carrying buttons
+   (sfarc-btn-icon-label) keep width:auto so their text never overflows and
+   overlaps the next button. */
+.sfarc-import-actions .sfarc-btn-icon:not(.sfarc-btn-icon-label) {
+  width: 24px;
+  min-width: 24px;
+}
+
+/* Primary action keeps the same compact label size as the icon+label buttons */
+.sfarc-btn-primary .sfarc-btn-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Copy dropdown (Copy as Excel / CSV / Options) */
+.sfarc-copy-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.sfarc-copy-btn {
+  gap: 4px !important;
+}
+
+.sfarc-copy-chevron {
+  transition: transform 0.15s ease;
+}
+
+.sfarc-copy-dropdown.open .sfarc-copy-chevron {
+  transform: rotate(180deg);
+}
+
+.sfarc-copy-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 1000;
+  min-width: 168px;
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  animation: sfarc-menu-in 0.12s ease;
+}
+
+@keyframes sfarc-menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sfarc-copy-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  color: var(--sfarc-i-text);
+  font-family: var(--sfarc-i-font);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: left;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s ease;
+}
+
+.sfarc-copy-menu-item:hover {
+  background: var(--sfarc-i-btn-hover-bg);
+}
+
+.sfarc-copy-menu-sep {
+  height: 1px;
+  background: var(--sfarc-i-card-border);
+  margin: 4px 6px;
+}
+
+.sfarc-btn-icon:hover:not(:disabled) {
+  color: var(--sfarc-i-accent);
+  border-color: var(--sfarc-i-accent);
+}
+
+.sfarc-btn-icon-svg {
+  display: block;
+  flex-shrink: 0 !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  min-height: 16px !important;
+}
+
+/* Status pills (StatusBox keeps this class scheme) — squarer, lighter tinted chips */
+.status-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  box-sizing: border-box;
+  padding: 0 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid var(--sfarc-i-card-border);
+  background: var(--sfarc-i-chip-bg);
+  color: var(--sfarc-i-muted);
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.status-stat-pill:hover {
+  transform: translateY(-1px);
+}
+
+.status-stat-pill .stat-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Status colour is enabled only while the import is in that phase (count > 0) */
+.status-stat-pill.stat-queued.stat-live {
+  background: rgba(2, 132, 199, 0.12);
+  color: var(--sfarc-i-info);
+  border-color: rgba(2, 132, 199, 0.28);
+}
+
+.status-stat-pill.stat-queued.stat-live.stat-checked {
+  background: rgba(2, 132, 199, 0.2);
+  color: var(--sfarc-i-info);
+  border-color: rgba(2, 132, 199, 0.45);
+}
+
+.status-stat-pill.stat-processing.stat-live {
+  background: rgba(217, 119, 6, 0.12);
+  color: var(--sfarc-i-warning);
+  border-color: rgba(217, 119, 6, 0.28);
+}
+
+.status-stat-pill.stat-processing.stat-live.stat-checked {
+  background: rgba(217, 119, 6, 0.2);
+  color: var(--sfarc-i-warning);
+  border-color: rgba(217, 119, 6, 0.45);
+}
+
+.status-stat-pill.stat-succeeded.stat-live {
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--sfarc-i-success);
+  border-color: rgba(5, 150, 105, 0.28);
+}
+
+.status-stat-pill.stat-succeeded.stat-live.stat-checked {
+  background: rgba(5, 150, 105, 0.2);
+  color: var(--sfarc-i-success);
+  border-color: rgba(5, 150, 105, 0.45);
+}
+
+.status-stat-pill.stat-failed.stat-live {
+  background: rgba(220, 38, 38, 0.12);
+  color: var(--sfarc-i-danger);
+  border-color: rgba(220, 38, 38, 0.28);
+}
+
+.status-stat-pill.stat-failed.stat-live.stat-checked {
+  background: rgba(220, 38, 38, 0.2);
+  color: var(--sfarc-i-danger);
+  border-color: rgba(220, 38, 38, 0.45);
+}
+
+/* ---------- Help panel ---------- */
+.sfarc-help-panel {
+  flex: 0 0 auto;
+  max-height: 40%;
+  overflow-y: auto;
+  padding: 14px 18px;
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-left: 3px solid var(--sfarc-i-accent);
+  border-radius: 14px;
+  box-shadow: var(--sfarc-i-card-shadow);
+}
+
+.sfarc-help-title {
+  margin: 0 0 6px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-help-text {
+  margin: 0 0 10px;
+  font-size: 12.5px;
+  color: var(--sfarc-i-muted);
+}
+
+.sfarc-help-list,
+.sfarc-help-sublist {
+  margin: 0 0 8px;
+  padding-left: 20px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--sfarc-i-muted);
+}
+
+.sfarc-help-list li,
+.sfarc-help-sublist li {
+  margin: 2px 0;
+}
+
+.sfarc-help-list a {
+  color: var(--sfarc-i-accent);
+  text-decoration: none;
+}
+
+.sfarc-help-list a:hover {
+  text-decoration: underline;
+}
+
+.sfarc-help-note {
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  color: var(--sfarc-i-warning);
+  background: rgba(217, 119, 6, 0.1);
+}
+
+/* ---------- Results table ---------- */
+.sfarc-import-results {
+  background: var(--sfarc-i-card-bg);
+  border: 1px solid var(--sfarc-i-card-border);
+  border-radius: 16px;
+  box-shadow: var(--sfarc-i-card-shadow);
+  overflow: hidden;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.sfarc-results-scroller {
+  border-radius: 16px;
+  background: var(--sfarc-i-card-bg);
+  overflow: auto !important;
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+
+/* Blend the shared virtual-scroll cells into the new design */
+.scrolltable-cell {
+  background-color: var(--sfarc-i-card-bg) !important;
+  color: var(--sfarc-i-text) !important;
+  border-bottom-color: var(--sfarc-i-card-border) !important;
+  font-family: var(--sfarc-i-font) !important;
+}
+
+.scrolltable-cell.header {
+  background-color: var(--sfarc-i-table-head) !important;
+  color: var(--sfarc-i-muted) !important;
+  border-bottom-color: var(--sfarc-i-card-border) !important;
+}
+
+.scrolltable-cell.skipped {
+  background-color: var(--sfarc-i-chip-bg) !important;
+}
+
+/* Compact result rows, matching the Data Export results table.
+   Higher specificity than the global table:not(.sfarc-mapping-table) td rule
+   in sfir.css (12px/16px padding + 14px font), so import rows stay thin.
+   Colors use the import design tokens so both themes stay correct. */
+table.sfir-inspector-table th,
+table.sfir-inspector-table td {
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  line-height: 1.3 !important;
+  /* height intentionally NOT !important: the row-resizer sets an inline
+     height while dragging and on re-render, so a hard !important here would
+     override it and snap every row back to 22px (resize appears broken). */
+  height: 22px;
+  color: var(--sfarc-i-text) !important;
+  background-color: var(--sfarc-i-card-bg) !important;
+  border-bottom-color: var(--sfarc-i-card-border) !important;
+}
+
+table.sfir-inspector-table .sfir-table-header-row th {
+  background-color: var(--sfarc-i-table-head) !important;
+  color: var(--sfarc-i-muted) !important;
+  font-weight: 500 !important;
+  padding: 4px 8px !important;
+  height: 24px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  border-bottom: 2px solid var(--sfarc-i-card-border) !important;
+}
+
+/* Zebra striping — matches the Data Export results table. Even rows get a
+   subtle tint in both themes (token-driven); hover still wins over the stripe. */
+table.sfir-inspector-table .sfir-table-row:nth-child(even) td,
+table.sfir-inspector-table .sfir-table-row:nth-child(even) td.sfir-row-number {
+  background-color: var(--sfarc-i-row-stripe) !important;
+}
+
+table.sfir-inspector-table .sfir-table-row:hover td,
+table.sfir-inspector-table .sfir-table-row:hover td.sfir-row-number {
+  background-color: var(--sfarc-i-row-hover) !important;
+}
+
+.sfir-table-header-row {
+  background: transparent !important;
+}
+
+/* ---------- Scrollbars ---------- */
+.sfarc-card-body::-webkit-scrollbar,
+.sfarc-help-panel::-webkit-scrollbar,
+.sfarc-results-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Style the scrollbar TRACK too — the default track is light, which shows
+   as a white line across the bottom/right of the results table in dark mode. */
+.sfarc-card-body::-webkit-scrollbar-track,
+.sfarc-help-panel::-webkit-scrollbar-track,
+.sfarc-results-scroller::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sfarc-card-body::-webkit-scrollbar-thumb,
+.sfarc-help-panel::-webkit-scrollbar-thumb,
+.sfarc-results-scroller::-webkit-scrollbar-thumb {
+  background: rgba(120, 135, 156, 0.35);
+  border-radius: 8px;
+}
+
+.sfarc-card-body::-webkit-scrollbar-corner,
+.sfarc-help-panel::-webkit-scrollbar-corner,
+.sfarc-results-scroller::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ---------- Compact confirmation dialog ---------- */
+.sfarc-import-results .slds-modal .slds-modal__container {
+  width: 380px !important;
+  max-width: 92vw !important;
+  min-width: 0 !important;
+}
+
+.sfarc-import-results .slds-modal__content.slds-modal__content_headless {
+  padding: 14px 16px 6px !important;
+}
+
+.sfarc-import-results .slds-modal__content br {
+  display: none;
+}
+
+.sfarc-import-results .slds-modal__content .slds-notify.slds-notify_toast {
+  margin: 0 0 10px !important;
+  padding: 7px 12px !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  border-radius: 8px !important;
+  font-size: 12px;
+  gap: 8px;
+}
+
+.sfarc-import-results .slds-modal__content .slds-notify__content .slds-text-heading_small {
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+.sfarc-import-results .slds-modal__content .slds-notify .slds-icon_container {
+  margin-right: 8px !important;
+}
+
+.sfarc-import-results .slds-modal__content .slds-text-heading_medium {
+  font-size: 15px;
+  line-height: 1.3;
+  margin: 2px 0 0;
+}
+
+.sfarc-import-results .slds-modal__footer {
+  padding: 8px 16px 10px !important;
+}
+
+.sfarc-import-results .slds-modal__footer .slds-button {
+  height: 28px;
+  min-height: 28px;
+  line-height: 1;
+  padding: 0 14px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 1100px) {
+  .sfarc-import-workspace {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    max-height: 54%;
+  }
+
+  /* Keep the action bar on ONE row: hide status labels (numbers only) when narrow */
+  .sfarc-status-pills .status-stat-pill > span:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .sfarc-status-pills {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Data Import — beauty pass: card headers, dark-mode fixes, paste dropzone
+   ========================================================================== */
+
+/* ---------- Card headers: icon chip + kicker + count chip ---------- */
+.sfarc-card-heading {
+  align-items: center;
+  gap: 8px;
+}
+
+.sfarc-card-kicker-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  color: var(--sfarc-i-accent);
+  background: transparent;
+  border: none;
+}
+
+.sfarc-card-header {
+  background: linear-gradient(180deg, rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.05), rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0));
+}
+
+body.sfarc-dark-theme .sfarc-card-header {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0));
+}
+
+.sfarc-card-chip {
+  flex-shrink: 0;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 9px;
+  font-size: 10.5px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--sfarc-i-accent);
+  background: transparent;
+  border: none;
+}
+
+/* ---------- Paste dropzone: clipboard icon + centered hint ---------- */
+.sfarc-data-drop {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4px;
+  height: 80px !important;
+  padding: 10px 14px !important;
+  font-family: var(--sfarc-i-font);
+  font-size: 12px !important;
+  color: var(--sfarc-i-text);
+  cursor: pointer;
+  border-style: dashed !important;
+  border-width: 1.5px !important;
+  border-radius: 12px !important;
+  background: var(--sfarc-i-input-bg);
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.sfarc-data-drop:hover {
+  border-color: var(--sfarc-i-input-hover-border);
+  background: var(--sfarc-i-card-bg);
+}
+
+.sfarc-data-drop:focus {
+  border-color: var(--sfarc-i-accent);
+  box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.09);
+}
+
+/* Dark icon replaced via React inline */
+
+/* ---------- Make the token system win over sfir.css global dark overrides ---------- */
+/* sfir.css forces #2b2b2b backgrounds on every dark-mode button; the primary
+   action must stay accent-blue. These rules are later in load order and equal
+   specificity + !important, so they win. */
+body.sfarc-dark-theme .sfarc-btn {
+  background: var(--sfarc-i-btn-bg) !important;
+  border: 1px solid var(--sfarc-i-btn-border) !important;
+  color: var(--sfarc-i-btn-text) !important;
+  box-shadow: none !important;
+}
+
+body.sfarc-dark-theme .sfarc-btn:hover:not(:disabled) {
+  background: var(--sfarc-i-btn-hover-bg) !important;
+  border-color: var(--sfarc-i-btn-hover-border) !important;
+  color: var(--sfarc-i-btn-text) !important;
+}
+
+body.sfarc-dark-theme .sfarc-btn-primary {
+  background: var(--sfarc-i-accent) !important;
+  border-color: var(--sfarc-i-accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 1px 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.25) !important;
+}
+
+body.sfarc-dark-theme .sfarc-btn-primary:hover:not(:disabled) {
+  background: var(--sfarc-i-accent-strong) !important;
+  border-color: var(--sfarc-i-accent-strong) !important;
+}
+
+body.sfarc-dark-theme .sfarc-btn-icon {
+  color: var(--sfarc-i-muted) !important;
+}
+
+body.sfarc-dark-theme .sfarc-btn-icon:hover:not(:disabled) {
+  color: var(--sfarc-i-accent) !important;
+  border-color: var(--sfarc-i-accent) !important;
+  background: var(--sfarc-i-btn-hover-bg) !important;
+}
+
+/* Same for form controls — sfir's #1e1e1e/#444 wins without this. Uses
+   background-color (not the background shorthand) so the select chevron and
+   the paste-zone clipboard icon keep their background images. */
+body.sfarc-dark-theme input.sfarc-input,
+body.sfarc-dark-theme select.sfarc-input,
+body.sfarc-dark-theme input.sfarc-mapping-input,
+body.sfarc-dark-theme select.sfarc-mapping-input {
+  background-color: var(--sfarc-i-input-bg) !important;
+  border-color: var(--sfarc-i-input-border) !important;
+  color: var(--sfarc-i-text) !important;
+}
+
+/* The paste dropzone keeps its own muted hint color (not forced bright) */
+body.sfarc-dark-theme textarea.sfarc-data-drop {
+  background-color: var(--sfarc-i-input-bg) !important;
+  border-color: var(--sfarc-i-input-border) !important;
+}
+
+/* ==========================================================================
+   Excel-like editing toolbar (draggable floating panel)
+   ========================================================================== */
+.sfarc-excel-toolbar {
+  position: fixed;
+  top: 96px;
+  right: 24px;
+  z-index: 99999;
+  width: 304px;
+  max-width: calc(100vw - 32px);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: 14px;
+  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.16), 0 2px 8px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  backdrop-filter: blur(18px) saturate(1.6);
+  font-family: var(--sfarc-i-font);
+  overflow: hidden;
+  user-select: none;
+}
+
+body.sfarc-dark-theme .sfarc-excel-toolbar {
+  background: rgba(20, 22, 27, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+
+body.sfarc-excel-dragging {
+  cursor: grabbing !important;
+}
+
+.sfarc-excel-toolbar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.42);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
+  cursor: grab;
+}
+
+body.sfarc-dark-theme .sfarc-excel-toolbar-header {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.sfarc-excel-toolbar-header:active {
+  cursor: grabbing;
+}
+
+.sfarc-excel-grip {
+  display: inline-flex;
+  color: var(--sfarc-i-faint);
+  flex-shrink: 0;
+}
+
+.sfarc-excel-toolbar-title {
+  flex: 1;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-excel-count {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--sfarc-i-accent);
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+  border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.28);
+  border-radius: 9999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.sfarc-excel-close {
+  border: none;
+  background: transparent;
+  color: var(--sfarc-i-faint);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 7px;
+  border-radius: 6px;
+}
+
+.sfarc-excel-close:hover {
+  background: var(--sfarc-i-chip-bg);
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-excel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px 12px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+}
+
+.sfarc-excel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 9px;
+}
+
+body.sfarc-dark-theme .sfarc-excel-section {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sfarc-excel-section-title {
+  font-size: 9.5px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--sfarc-i-faint);
+}
+
+.sfarc-excel-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sfarc-excel-input,
+.sfarc-excel-select {
+  height: 28px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-family: var(--sfarc-i-font);
+  color: var(--sfarc-i-text);
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 6px;
+  outline: none;
+  box-sizing: border-box;
+}
+
+body.sfarc-dark-theme .sfarc-excel-input,
+body.sfarc-dark-theme .sfarc-excel-select {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--sfarc-i-text);
+}
+
+.sfarc-excel-input:focus,
+.sfarc-excel-select:focus {
+  border-color: var(--sfarc-i-accent);
+  box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.15);
+}
+
+.sfarc-excel-input {
+  flex: 0 0 62px;
+  width: 62px;
+}
+
+.sfarc-excel-input.wide {
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+.sfarc-excel-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.sfarc-excel-select.sfarc-excel-scope {
+  flex: 0 0 108px;
+  width: 108px;
+}
+
+.sfarc-excel-range-hint {
+  font-size: 10.5px;
+  color: var(--sfarc-i-faint);
+  flex-shrink: 0;
+}
+
+.sfarc-excel-btn {
+  height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 7px;
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--sfarc-i-btn-text);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+body.sfarc-dark-theme .sfarc-excel-btn {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sfarc-excel-btn:hover:not(:disabled) {
+  background: var(--sfarc-i-btn-hover-bg);
+  border-color: var(--sfarc-i-btn-hover-border);
+}
+
+.sfarc-excel-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.sfarc-excel-btn.primary {
+  background: var(--sfarc-i-accent);
+  border-color: var(--sfarc-i-accent);
+  color: #ffffff;
+}
+
+.sfarc-excel-btn.primary:hover:not(:disabled) {
+  background: var(--sfarc-i-accent-strong);
+  border-color: var(--sfarc-i-accent-strong);
+}
+
+.sfarc-excel-btn.danger {
+  color: var(--sfarc-i-danger);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.sfarc-excel-btn.danger:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: var(--sfarc-i-danger);
+}
+
+.sfarc-excel-msg {
+  min-height: 14px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--sfarc-i-success);
+}
+
+.sfarc-excel-tip {
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: var(--sfarc-i-faint);
+}
+
+/* Active state on the toolbar launcher button */
+.sfarc-excel-active {
+  border-color: var(--sfarc-i-accent) !important;
+  color: var(--sfarc-i-accent) !important;
+  box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12) !important;
+}
+
+/* Excel-style table interactions */
+.sfir-table-row .scrolltable-cell:not(.header) {
+  cursor: cell;
+}
+
+.sfir-table-row .sfir-row-number {
+  cursor: pointer !important;
+}
+
+.sfir-table-row .sfir-row-number:hover {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.08) !important;
+}
+
+/* ---------- Smart auto-paste states ---------- */
+/* background-repeat is forced no-repeat on every state so the checkmark icon
+   can never tile across the dropzone (a repeating pattern looked broken). */
+.sfarc-data-drop.has-data {
+  font-size: 11px !important;
+  color: var(--sfarc-i-text, #334155) !important;
+  overflow: hidden;
+  height: 80px !important;
+  max-height: 80px !important;
+  overflow-y: auto !important;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-all;
+  line-height: 1.5;
+}
+
+body.sfarc-dark-theme .sfarc-data-drop.has-data {
+  color: #cbd5e1 !important;
+}
+
+.sfarc-data-drop.was-autopasted {
+  animation: sfarcAutopasteGlow 1s ease !important;
+}
+
+@keyframes sfarcAutopasteGlow {
+  0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5); }
+  100% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+}
+.sfarc-null-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sfarc-i-text-muted, #94a3b8);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sfarc-null-toggle input {
+  accent-color: var(--sfarc-accent, #10b981);
+}
+
+.sfarc-preflight-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin-bottom: 10px;
+  padding: 9px 12px;
+  border: 1px solid var(--sfarc-i-border, rgba(148, 163, 184, .22));
+  border-radius: 8px;
+  color: var(--sfarc-i-text-muted, #94a3b8);
+  font-size: 12px;
+}
+
+.sfarc-file-spinner {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+  border: 2px solid color-mix(in srgb, var(--sfarc-i-accent) 28%, transparent);
+  border-top-color: var(--sfarc-i-accent);
+  border-radius: 50%;
+  animation: sfarc-file-spin .7s linear infinite;
+}
+
+.sfarc-parse-cancel {
+  margin-top: 6px;
+  padding: 3px 8px;
+  color: var(--sfarc-i-muted);
+  background: transparent;
+  border: 1px solid var(--sfarc-i-border);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+@keyframes sfarc-file-spin { to { transform: rotate(360deg); } }
+
+.sfarc-preflight-summary strong {
+  color: var(--sfarc-i-text, #e2e8f0);
+}
+
+.sfarc-preflight-summary .is-warning {
+  color: #f59e0b;
+}

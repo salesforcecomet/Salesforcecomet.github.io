@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { background: #101113; font-family: sans-serif; padding: 24px; }
+/* slider pill */
+.slds-builder-header__nav-list .sfir-nav-slider {
+    position: absolute !important;
+    top: 3px !important;
+    bottom: 3px !important;
+    left: 3px !important;
+    width: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: var(--sfarc-accent, #2196f3) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+/* item action */
+/* NOT FOUND */
+/* active item */
+.slds-builder-header__item-action.sfir-nav-active {
+    background-color: transparent !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    border: none !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+}
+/* active hover */
+/* NOT FOUND */
+/* dark active */
+body.sfarc-dark-theme .slds-builder-header__item-action.sfir-nav-active:focus {
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    background-color: transparent !important;
+}
+.slds-builder-header__nav-list { position: relative; display: inline-flex; list-style: none; margin: 0; padding: 0; gap: 4px; }
+.slds-builder-header__nav-item { position: relative; display: inline-flex; }
+.slds-builder-header__nav-item a { display: inline-flex; align-items: center; height: 24px; padding: 0 14px; border-radius: 8px; text-decoration: none; }
+</style>
+</head>
+<body class="sfarc-dark-theme">
+  <div style="margin-bottom: 28px;">
+    <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Lime accent (light) — text should be a dark shade, no glow:</div>
+    <ul class="slds-builder-header__nav-list" id="nav-lime" style="--sfarc-accent: #D2FF59; --sfarc-accent-contrast: #69802d;">
+      <li class="sfir-nav-slider" style="position:absolute; top:3px; bottom:3px; left:3px; width:80px; background-color:#D2FF59; border-radius:8px; pointer-events:none;"></li>
+      <li class="slds-builder-header__nav-item"><a class="slds-builder-header__item-action sfir-nav-active" href="#">Export</a></li>
+    </ul>
+  </div>
+  <div>
+    <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Blue accent (dark) — text stays white:</div>
+    <ul class="slds-builder-header__nav-list" id="nav-blue" style="--sfarc-accent: #2196f3; --sfarc-accent-contrast: #ffffff;">
+      <li class="sfir-nav-slider" style="position:absolute; top:3px; bottom:3px; left:3px; width:80px; background-color:#2196f3; border-radius:8px; pointer-events:none;"></li>
+      <li class="slds-builder-header__nav-item"><a class="slds-builder-header__item-action sfir-nav-active" href="#">Export</a></li>
+    </ul>
+  </div>
+  <script>
+    window.__measure = () => {
+      const pill = document.getElementById('nav-lime').querySelector('.sfir-nav-slider');
+      const limeText = getComputedStyle(document.querySelector('#nav-lime .sfir-nav-active'));
+      const blueText = getComputedStyle(document.querySelector('#nav-blue .sfir-nav-active'));
+      return {
+        limeContrast: '#69802d',
+        blueContrast: '#ffffff',
+        pillShadow: getComputedStyle(pill).boxShadow,
+        limeTextColor: limeText.color,
+        blueTextColor: blueText.color,
+      };
+    };
+  </script>
+</body>
+</html>

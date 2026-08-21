@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Suggestions Window — Max Height Preview</title>
+<style>
+  body { margin: 0; background: #0f1115; font-family: 'Inter', system-ui, sans-serif; padding: 30px; }
+  .frame { width: 780px; background: #18181b; border: 1px solid #27272a; border-radius: 10px; padding: 14px; }
+
+  /* ===== The exact sfir.css rules (what was overriding the cap) ===== */
+  .sfir-suggestions-panel {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: #f8fafc !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 6px 8px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    max-height: none !important;
+    height: auto !important;
+  }
+  .sfir-suggestions-panel .autocomplete-results {
+    display: contents !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .sfir-suggestions-title {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    color: #64748b !important;
+    text-transform: uppercase !important;
+    width: 100% !important;
+  }
+  .sfir-suggestions-panel .slds-pill {
+    margin-bottom: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    background: #1e293b !important;
+    color: #e2e8f0 !important;
+    border-radius: 999px !important;
+    padding: 3px 12px 3px 6px !important;
+    font-size: 12px !important;
+    height: 26px !important;
+  }
+  .slds-pill__icon_container {
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(74, 222, 128, 0.25); color: #4ade80;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0;
+  }
+
+  /* ===== The new data-export.css override ===== */
+  .sfir-suggestions-panel.expanded {
+    max-height: 220px !important;
+    overflow-y: auto !important;
+  }
+
+  body.sfarc-dark-theme .sfir-suggestions-title { color: #94a3b8; }
+  body.sfarc-dark-theme .sfir-suggestions-panel { background: #18181b; }
+  body.sfarc-dark-theme .sfir-suggestions-panel .slds-pill { background: #27272a; color: #f4f4f5; }
+
+  .meta { margin-top: 14px; font-family: monospace; font-size: 12px; color: #a1a1aa; white-space: pre; }
+</style>
+</head>
+<body class="sfarc-dark-theme">
+  <div class="frame">
+    <div class="sfir-suggestions-panel expanded">
+      <div class="sfir-suggestions-title">OBJECTS SUGGESTIONS:</div>
+      <div class="autocomplete-results" id="results"></div>
+    </div>
+  </div>
+  <div class="meta" id="meta">seeding…</div>
+  <script>
+    const results = document.getElementById('results');
+    const names = ['AccessControlPolicy','AccountIntelligenceSettings','AccountSettings','ActionLauncherItemDef','ActionsSettings','ActivitiesSettings','QuickActionDefinition','QuickActionList','QuickActionListItem','ApexExecutionOverlayAction','RecordActionDeployment','StandardAction','UserEntityAccess','UserFieldAccess','VisualforceAccessMetrics','AutomatedContactsSettings','BusProcessFeedbackConfig','CommunityWorkspacesNode','CompactLayout','CompactLayoutInfo','CompactLayoutItemInfo','ContractSettings','EACSettings','EmployeeFieldAccessSettings','IDEWorkspace','IndustriesManufacturingSettings','InstalledSubscriberPackage','InstalledSubscriberPackageVersion','InvocableActionSettings','MacroSettings','MetadataComponentDependency','MetadataContainer','MetadataContainerMember','MetadataPackage','MetadataPackageVersion','NetworkAccess','Package2','Package2Member','Package2Version','Package2VersionCreateRequest','Package2VersionCreateRequestError','PackageInstallRequest','PackageUploadRequest','PackageVersionInstallRequestError','PackageVersionUninstallRequestError','PlatformCachePartition','PlatformCachePartitionType','PrivacySettings','SourceTrackingSettings','SubscriberPackage','SubscriberPackageVersion','SubscriberPackageVersionInstallRequest','SubscriberPackageVersionUninstallRequest','TraceFlag','TransactionSecurityPolicy','UiFormulaCriterion','UserInterfaceSettings'];
+    names.forEach(n => {
+      const pill = document.createElement('span');
+      pill.className = 'slds-pill slds-pill_link';
+      pill.innerHTML = '<span class="slds-pill__icon_container">$x</span><span class="slds-pill__label">' + n + '</span>';
+      results.appendChild(pill);
+    });
+    const panel = document.querySelector('.sfir-suggestions-panel');
+    const meta = document.getElementById('meta');
+    requestAnimationFrame(() => {
+      const cs = getComputedStyle(panel);
+      meta.textContent =
+        'max-height: ' + cs.maxHeight + '\n' +
+        'overflow-y: ' + cs.overflowY + '\n' +
+        'scrollHeight: ' + panel.scrollHeight + 'px  (content is taller → scrolls)\n' +
+        'clientHeight: ' + panel.clientHeight + 'px  (capped)\n' +
+        'scrollable: ' + (panel.scrollHeight > panel.clientHeight ? 'YES ✓' : 'no');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><title>API Name Badge Test</title>
+<style>
+.slds-form-element__label { display: inline-block; font-size: 13px; font-weight: 600; margin: 0 0 4px; }
+.sfarc-api-badge { margin-left: 8px; background: #1589ee; color: #fff; padding: 2px 6px; font-size: 11px; font-family: monospace; border-radius: 3px; white-space: nowrap; }
+.field-row { border: 1px solid #e0e0e0; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; max-width: 420px; }
+</style>
+</head>
+<body>
+<h3>Wrappers with data-target-selection-name (primary path)</h3>
+<div id="wrapper-list">
+  <records-record-layout-item data-target-selection-name="Opportunity.Opportunity.Opportunity.OpportunityName">
+    <div class="field-row"><span class="slds-form-element__label">Opportunity Name *</span><input type="text" value="x"></div>
+  </records-record-layout-item>
+  <records-record-layout-item data-target-selection-name="Opportunity.Opportunity.Opportunity.OwnerId">
+    <div class="field-row"><span class="slds-form-element__label">Opportunity Owner</span><input type="text" value="Vishu Grade"></div>
+  </records-record-layout-item>
+  <records-record-layout-item data-target-selection-name="Opportunity.Opportunity.Opportunity.AccountId">
+    <div class="field-row"><span class="slds-form-element__label">Account Name</span><input type="text" value="ACME"></div>
+  </records-record-layout-item>
+  <records-record-layout-item data-target-selection-name="Opportunity.Opportunity.Opportunity.Type">
+    <div class="field-row"><span class="slds-form-element__label">Type</span><input type="text" value="Existing"></div>
+  </records-record-layout-item>
+  <records-record-layout-item data-target-selection-name="Opportunity.Opportunity.Opportunity.ExpectedRevenue">
+    <div class="field-row"><span class="slds-form-element__label">Expected Revenue</span><input type="text" value="$100"></div>
+  </records-record-layout-item>
+  <records-record-layout-item data-target-selection-name="Opportunity.Opportunity.Opportunity.IsPrivate">
+    <div class="field-row"><span class="slds-form-element__label">Private</span><input type="checkbox"></div>
+  </records-record-layout-item>
+</div>
+<h3>Label-only elements (fallback path)</h3>
+<div class="field-row"><span class="slds-form-element__label">Close Date</span><input type="text" value="09/05/2021"></div>
+<div class="field-row"><span class="slds-form-element__label">Stage</span><input type="text" value="Negotiation"></div>
+<div class="field-row"><span class="slds-form-element__label">Not a real field</span><input type="text" value="x"></div>
+<script>
+// Reimplement the badge injection using the exact logic from main.js showApiNames
+window.escapeHtml = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const labelMap = { 'Close Date': ['CloseDate'], 'Stage': ['StageName'] };
+const createApiBadge = (apiNameStr) => {
+  const badge = document.createElement('span');
+  badge.className = 'sfarc-api-badge sfarc-api-name-badge';
+  badge.innerHTML = '<i class="fa-regular fa-eye" style="margin-right: 4px;"></i>' + window.escapeHtml(apiNameStr);
+  badge.style.cssText = 'margin-left:8px;background:#1589ee;color:white;padding:2px 6px;font-size:11px;font-family:monospace;border-radius:3px;cursor:pointer;white-space:nowrap;';
+  badge.title = 'API Name: ' + apiNameStr;
+  return badge;
+};
+const appendBadgeToLabel = (labelEl, apiNameStr) => {
+  if (!labelEl || labelEl.querySelector('.sfarc-api-badge')) return;
+  labelEl.appendChild(createApiBadge(apiNameStr));
+};
+// Primary path
+const fieldWrappers = document.querySelectorAll('records-record-layout-item, force-record-layout-item, record_flexipage-record-field, .forcePageBlockItemView, records-lwc-record-layout-item');
+fieldWrappers.forEach(wrapper => {
+  const selName = wrapper.getAttribute('data-target-selection-name') || (wrapper.dataset && wrapper.dataset.targetSelectionName);
+  if (!selName) return;
+  const parts = selName.split('.');
+  const apiName = parts[parts.length - 1];
+  if (!apiName || apiName === 'null' || apiName === 'undefined') return;
+  const labelEl = wrapper.querySelector('.slds-form-element__label, .test-id__field-label, span.slds-form-element__label');
+  if (!labelEl) return;
+  appendBadgeToLabel(labelEl, apiName);
+});
+// Fallback
+document.querySelectorAll('.test-id__field-label, .slds-form-element__label, span.slds-form-element__label').forEach(el => {
+  if (el.querySelector('.sfarc-api-badge')) return;
+  const clone = el.cloneNode(true);
+  clone.querySelectorAll('*').forEach(c => c.remove());
+  const labelText = clone.textContent.trim();
+  if (labelMap[labelText]) {
+    appendBadgeToLabel(el, labelMap[labelText].join(', '));
+  }
+});
+window.__result = () => [...document.querySelectorAll('.slds-form-element__label')].map(l => ({ label: l.childNodes[0].textContent.trim(), badge: (l.querySelector('.sfarc-api-badge')||{}).textContent || null }));
+</script>
+</body>
+</html>

@@ -1,0 +1,3487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Debug Log Viewer — Tab Harness</title>
+<style>
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+/* color accent vars theme-manager would set */
+:root {
+  --sfarc-accent: #2196f3;
+  --sfarc-accent-light: #5eb4ff;
+}
+</style>
+<style>body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    background-color: #f8f9fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Dark Theme (Default) */
+body.sfarc-dark-theme {
+    background-color: #000000;
+    color: #d4d4d4;
+}
+
+/* Live Variable Debugger Theme Variables */
+:root {
+    --vt-header-bg: #ffffff;
+    --vt-header-border: #e2e8f0;
+    --vt-input-bg: #f8fafc;
+    --vt-input-border: #cbd5e1;
+    --vt-input-text: #334155;
+    
+    --vt-btn-bg: #f1f5f9;
+    --vt-btn-border: #e2e8f0;
+    --vt-btn-text: #475569;
+    
+    --vt-panel-bg: #ffffff;
+    --vt-panel-border: #e2e8f0;
+    
+    --vt-panel-header-bg: #f8fafc;
+    --vt-panel-header-border: #e2e8f0;
+    
+    --vt-step-detail-bg: #f8fafc;
+    --vt-step-detail-text: #334155;
+    
+    --vt-scope-header-bg: #f1f5f9;
+    --vt-text-muted: #64748b;
+
+    --vt-card-bg: #f8fafc;
+    --vt-card-border: #e2e8f0;
+    --vt-card-header-bg: #f1f5f9;
+    --vt-val-color: #15803d;
+    --vt-row-border: #e2e8f0;
+    --vt-changed-bg: rgba(16, 185, 129, 0.12);
+    --vt-changed-border: rgba(16, 185, 129, 0.4);
+    --vt-changed-text: #065f46;
+    --vt-accent-bg: rgba(139, 92, 246, 0.12);
+    --vt-accent-border: rgba(139, 92, 246, 0.4);
+    --vt-accent-text: #5b21b6;
+    
+    --lv-search-bg: rgba(0, 0, 0, 0.05);
+    --lv-search-border: rgba(0, 0, 0, 0.15);
+    --lv-search-text: #333333;
+}
+
+body.sfarc-dark-theme {
+    --vt-header-bg: rgba(15, 23, 42, 0.7);
+    --vt-header-border: rgba(255, 255, 255, 0.12);
+    --vt-input-bg: rgba(255, 255, 255, 0.08);
+    --vt-input-border: rgba(255, 255, 255, 0.2);
+    --vt-input-text: #ffffff;
+    
+    --vt-btn-bg: rgba(255, 255, 255, 0.1);
+    --vt-btn-border: rgba(255, 255, 255, 0.2);
+    --vt-btn-text: #ffffff;
+    
+    --vt-panel-bg: rgba(15, 23, 42, 0.5);
+    --vt-panel-border: rgba(255, 255, 255, 0.1);
+    
+    --vt-panel-header-bg: rgba(255, 255, 255, 0.05);
+    --vt-panel-header-border: rgba(255, 255, 255, 0.1);
+    
+    --vt-step-detail-bg: rgba(0, 0, 0, 0.2);
+    --vt-step-detail-text: #f1f5f9;
+    
+    --vt-scope-header-bg: rgba(255, 255, 255, 0.03);
+    --vt-text-muted: #cbd5e1;
+
+    --vt-card-bg: rgba(255, 255, 255, 0.04);
+    --vt-card-border: rgba(255, 255, 255, 0.08);
+    --vt-card-header-bg: rgba(255, 255, 255, 0.06);
+    --vt-val-color: #4ade80;
+    --vt-row-border: rgba(255, 255, 255, 0.04);
+    --vt-changed-bg: rgba(16, 185, 129, 0.2);
+    --vt-changed-border: #10b981;
+    --vt-changed-text: #a7f3d0;
+    --vt-accent-bg: rgba(167, 139, 250, 0.15);
+    --vt-accent-border: rgba(167, 139, 250, 0.3);
+    --vt-accent-text: #c084fc;
+    
+    --lv-search-bg: rgba(255, 255, 255, 0.07);
+    --lv-search-border: rgba(255, 255, 255, 0.15);
+    --lv-search-text: #ffffff;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: absolute; 
+    inset: 0; 
+    z-index: 100;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center;
+    background: #ffffff; /* light mode */
+    gap: 20px;
+}
+body.sfarc-dark-theme .loading-overlay {
+    background: #000000;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-text {
+    font-size: 13px; 
+    color: #555555; 
+    letter-spacing: 0.04em; 
+    margin-bottom: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+body.sfarc-dark-theme .loading-text {
+    color: #8b949e;
+}
+
+.loading-icon {
+    margin-right: 8px; 
+    color: var(--sfarc-accent, #2196f3);
+}
+body.sfarc-dark-theme .loading-icon {
+    color: #58a6ff;
+}
+
+/* Unified loader artwork is black → invert on the dark loading overlay */
+body.sfarc-dark-theme .loading-overlay .comet-loader-inline {
+    filter: invert(1);
+}
+
+.loading-bar-container {
+    width: 340px; 
+    height: 6px; 
+    background: rgba(0,0,0,0.07); 
+    border-radius: 4px; 
+    overflow: hidden;
+}
+body.sfarc-dark-theme .loading-bar-container {
+    background: rgba(255,255,255,0.07);
+}
+
+.loading-bar {
+    height: 100%; 
+    width: 0%; 
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--sfarc-accent-dark, #1976d2), var(--sfarc-accent, #2196f3));
+    transition: width 0.25s ease-out;
+    box-shadow: 0 0 10px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+}
+body.sfarc-dark-theme .loading-bar {
+    background: linear-gradient(90deg, #1f6feb, #58a6ff);
+    box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+}
+
+.loading-pct {
+    font-size: 11px; 
+    color: var(--sfarc-accent, #2196f3); 
+    margin-top: 8px; 
+    font-weight: 600; 
+    letter-spacing: 0.05em;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+body.sfarc-dark-theme .loading-pct {
+    color: #58a6ff;
+}
+
+.viewer-header {
+    background: #fff;
+    border-bottom: 1px solid #d8dde6;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+body.sfarc-dark-theme .viewer-header {
+    background: #000000;
+    border-bottom-color: #222222;
+}
+
+.viewer-footer {
+    background: #fff;
+    border-top: 1px solid #d8dde6;
+    padding: 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 40px;
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+body.sfarc-dark-theme .viewer-footer {
+    background: #000000;
+    border-top-color: #222222;
+}
+
+.viewer-tabs {
+    display: flex;
+    gap: 20px;
+    height: 100%;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+}
+.viewer-tabs::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.viewer-tab {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    /* Space between icon and text */
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    color: #555;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.viewer-tab i {
+    font-size: 14px;
+}
+
+body.sfarc-dark-theme .viewer-tab {
+    color: #969696;
+}
+
+.viewer-tab.sfarc-active {
+    border-bottom-color: var(--sfarc-accent, #2196f3);
+    color: var(--sfarc-accent, #2196f3);
+}
+
+body.sfarc-dark-theme .viewer-tab.sfarc-active {
+    border-bottom-color: var(--sfarc-accent-light, #5eb4ff);
+    color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+.viewer-tab.disabled {
+    color: #aaa;
+    cursor: default;
+}
+
+body.sfarc-dark-theme .viewer-tab.disabled {
+    color: #555;
+}
+
+/* Secondary sub-tab bar inside grouped primary tabs (Execution / Data Ops /
+   Security & Impact). Sits at the top of the group content, styled as small
+   pill tabs that mirror the primary tab language. */
+.viewer-subtabs {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px 0 12px;
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    background: transparent;
+}
+.viewer-subtabs::-webkit-scrollbar {
+    display: none;
+}
+
+.viewer-subtab {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 11px;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: rgba(255, 255, 255, 0.55);
+    color: #555;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.viewer-subtab i {
+    font-size: 11px;
+}
+
+.viewer-subtab:hover {
+    background: rgba(255, 255, 255, 0.85);
+    color: #1c1c1e;
+}
+
+.viewer-subtab.sfarc-active {
+    background: var(--sfarc-accent, #2196f3);
+    border-color: var(--sfarc-accent, #2196f3);
+    color: #ffffff;
+}
+
+body.sfarc-dark-theme .viewer-subtabs {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body.sfarc-dark-theme .viewer-subtab {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.14);
+    color: #b5b5bd;
+}
+
+body.sfarc-dark-theme .viewer-subtab:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+body.sfarc-dark-theme .viewer-subtab.sfarc-active {
+    background: var(--sfarc-accent, #2196f3);
+    border-color: var(--sfarc-accent, #2196f3);
+    color: #ffffff;
+}
+
+.viewer-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.viewer-btn {
+    padding: 6px 12px;
+    border: 1px solid #d8dde6;
+    background: #fff;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--sfarc-accent, #2196f3);
+}
+
+body.sfarc-dark-theme .viewer-btn {
+    background: #3c3c3c;
+    border-color: #3e3e42;
+    color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+.viewer-btn:hover {
+    background: #f4f6f9;
+}
+
+body.sfarc-dark-theme .viewer-btn:hover {
+    background: #505050;
+}
+
+.viewer-btn.delete {
+    background-color: #c23934;
+    color: white;
+    border-color: #c23934;
+}
+
+body.sfarc-dark-theme .viewer-btn.delete {
+    background-color: #c23934;
+    border-color: #c23934;
+    color: white;
+}
+
+.viewer-btn.delete:hover {
+    background-color: #a61a14;
+    border-color: #a61a14;
+}
+
+.viewer-legend {
+    background: #f4f6f9;
+    padding: 8px 16px;
+    border-bottom: 1px solid #d8dde6;
+    display: flex;
+    gap: 16px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+body.sfarc-dark-theme .viewer-legend {
+    background: #2d2d2d;
+    border-bottom-color: #3e3e42;
+    color: #d4d4d4;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-count {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    margin-left: 2px;
+    min-width: 18px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    color: #666;
+}
+
+body.sfarc-dark-theme .legend-count {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: #aaa;
+}
+
+.legend-box {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+/* Colors adjusted for dark theme visibility if needed, but standard colors usually work ok */
+.legend-box.user-debug {
+    background: var(--sfarc-accent, #2196f3);
+}
+
+.legend-box.query {
+    background: #e91e63;
+}
+
+.legend-box.validation {
+    background: #d79b00;
+}
+
+.legend-box.method {
+    background: #2e844a;
+}
+
+.legend-box.error {
+    background: #c23934;
+}
+
+.legend-box.callout {
+    background: #673ab7;
+}
+
+body.sfarc-dark-theme .legend-box.user-debug {
+    background: #569cd6;
+}
+
+/* VS Code Blue */
+body.sfarc-dark-theme .legend-box.validation {
+    background: #dcdcaa;
+}
+
+/* VS Code Yellow/Beige */
+body.sfarc-dark-theme .legend-box.method {
+    background: #6a9955;
+}
+
+/* VS Code Green */
+
+.tab-content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Execution Order toolbar (step / animate / reset) */
+.order-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    flex-shrink: 0;
+}
+
+.order-toolbar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #f1f5f9;
+}
+
+body.sfarc-dark-theme .order-toolbar {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Apex Debug container/raw toggle bar */
+.debug-view-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    flex-shrink: 0;
+}
+
+.log-container {
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+    background: #fff;
+    white-space: pre-wrap;
+    line-height: 1.4;
+    position: relative; /* needed for loading overlay anchor */
+}
+
+body.sfarc-dark-theme .log-container {
+    background: #1e1e1e;
+    color: #d4d4d4;
+}
+
+/* Execution Tree Enhancements */
+#order-container {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 16px;
+}
+
+#order-container .log-line {
+    padding: 3px 0;
+    border-left: 2px solid transparent;
+    margin-left: 0;
+    transition: all 0.15s ease;
+}
+
+#order-container .log-line:hover {
+    background-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.05);
+    border-left-color: var(--sfarc-accent, #2196f3);
+}
+
+body.sfarc-dark-theme #order-container .log-line:hover {
+    background-color: rgba(86, 156, 214, 0.08);
+    border-left-color: #569cd6;
+}
+
+/* Method Entry/Exit Colors */
+#order-container .log-event-method {
+    color: #2e844a;
+    font-weight: 500;
+}
+
+body.sfarc-dark-theme #order-container .log-event-method {
+    color: #6a9955;
+}
+
+/* Code Unit Colors */
+#order-container [class*="CODE_UNIT"] {
+    color: var(--sfarc-accent, #2196f3);
+    font-weight: 600;
+}
+
+body.sfarc-dark-theme #order-container [class*="CODE_UNIT"] {
+    color: #569cd6;
+}
+
+/* Timestamp styling */
+#order-container .log-timestamp {
+    color: #888;
+    font-size: 11px;
+    margin-right: 8px;
+    font-weight: normal;
+}
+
+body.sfarc-dark-theme #order-container .log-timestamp {
+    color: #666;
+}
+
+/* New Execution Tree Styling */
+.exec-tree-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 12px;
+    margin: 0;
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+}
+
+.exec-tree-line:hover {
+    background-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.08);
+    border-left-color: var(--sfarc-accent, #2196f3);
+}
+
+body.sfarc-dark-theme .exec-tree-line:hover {
+    background-color: rgba(86, 156, 214, 0.12);
+    border-left-color: #569cd6;
+}
+
+.exec-icon {
+    flex-shrink: 0;
+    width: 20px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.exec-timestamp {
+    flex-shrink: 0;
+    font-size: 11px;
+    color: #888;
+    font-family: 'Consolas', 'Monaco', monospace;
+    min-width: 120px;
+}
+
+body.sfarc-dark-theme .exec-timestamp {
+    color: #666;
+}
+
+.exec-depth-indicator {
+    flex-shrink: 0;
+    font-size: 10px;
+    padding: 2px 8px;
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+    color: var(--sfarc-accent, #2196f3);
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+body.sfarc-dark-theme .exec-depth-indicator {
+    background: rgba(86, 156, 214, 0.15);
+    color: #569cd6;
+}
+
+.exec-content {
+    flex: 1;
+    word-break: break-word;
+}
+
+.exec-content strong {
+    font-weight: 600;
+    margin-right: 6px;
+}
+
+/* Row Count Badge */
+.exec-row-count-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    padding: 3px 10px;
+    background: #2E86C1;
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-left: 4px;
+}
+
+body.sfarc-dark-theme .exec-row-count-badge {
+    background: #2E86C1;
+}
+
+.exec-dml-badge {
+    background: #E67E22;
+}
+
+body.sfarc-dark-theme .exec-dml-badge {
+    background: #E67E22;
+}
+
+.exec-unknown-count {
+    background: #888;
+}
+
+body.sfarc-dark-theme .exec-unknown-count {
+    background: #666;
+}
+
+/* Event Type Colors */
+.exec-code-unit-start {
+    border-left-color: var(--sfarc-accent, #2196f3);
+}
+
+.exec-code-unit-start .exec-icon {
+    color: var(--sfarc-accent, #2196f3);
+}
+
+body.sfarc-dark-theme .exec-code-unit-start .exec-icon {
+    color: #569cd6;
+}
+
+.exec-code-unit-end {
+    opacity: 0.7;
+}
+
+.exec-code-unit-end .exec-icon {
+    color: #666;
+}
+
+.exec-method-entry {
+    border-left-color: #2e844a;
+}
+
+.exec-method-entry .exec-icon {
+    color: #2e844a;
+}
+
+body.sfarc-dark-theme .exec-method-entry .exec-icon {
+    color: #6a9955;
+}
+
+.exec-method-exit {
+    opacity: 0.7;
+}
+
+.exec-method-exit .exec-icon {
+    color: #666;
+}
+.tab-actions-bar {
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.order-layout-wrapper {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    height: calc(100vh - 120px);
+}
+
+#order-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 30px;
+    background: transparent;
+}
+
+.order-sidebar {
+    width: 380px;
+    background: rgba(255, 255, 255, 0.03);
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+}
+
+.sidebar-header {
+    padding: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.sidebar-subtitle {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+}
+
+.summary-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px 10px 16px;
+    background: rgba(255, 255, 255, 0.015);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+    cursor: default;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Left vertical accent bar representing the component type */
+.summary-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* Card hover slight lift */
+.summary-card:hover {
+    background: rgba(255, 255, 255, 0.04);
+    transform: translateX(3px);
+}
+
+/* Thematic Accent indicators and glows */
+.card-class::before { background: #818cf8; }
+.card-class:hover {
+    border-color: rgba(99, 102, 241, 0.2);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);
+}
+
+.card-trigger::before { background: #22d3ee; }
+.card-trigger:hover {
+    border-color: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 4px 12px rgba(6, 182, 212, 0.08);
+}
+
+.card-flow::before { background: #c084fc; }
+.card-flow:hover {
+    border-color: rgba(168, 85, 247, 0.2);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.08);
+}
+
+.card-validation::before { background: #fb923c; }
+.card-validation:hover {
+    border-color: rgba(249, 115, 22, 0.2);
+    box-shadow: 0 4px 12px rgba(249, 115, 22, 0.08);
+}
+
+.comp-name-row {
+    margin-bottom: 4px;
+}
+
+.comp-name {
+    color: #f1f5f9;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    word-break: break-all;
+    white-space: normal;
+}
+
+.comp-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.comp-meta-item {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    letter-spacing: 0.1px;
+}
+
+/* Very compact pill tags inside the card metadata */
+.comp-mini-badge {
+    font-size: 8.5px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.type-class {
+    background: rgba(99, 102, 241, 0.08);
+    color: #a5b4fc;
+}
+.type-trigger {
+    background: rgba(6, 182, 212, 0.08);
+    color: #67e8f9;
+}
+.type-flow {
+    background: rgba(168, 85, 247, 0.08);
+    color: #d8b4fe;
+}
+.type-validation {
+    background: rgba(249, 115, 22, 0.08);
+    color: #ffedd5;
+}
+
+.loading-sidebar {
+    padding: 40px;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.step-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.primary-btn {
+    background: var(--sfarc-accent, #2196f3) !important;
+    color: white !important;
+    border: none !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+    transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+.primary-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.4);
+}
+
+.exec-tree-diagram {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tree-node-wrapper {
+    position: relative;
+    padding-left: 24px;
+}
+
+.tree-node-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tree-node-wrapper:last-child::before {
+    bottom: auto;
+    height: 24px;
+}
+
+.tree-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: default;
+}
+
+.tree-node:hover {
+    transform: scale(1.02);
+    z-index: 10;
+}
+
+.tree-node::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 20px;
+    width: 24px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.node-icon {
+    font-size: 14px;
+    width: 20px;
+    text-align: center;
+}
+
+.node-label {
+    white-space: nowrap;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.node-inputs {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.node-output {
+    font-size: 11px;
+    color: #4df3a3;
+    font-weight: 700;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(77, 243, 163, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.node-timestamp {
+    font-size: 10px;
+    opacity: 0.7;
+    font-family: 'Consolas', monospace;
+    margin-left: 8px;
+}
+
+/* Node Colors */
+.node-codeunit {
+    background: linear-gradient(135deg, var(--sfarc-accent, #2196f3), #00a1e0);
+}
+
+.node-method {
+    background: linear-gradient(135deg, #2e844a, #45c65a);
+}
+
+.node-soql {
+    background: linear-gradient(135deg, #e91e63, #ff4081);
+}
+
+.node-dml {
+    background: linear-gradient(135deg, #e67e22, #f39c12);
+}
+
+.node-flow {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+}
+
+.node-validation {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: #333;
+}
+
+.node-constructor {
+    background: linear-gradient(135deg, #34495e, #2c3e50);
+}
+
+/* Animation Classes */
+.tree-node-wrapper.animating {
+    opacity: 0;
+    transform: translateX(-20px);
+}
+
+.tree-node-wrapper.show-anim {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+body.sfarc-dark-theme .loading {
+    color: #aaa;
+}
+
+/* Log Syntax Highlighting */
+.log-line {
+    display: block;
+}
+
+.log-line:hover {
+    background-color: #faffbd;
+}
+
+.log-line.jump-flash {
+    background-color: #ffeb3b;
+    transition: background-color 0.15s ease;
+}
+
+body.sfarc-dark-theme .log-line.jump-flash {
+    background-color: rgba(255, 235, 59, 0.35);
+}
+
+body.sfarc-dark-theme .log-line:hover {
+    background-color: #2a2d2e;
+}
+
+.log-event-user-debug {
+    color: var(--sfarc-accent, #2196f3);
+    font-weight: bold;
+}
+
+.log-event-query {
+    color: #e91e63;
+}
+
+.log-event-validation {
+    color: #d79b00;
+    font-weight: bold;
+}
+
+.log-event-method {
+    color: #2e844a;
+}
+
+.log-event-error {
+    color: #c23934;
+    font-weight: bold;
+    background-color: #ffeaea;
+}
+
+.log-event-callout {
+    color: #673ab7;
+}
+
+/* Dark Theme Syntax Highlighting */
+body.sfarc-dark-theme .log-event-user-debug {
+    color: #569cd6;
+}
+
+/* Blue */
+body.sfarc-dark-theme .log-event-query {
+    color: #c586c0;
+}
+
+/* Purple/Pink */
+body.sfarc-dark-theme .log-event-validation {
+    color: #dcdcaa;
+    font-weight: bold;
+}
+
+/* Yellow */
+body.sfarc-dark-theme .log-event-method {
+    color: #6a9955;
+}
+
+/* Green */
+body.sfarc-dark-theme .log-event-error {
+    color: #f48771;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+/* Red */
+body.sfarc-dark-theme .log-event-callout {
+    color: #4ec9b0;
+}
+
+/* Teal */
+
+.log-timestamp {
+    color: #888;
+    margin-right: 8px;
+}
+
+body.sfarc-dark-theme .log-timestamp {
+    color: #858585;
+}
+
+.log-details {
+    color: #333;
+}
+
+body.sfarc-dark-theme .log-details {
+    color: #d4d4d4;
+}
+
+/* Specific highlighting for the screenshot look */
+.highlight-user-debug {
+    color: #0000ff;
+}
+
+.highlight-validation {
+    color: #b8860b;
+    font-weight: bold;
+}
+
+body.sfarc-dark-theme .highlight-user-debug {
+    color: #569cd6;
+}
+
+body.sfarc-dark-theme .highlight-validation {
+    color: #dcdcaa;
+}
+
+/* Log Details Grid */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    padding: 20px;
+    background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+}
+
+body.sfarc-dark-theme .details-grid {
+    background: #1e1e1e;
+    color: #d4d4d4;
+}
+
+.detail-row {
+    display: flex;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+body.sfarc-dark-theme .detail-row {
+    border-bottom-color: #3e3e42;
+}
+
+.detail-label {
+    font-weight: 600;
+    width: 120px;
+    color: #333;
+}
+
+body.sfarc-dark-theme .detail-label {
+    color: #d4d4d4;
+}
+
+.detail-value {
+    color: #666;
+}
+
+body.sfarc-dark-theme .detail-value {
+    color: #aaa;
+}
+
+/* Generic Table Styles (Queries, DML, Limits) */
+.table-container {
+    flex: 1;
+    overflow: auto;
+    padding: 0;
+    background: transparent;
+    /* Remove solid white bg to let page bg sfarc-show if we want "move it below" to look detached? */
+    /* Wait, user wants "move it little bit below". If container has bg, it looks like a block. */
+    /* If I add margin-top, the gap shows body bg. */
+    background: #fff;
+    margin-top: 16px;
+    /* Added margin */
+}
+
+body.sfarc-dark-theme .table-container {
+    background: #1e1e1e;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 12px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+body.sfarc-dark-theme .data-table th,
+body.sfarc-dark-theme .data-table td {
+    border-bottom-color: #3e3e42;
+}
+
+.data-table th {
+    background: #f1f5f9;
+    border-bottom: 1px solid #e2e8f0;
+    font-weight: 600;
+    color: #475569;
+    position: sticky;
+    top: 0;
+}
+
+/* Glassmorphism Dark */
+body.sfarc-dark-theme .data-table th {
+    background: rgba(68, 66, 66, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    border-bottom: 1px solid rgba(68, 66, 66, 0.3);
+    color: #aaa;
+}
+
+.data-table th:first-child {
+    border-top-left-radius: 16px;
+}
+
+.data-table th:last-child {
+    border-top-right-radius: 16px;
+}
+
+.data-table tr:hover {
+    background: #f8fafc;
+}
+
+body.sfarc-dark-theme .data-table tr:hover {
+    background: #2a2d2e;
+}
+
+.data-table td {
+    color: #333;
+}
+
+body.sfarc-dark-theme .data-table td {
+    color: #d4d4d4;
+}
+
+.query-soql {
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #e91e63;
+}
+
+body.sfarc-dark-theme .query-soql {
+    color: #c586c0;
+}
+
+/* DML Table Cell Styling */
+.dml-operation-cell,
+.dml-type-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: help;
+}
+
+.dml-operation-cell i,
+.dml-type-cell i {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.dml-row-count {
+    font-weight: 600;
+    color: #2E86C1;
+}
+
+body.sfarc-dark-theme .dml-row-count {
+    color: #569cd6;
+}
+
+.dml-source-name {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+}
+
+.dml-object-type {
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #666;
+}
+
+body.sfarc-dark-theme .dml-object-type {
+    color: #999;
+}
+
+/* SOQL Analysis Table Styling */
+.soql-source-name {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+}
+
+.soql-row-count {
+    text-align: right;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-weight: 600;
+    color: #2E86C1;
+}
+
+body.sfarc-dark-theme .soql-row-count {
+    color: #569cd6;
+}
+
+.soql-failed {
+    background-color: rgba(220, 53, 69, 0.1);
+}
+
+body.sfarc-dark-theme .soql-failed {
+    background-color: rgba(220, 53, 69, 0.15);
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    text-align: center;
+}
+
+.status-badge.status-success {
+    background: #D4EDDA;
+    color: #155724;
+}
+
+.status-badge.status-failed {
+    background: #F8D7DA;
+    color: #721C24;
+}
+
+body.sfarc-dark-theme .status-badge.status-success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #6FCF97;
+}
+
+body.sfarc-dark-theme .status-badge.status-failed {
+    background: rgba(220, 53, 69, 0.2);
+    color: #E74C3C;
+}
+
+/* Custom Tree Diagram Styling */
+.exec-tree-diagram {
+    padding: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tree-node-wrapper {
+    position: relative;
+    margin-left: 20px;
+}
+
+.tree-node-wrapper:before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 20px;
+    width: 15px;
+    height: 2px;
+    background: #666;
+}
+
+.tree-node-wrapper:after {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: #666;
+}
+
+.tree-node-wrapper:last-child:after {
+    height: 20px;
+}
+
+body.sfarc-dark-theme .tree-node-wrapper:before,
+body.sfarc-dark-theme .tree-node-wrapper:after {
+    background: #555;
+}
+
+.tree-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    margin: 2px 0;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.tree-node:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.node-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.node-label {
+    font-weight: 500;
+    font-size: 13px;
+    flex: 1;
+}
+
+.node-timestamp {
+    font-size: 11px;
+    opacity: 0.7;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+.tree-children {
+    margin-left: 0;
+}
+
+/* Color Classes for Different Node Types */
+.node-codeunit {
+    background: linear-gradient(135deg, var(--sfarc-accent, #2196f3) 0%, var(--sfarc-accent-dark, #1976d2) 100%);
+    color: white;
+    border-left: 4px solid var(--sfarc-accent-dark, #1976d2);
+}
+
+.node-method {
+    background: linear-gradient(135deg, #2e844a 0%, #1d5c31 100%);
+    color: white;
+    border-left: 4px solid #1d5c31;
+}
+
+.node-soql {
+    background: linear-gradient(135deg, #2E86C1 0%, #1f5f8b 100%);
+    color: white;
+    border-left: 4px solid #1f5f8b;
+}
+
+.node-dml {
+    background: linear-gradient(135deg, #E67E22 0%, #b8651b 100%);
+    color: white;
+    border-left: 4px solid #b8651b;
+}
+
+.node-flow {
+    background: linear-gradient(135deg, #9B59B6 0%, #7d3c98 100%);
+    color: white;
+    border-left: 4px solid #7d3c98;
+}
+
+.node-validation {
+    background: linear-gradient(135deg, #F1C40F 0%, #c29d0b 100%);
+    color: #000;
+    border-left: 4px solid #c29d0b;
+}
+
+.node-constructor {
+    background: linear-gradient(135deg, #E91E63 0%, #c2185b 100%);
+    color: white;
+    border-left: 4px solid #c2185b;
+}
+
+/* Dark theme adjustments */
+body.sfarc-dark-theme .tree-node {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+body.sfarc-dark-theme .tree-node:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Governor Limits Table Styling */
+.limits-table {
+    font-size: 12.5px;
+}
+
+.limits-table th,
+.limits-table td {
+    padding: 6px 10px;
+}
+
+.limit-resource {
+    font-weight: 500;
+}
+
+.limit-number {
+    text-align: right;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-weight: 600;
+}
+
+.limit-percentage {
+    text-align: center;
+}
+
+.percentage-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 10.5px;
+}
+
+.percentage-badge.limit-safe {
+    background: #D4EDDA;
+    color: #155724;
+}
+
+.percentage-badge.limit-moderate {
+    background: #FFF3CD;
+    color: #856404;
+}
+
+.percentage-badge.limit-warning {
+    background: #FFE5CC;
+    color: #E67E22;
+}
+
+.percentage-badge.limit-critical {
+    background: #F8D7DA;
+    color: #721C24;
+}
+
+body.sfarc-dark-theme .percentage-badge.limit-safe {
+    background: rgba(40, 167, 69, 0.2);
+    color: #6FCF97;
+}
+
+body.sfarc-dark-theme .percentage-badge.limit-moderate {
+    background: rgba(255, 193, 7, 0.2);
+    color: #F1C40F;
+}
+
+body.sfarc-dark-theme .percentage-badge.limit-warning {
+    background: rgba(230, 126, 34, 0.2);
+    color: #E67E22;
+}
+
+body.sfarc-dark-theme .percentage-badge.limit-critical {
+    background: rgba(220, 53, 69, 0.2);
+    color: #E74C3C;
+}
+
+.limit-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #E9ECEF;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+body.sfarc-dark-theme .limit-progress-bar {
+    background: #2a2d2e;
+}
+
+.limit-progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+    border-radius: 999px;
+}
+
+.limit-progress-fill.limit-safe {
+    background: linear-gradient(90deg, #28A745, #6FCF97);
+}
+
+.limit-progress-fill.limit-moderate {
+    background: linear-gradient(90deg, #FFC107, #F1C40F);
+}
+
+.limit-progress-fill.limit-warning {
+    background: linear-gradient(90deg, #E67E22, #F39C12);
+}
+
+.limit-progress-fill.limit-critical {
+    background: linear-gradient(90deg, #DC3545, #E74C3C);
+}
+
+/* Remove row background colors */
+.limit-safe,
+.limit-moderate,
+.limit-warning,
+.limit-critical {
+    background-color: transparent;
+}
+
+body.sfarc-dark-theme .limit-safe,
+body.sfarc-dark-theme .limit-moderate,
+body.sfarc-dark-theme .limit-warning,
+body.sfarc-dark-theme .limit-critical {
+    background-color: transparent;
+}
+
+/* Drop Zone Styles */
+.drop-zone {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 20px;
+}
+
+body.sfarc-dark-theme .drop-zone {
+    background: #1e1e1e;
+}
+
+.drop-content {
+    border: 2px dashed #d8dde6;
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    color: #555;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: 300px;
+}
+
+body.sfarc-dark-theme .drop-content {
+    background: #252526;
+    border-color: #3e3e42;
+    color: #aaa;
+}
+
+.drop-content:hover,
+.drop-zone.dragover .drop-content {
+    border-color: var(--sfarc-accent, #2196f3);
+    background: #f4f6f9;
+}
+
+body.sfarc-dark-theme .drop-content:hover,
+body.sfarc-dark-theme .drop-zone.dragover .drop-content {
+    border-color: var(--sfarc-accent-light, #5eb4ff);
+    background: #2a2d2e;
+}
+
+.drop-content h3 {
+    margin: 10px 0 5px;
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.drop-content p {
+    margin: 0;
+    font-size: 14px;
+    color: #888;
+}
+
+body.sfarc-dark-theme .drop-content p {
+    color: #666;
+}
+
+/* Summary Header */
+.viewer-summary {
+    display: flex;
+    gap: 10px;
+    margin-right: 16px;
+}
+
+.summary-item {
+    padding: 4px 8px;
+    border: 1px solid #d8dde6;
+    border-radius: 9999px;
+    font-size: 12px;
+    color: #555;
+    background: #fff;
+    white-space: nowrap;
+}
+
+body.sfarc-dark-theme .summary-item {
+    background: #252526;
+    border-color: #3e3e42;
+    color: #aaa;
+}
+
+.summary-item.error {
+    background-color: #ffeaea;
+    color: #c23934;
+    border-color: #c23934;
+}
+
+body.sfarc-dark-theme .summary-item.error {
+    background-color: rgba(194, 57, 52, 0.2);
+    color: #f48771;
+    border-color: #a61a14;
+}
+
+/* Icon Buttons */
+.viewer-btn.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+
+
+/* Flow Analysis Styles */
+.flow-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.flow-badge.flow-start {
+    background-color: #9B59B6;
+    color: white;
+}
+
+body.sfarc-dark-theme .flow-badge {
+    background-color: #333;
+    color: #ccc;
+}
+
+body.sfarc-dark-theme .flow-badge.flow-start {
+    background-color: #8e44ad;
+    color: white;
+}
+
+.error-row {
+    background-color: rgba(194, 57, 52, 0.1);
+}
+
+body.sfarc-dark-theme .error-row {
+    background-color: rgba(194, 57, 52, 0.2);
+}
+
+/* Raw Tree View */
+.tree-container {
+    flex: 1;
+    overflow: auto;
+    padding: 10px;
+    background: #fff;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+body.sfarc-dark-theme .tree-container {
+    background: #1e1e1e;
+    color: #d4d4d4;
+}
+
+.tree-row {
+    display: flex;
+    align-items: center;
+    white-space: pre;
+}
+
+.tree-row:hover {
+    background-color: #f4f6f9;
+}
+
+body.sfarc-dark-theme .tree-row:hover {
+    background-color: #2a2d2e;
+}
+
+.tree-line-num {
+    width: 40px;
+    color: #888;
+    text-align: right;
+    padding-right: 10px;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.tree-indent {
+    color: #888;
+    font-family: monospace;
+}
+
+.tree-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tree-type {
+    font-weight: bold;
+}
+
+.tree-type.CODE_UNIT {
+    color: var(--sfarc-accent, #2196f3);
+}
+
+.tree-type.METHOD {
+    color: #2e844a;
+}
+
+.tree-type.FLOW {
+    color: #e91e63;
+}
+
+.tree-type.DML {
+    color: #d79b00;
+}
+
+.tree-type.SOQL {
+    color: #673ab7;
+}
+
+body.sfarc-dark-theme .tree-type.CODE_UNIT {
+    color: #569cd6;
+}
+
+body.sfarc-dark-theme .tree-type.METHOD {
+    color: #6a9955;
+}
+
+body.sfarc-dark-theme .tree-type.FLOW {
+    color: #c586c0;
+}
+
+body.sfarc-dark-theme .tree-type.DML {
+    color: #dcdcaa;
+}
+
+body.sfarc-dark-theme .tree-type.SOQL {
+    color: #4ec9b0;
+}
+
+.tree-duration {
+    color: #666;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+body.sfarc-dark-theme .tree-duration {
+    color: #aaa;
+}
+
+.tree-bar {
+    height: 10px;
+    background-color: #e0e0e0;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+body.sfarc-dark-theme .tree-bar {
+    background-color: #3e3e42;
+}
+
+/* Debug Line Container View */
+/* User Debug Enhancements */
+#user-debug-container {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    padding: 16px;
+}
+
+#user-debug-container .log-line {
+    padding: 4px 0;
+    border-left: 3px solid transparent;
+    padding-left: 8px;
+    margin-bottom: 2px;
+}
+
+#user-debug-container .log-event-user-debug {
+    background-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.05);
+    border-left-color: var(--sfarc-accent, #2196f3);
+    padding: 6px 8px;
+    border-radius: 2px;
+}
+
+body.sfarc-dark-theme #user-debug-container .log-event-user-debug {
+    background-color: rgba(86, 156, 214, 0.1);
+    border-left-color: #569cd6;
+}
+
+.debug-lines-container {
+    padding: 16px;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+.debug-line-container {
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 4px solid;
+    padding: 12px;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+}
+
+.debug-line-container:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sfarc-dark-theme .debug-line-container {
+    background: #1f2937;
+}
+
+.debug-line-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.debug-line-number {
+    color: #6b7280;
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.debug-line-timestamp {
+    color: #9ca3af;
+    font-family: monospace;
+}
+
+.debug-line-type {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.debug-line-content {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #1f2937;
+    word-break: break-word;
+}
+
+.sfarc-dark-theme .debug-line-content {
+    color: #e5e7eb;
+}
+
+/* Type-specific colors */
+.debug-line-user-debug {
+    border-left-color: #3b82f6;
+}
+
+.debug-line-user-debug .debug-line-type {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.sfarc-dark-theme .debug-line-user-debug .debug-line-type {
+    background: #1e3a8a;
+    color: #93c5fd;
+}
+
+.debug-line-soql {
+    border-left-color: #8b5cf6;
+}
+
+.debug-line-soql .debug-line-type {
+    background: #ede9fe;
+    color: #5b21b6;
+}
+
+.sfarc-dark-theme .debug-line-soql .debug-line-type {
+    background: #4c1d95;
+    color: #c4b5fd;
+}
+
+.debug-line-dml {
+    border-left-color: #10b981;
+}
+
+.debug-line-dml .debug-line-type {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.sfarc-dark-theme .debug-line-dml .debug-line-type {
+    background: #064e3b;
+    color: #6ee7b7;
+}
+
+.debug-line-method {
+    border-left-color: #f59e0b;
+}
+
+.debug-line-method .debug-line-type {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.sfarc-dark-theme .debug-line-method .debug-line-type {
+    background: #78350f;
+    color: #fcd34d;
+}
+
+.debug-line-error {
+    border-left-color: #ef4444;
+}
+
+.debug-line-error .debug-line-type {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.sfarc-dark-theme .debug-line-error .debug-line-type {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
+.debug-line-callout {
+    border-left-color: #06b6d4;
+}
+
+.debug-line-callout .debug-line-type {
+    background: #cffafe;
+    color: #155e75;
+}
+
+.sfarc-dark-theme .debug-line-callout .debug-line-type {
+    background: #164e63;
+    color: #67e8f9;
+}
+
+.debug-line-validation {
+    border-left-color: #ec4899;
+}
+
+.debug-line-validation .debug-line-type {
+    background: #fce7f3;
+    color: #9f1239;
+}
+
+.sfarc-dark-theme .debug-line-validation .debug-line-type {
+    background: #831843;
+    color: #f9a8d4;
+}
+
+.debug-line-flow {
+    border-left-color: #14b8a6;
+}
+
+.debug-line-flow .debug-line-type {
+    background: #ccfbf1;
+    color: #115e59;
+}
+
+.sfarc-dark-theme .debug-line-flow .debug-line-type {
+    background: #134e4a;
+    color: #5eead4;
+}
+
+.debug-line-default {
+    border-left-color: #6b7280;
+}
+
+.debug-line-default .debug-line-type {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.sfarc-dark-theme .debug-line-default .debug-line-type {
+    background: #374151;
+    color: #d1d5db;
+}
+
+.no-debug {
+    text-align: center;
+    padding: 40px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+/* SOQL Badge in Tree */
+.tree-soql-badge {
+    background-color: #f3f3f3;
+    color: #555;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    margin-left: 8px;
+    border: 1px solid #ddd;
+    font-weight: 500;
+}
+
+body.sfarc-dark-theme .tree-soql-badge {
+    background-color: #2d2d2d;
+    color: #ccc;
+    border-color: #444;
+}
+
+.tree-soql-badge.soql-warning {
+    background-color: #fff3cd;
+    /* Light Yellow */
+    color: #856404;
+    border-color: #ffeeba;
+}
+
+body.sfarc-dark-theme .tree-soql-badge.soql-warning {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #eec900;
+    border-color: rgba(255, 193, 7, 0.3);
+}
+
+.tree-soql-badge.soql-critical {
+    background-color: #f8d7da;
+    /* Light Red */
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+body.sfarc-dark-theme .tree-soql-badge.soql-critical {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #ff6b6b;
+    border-color: rgba(220, 53, 69, 0.3);
+}
+
+/* SOQL Board Expandable Details */
+.soql-board-row {
+    cursor: pointer;
+}
+
+.soql-toggle-icon {
+    display: inline-block;
+    width: 16px;
+    text-align: center;
+    color: #999;
+    margin-right: 8px;
+    transition: transform 0.2s;
+    font-size: 11px;
+}
+
+.soql-board-row:hover .soql-toggle-icon {
+    color: #555;
+}
+
+.soql-board-row:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+body.sfarc-dark-theme .soql-board-row:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.soql-details-row {
+    background-color: #f8f9fa;
+}
+
+body.sfarc-dark-theme .soql-details-row {
+    background-color: #252526;
+}
+
+.soql-details-content {
+    padding: 8px 16px 16px 40px;
+}
+
+.soql-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+}
+
+body.sfarc-dark-theme .soql-details-table {
+    background: #1e1e1e;
+    border-color: #3e3e42;
+}
+
+.soql-details-table th,
+.soql-details-table td {
+    padding: 4px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: left;
+}
+
+body.sfarc-dark-theme .soql-details-table th,
+body.sfarc-dark-theme .soql-details-table td {
+    border-bottom-color: #3e3e42;
+}
+
+.soql-details-table th {
+    background-color: #f1f3f5;
+    color: #666;
+    font-weight: 600;
+}
+
+body.sfarc-dark-theme .soql-details-table th {
+    background-color: #333;
+    color: #aaa;
+}
+
+.query-text {
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #e91e63;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+body.sfarc-dark-theme .query-text {
+    color: #c586c0;
+}
+
+/* Security Analysis Custom Styles */
+#content-security {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+body.sfarc-dark-theme .summary-card {
+    background: #1e1e1e !important;
+    border: 1px solid #3e3e42;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+    transition: transform 0.2s ease;
+}
+
+/* CPU Time Breakdown Grid & Progress Bars */
+.cpu-breakdown-container {
+    background: #fdfdfd;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+}
+
+body.sfarc-dark-theme .cpu-breakdown-container {
+    background: #1e1e1e;
+    border-color: #3e3e42;
+}
+
+.cpu-progress-multi {
+    display: flex;
+    height: 24px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #e2e8f0;
+    margin-bottom: 12px;
+}
+
+body.sfarc-dark-theme .cpu-progress-multi {
+    background: #2d2d2d;
+}
+
+.cpu-segment {
+    height: 100%;
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+}
+
+.cpu-segment.apex { background: #3498DB; }
+.cpu-segment.database { background: #E74C3C; }
+.cpu-segment.flow { background: #9B59B6; }
+.cpu-segment.validation { background: #F1C40F; color: #000; text-shadow: none; }
+.cpu-segment.other { background: #7f8c8d; }
+
+.cpu-legend-list {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.cpu-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #4a5568;
+}
+
+body.sfarc-dark-theme .cpu-legend-item {
+    color: #a0aec0;
+}
+
+.cpu-legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+}
+
+.cpu-legend-color.apex { background: #3498DB; }
+.cpu-legend-color.database { background: #E74C3C; }
+.cpu-legend-color.flow { background: #9B59B6; }
+.cpu-legend-color.validation { background: #F1C40F; }
+.cpu-legend-color.other { background: #95A5A6; }
+
+/* Slowest Bottlenecks Two-Column Grid */
+.hotspots-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1024px) {
+    .hotspots-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.hotspot-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+body.sfarc-dark-theme .hotspot-panel {
+    background: #1e1e1e;
+    border-color: #3e3e42;
+}
+
+.hotspot-panel h3 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: #2c3e50;
+    border-bottom: 2px solid #edf2f7;
+    padding-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+body.sfarc-dark-theme .hotspot-panel h3 {
+    color: #eee;
+    border-bottom-color: #2d2d2d;
+}
+
+.hotspot-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.hotspot-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border-left: 4px solid #cbd5e1;
+    font-size: 12px;
+}
+
+body.sfarc-dark-theme .hotspot-item {
+    background: #252526;
+    border-left-color: #3e3e42;
+}
+
+.hotspot-item.query-item {
+    border-left-color: #e74c3c;
+}
+
+.hotspot-item.method-item {
+    border-left-color: #3498db;
+}
+
+.hotspot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.hotspot-name {
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 11px;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 12px;
+}
+
+body.sfarc-dark-theme .hotspot-name {
+    color: #ddd;
+}
+
+.hotspot-meta {
+    font-size: 11px;
+    color: #64748b;
+}
+
+body.sfarc-dark-theme .hotspot-meta {
+    color: #94a3b8;
+}
+
+.hotspot-duration {
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+    font-weight: bold;
+    color: #1e293b;
+    white-space: nowrap;
+    background: rgba(0,0,0,0.04);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+body.sfarc-dark-theme .hotspot-duration {
+    color: #fff;
+    background: rgba(255,255,255,0.06);
+}
+
+.hotspot-reason {
+    font-size: 11px;
+    color: #b45309; /* amber-700 in light mode */
+    background: #fef3c7; /* amber-100 */
+    border-radius: 4px;
+    padding: 4px 8px;
+    margin-top: 6px;
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.3;
+}
+
+body.sfarc-dark-theme .hotspot-reason {
+    color: #fcd34d; /* amber-300 */
+    background: rgba(180, 83, 9, 0.25);
+}
+
+/* Find inside log search styling */
+mark.sfarc-search-highlight {
+    background-color: #ffd54f !important;
+    color: #000 !important;
+    padding: 0 1px;
+    border-radius: 2px;
+}
+mark.sfarc-current-highlight {
+    background-color: #ff9800 !important;
+    box-shadow: 0 0 0 2px #3c3c3c, 0 0 0 4px #ff9800;
+}
+.viewer-search-btn {
+    border-radius: 2px;
+    transition: background 0.15s, color 0.15s;
+}
+.viewer-search-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff !important;
+}
+
+/* Field Impact Analyzer Styles */
+.sfarc-fi-card:hover {
+  border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.4) !important;
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+.sfarc-fi-card button:hover {
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.2) !important;
+  color: var(--sfarc-accent-glow, #38bdf8) !important;
+  border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.4) !important;
+}
+
+/* --- LOG VIEWER DASHBOARD STYLES --- */
+.sfarc-dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--sfarc-text, #333);
+}
+
+/* KPI Summary Cards — compact, icon chip instead of colored side bar */
+.sfarc-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.sfarc-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    transition: border-color 0.15s ease;
+}
+
+.sfarc-kpi-card:hover {
+    border-color: #cbd5e1;
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card {
+    background: #1e1e1e;
+    border-color: #2e2e2e;
+}
+
+.kpi-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.kpi-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 11px;
+    flex-shrink: 0;
+}
+
+.sfarc-kpi-card.cpu-card .kpi-icon {
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12);
+    color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-kpi-card.db-card .kpi-icon {
+    background: rgba(236, 72, 153, 0.12);
+    color: #db2777;
+}
+
+.sfarc-kpi-card.soql-card .kpi-icon {
+    background: rgba(234, 179, 8, 0.14);
+    color: #b45309;
+}
+
+.sfarc-kpi-card.success-card .kpi-icon {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card.cpu-card .kpi-icon {
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.2);
+    color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card.db-card .kpi-icon {
+    background: rgba(236, 72, 153, 0.2);
+    color: #f472b6;
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card.soql-card .kpi-icon {
+    background: rgba(234, 179, 8, 0.2);
+    color: #fbbf24;
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card.success-card .kpi-icon {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+.sfarc-kpi-card .kpi-label {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card .kpi-label {
+    color: #94a3b8;
+}
+
+.sfarc-kpi-card .kpi-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    font-variant-numeric: tabular-nums;
+}
+
+body.sfarc-dark-theme .sfarc-kpi-card .kpi-value {
+    color: #f1f5f9;
+}
+
+.sfarc-kpi-card .kpi-subtext {
+    font-size: 10.5px;
+    color: #94a3b8;
+}
+
+/* KPI Card Colors (kept for per-card icon hues; the side bar is gone) */
+.sfarc-kpi-card.success-card,
+.sfarc-kpi-card.error-card,
+.sfarc-kpi-card.cpu-card,
+.sfarc-kpi-card.db-card,
+.sfarc-kpi-card.soql-card {
+    border-left: none;
+}
+
+/* Dashboard Panels Layout */
+.sfarc-dash-panels-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 12px;
+}
+
+.sfarc-dash-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+body.sfarc-dark-theme .sfarc-dash-panel {
+    background: #1e1e1e;
+    border-color: #2e2e2e;
+}
+
+.sfarc-dash-panel h3,
+.sfarc-hotspots-panel h3 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+body.sfarc-dark-theme .sfarc-dash-panel h3,
+body.sfarc-dark-theme .sfarc-hotspots-panel h3 {
+    color: #f1f5f9;
+}
+
+/* Donut Chart Visual */
+.donut-chart-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.donut-svg-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    flex-shrink: 0;
+}
+
+.donut-center-text {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.donut-center-text .center-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+body.sfarc-dark-theme .donut-center-text .center-value {
+    color: #f1f5f9;
+}
+
+.donut-center-text .center-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+}
+
+.donut-segment-circle {
+    transition: stroke-width 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+}
+
+.donut-segment-circle:hover {
+    stroke-width: 5.5;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+}
+
+.donut-legend-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.donut-legend-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+    cursor: default;
+}
+
+.donut-legend-row:hover {
+    background: #f8fafc;
+}
+
+body.sfarc-dark-theme .donut-legend-row:hover {
+    background: #252526;
+}
+
+.legend-label-col {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #475569;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+body.sfarc-dark-theme .legend-label-col {
+    color: #cbd5e1;
+}
+
+.legend-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.legend-value-col {
+    font-size: 12px;
+    font-weight: 600;
+    color: #1e293b;
+    text-align: right;
+    white-space: nowrap;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+body.sfarc-dark-theme .legend-value-col {
+    color: #f1f5f9;
+}
+
+/* Alert Insights List */
+.insights-alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.insight-alert-item {
+    display: flex;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.insight-alert-item.danger {
+    background: #fef2f2;
+    border-left: 4px solid #ef4444;
+    color: #991b1b;
+}
+
+body.sfarc-dark-theme .insight-alert-item.danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+}
+
+.insight-alert-item.warning {
+    background: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    color: #92400e;
+}
+
+body.sfarc-dark-theme .insight-alert-item.warning {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fde047;
+}
+
+.insight-alert-item.info {
+    background: #f0f9ff;
+    border-left: 4px solid #0ea5e9;
+    color: #075985;
+}
+
+body.sfarc-dark-theme .insight-alert-item.info {
+    background: rgba(14, 165, 233, 0.1);
+    color: #7dd3fc;
+}
+
+.insight-alert-icon {
+    font-size: 14px;
+    margin-top: 2px;
+}
+
+/* Hotspots Grid Layout */
+.sfarc-hotspots-panel {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 16px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+
+body.sfarc-dark-theme .sfarc-hotspots-panel {
+    border-color: #2e2e2e;
+    background: #1e1e1e;
+}
+
+.hotspots-grid-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+}
+
+/* Minimal panel empty state */
+.sfarc-panel-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 22px 12px;
+    color: #94a3b8;
+    font-size: 12px;
+    border: 1px dashed #e2e8f0;
+    border-radius: 8px;
+    background: rgba(148, 163, 184, 0.04);
+}
+
+body.sfarc-dark-theme .sfarc-panel-empty {
+    color: #7d8590;
+    border-color: #2e2e2e;
+    background: rgba(148, 163, 184, 0.04);
+}
+
+.hotspot-col-section h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+body.sfarc-dark-theme .hotspot-col-section h4 {
+    color: #94a3b8;
+}
+
+.hotspot-item-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border: 1px solid #f1f5f9;
+    border-radius: 6px;
+    background: #f8fafc;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+body.sfarc-dark-theme .hotspot-item-card {
+    border-color: #2a2a2a;
+    background: #252526;
+}
+
+.hotspot-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+body.sfarc-dark-theme .hotspot-item-header {
+    color: #f1f5f9;
+}
+
+.hotspot-item-source {
+    font-size: 11px;
+    color: #64748b;
+}
+
+body.sfarc-dark-theme .hotspot-item-source {
+    color: #94a3b8;
+}
+
+.hotspot-item-reason {
+    font-size: 11px;
+    color: #e28743;
+    font-style: italic;
+    margin-top: 2px;
+}
+
+
+/* iOS-style step scrubber — blue filled track + white pill thumb */
+#sfarc-vt-scrubber {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #00d4ff 0%, #00d4ff var(--vt-scrub-pct, 0%), var(--vt-btn-border, #334155) var(--vt-scrub-pct, 0%), var(--vt-btn-border, #334155) 100%);
+  outline: none;
+}
+
+#sfarc-vt-scrubber::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #00d4ff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+#sfarc-vt-scrubber::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+#sfarc-vt-scrubber::-moz-range-track {
+  height: 4px;
+  border-radius: 4px;
+  background: var(--vt-btn-border, #334155);
+  border: none;
+}
+
+#sfarc-vt-scrubber::-moz-range-progress {
+  height: 4px;
+  border-radius: 4px;
+  background: #00d4ff;
+}
+
+#sfarc-vt-scrubber::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid #00d4ff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+    <div class="viewer-header">
+        <div class="viewer-tabs">
+            <div class="viewer-tab sfarc-active" data-target="log">
+                <i class="fa-solid fa-file-lines"></i>
+                <span>Log Explorer</span>
+            </div>
+            <div class="viewer-tab" data-target="details">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>Details</span>
+            </div>
+            <div class="viewer-tab" data-target="user-debug">
+                <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; margin-right: 4px;">pest_control</span>
+                <span>Apex Debug</span>
+            </div>
+            <div class="viewer-tab" data-target="execution">
+                <i class="fa-solid fa-diagram-project"></i>
+                <span>Execution</span>
+            </div>
+            <div class="viewer-tab" data-target="data-ops">
+                <i class="fa-solid fa-database"></i>
+                <span>Data Ops</span>
+            </div>
+            <div class="viewer-tab" data-target="gov-limits">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Performance</span>
+            </div>
+            <div class="viewer-tab" data-target="var-tracker">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Variable Tracker</span>
+            </div>
+            <div class="viewer-tab" data-target="security-impact">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Security &amp; Impact</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="viewer-legend" id="legend-container">
+        <div class="legend-item"><span class="legend-box user-debug"></span> User Debug <span class="legend-count"
+                id="count-user-debug">0</span></div>
+        <div class="legend-item"><span class="legend-box query"></span> Queries <span class="legend-count"
+                id="count-query">0</span></div>
+        <div class="legend-item"><span class="legend-box validation"></span> Validation Rule <span class="legend-count"
+                id="count-validation">0</span></div>
+        <div class="legend-item"><span class="legend-box method"></span> Method Entry <span class="legend-count"
+                id="count-method">0</span></div>
+        <div class="legend-item"><span class="legend-box error"></span> Error <span class="legend-count"
+                id="count-error">0</span></div>
+        <div class="legend-item"><span class="legend-box callout"></span> Callouts <span class="legend-count"
+                id="count-callout">0</span></div>
+        <div class="viewer-search-wrapper"
+            style="position: relative; display: flex; align-items: center; margin-left: auto;">
+            <input type="text" id="viewer-search-input" placeholder="Find inside log..."
+                style="background: var(--lv-search-bg); border: 1px solid var(--lv-search-border); padding: 5px 75px 5px 10px; border-radius: 4px; color: var(--lv-search-text); font-size: 12px; outline: none; width: 220px; transition: border-color 0.15s ease;">
+            <div class="viewer-search-controls"
+                style="position: absolute; right: 8px; display: flex; align-items: center; gap: 4px; pointer-events: auto;">
+                <span id="viewer-search-counter"
+                    style="color: #aaa; font-size: 11px; display: none; margin-right: 4px; user-select: none;"></span>
+                <button id="viewer-search-clear" class="viewer-search-btn" title="Clear Search"
+                    style="background: none; border: none; color: #888; cursor: pointer; padding: 2px; display: none; font-size: 11px; line-height: 1;"><i
+                        class="fa-solid fa-circle-xmark"></i></button>
+                <button id="viewer-search-prev" class="viewer-search-btn" title="Previous Match"
+                    style="background: none; border: none; color: #888; cursor: pointer; padding: 2px; display: none; font-size: 11px; line-height: 1;"><i
+                        class="fa-solid fa-chevron-up"></i></button>
+                <button id="viewer-search-next" class="viewer-search-btn" title="Next Match"
+                    style="background: none; border: none; color: #888; cursor: pointer; padding: 2px; display: none; font-size: 11px; line-height: 1;"><i
+                        class="fa-solid fa-chevron-down"></i></button>
+                <i id="viewer-search-icon" class="fa-solid fa-magnifying-glass"
+                    style="color: #888; font-size: 11px; pointer-events: none;"></i>
+            </div>
+        </div>
+    </div>
+    <div id="drop-zone" class="drop-zone" style="display: none;">
+        <div class="drop-content">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <h3>Drag & Drop Log File</h3>
+            <p>or click to browse</p>
+            <input type="file" id="file-input" accept=".log,.txt" style="display: none;">
+        </div>
+    </div>
+
+    <div id="content-log" class="tab-content sfarc-active">
+        <div id="log-container" class="log-container">
+            <div id="sfarc-log-loading-overlay" class="loading-overlay">
+                <div class="loading-content">
+                    <div class="loading-text">
+                        <span class="comet-loader-inline"></span>
+                        <span id="sfarc-load-status">Initializing session...</span>
+                    </div>
+                    <div class="loading-bar-container">
+                        <div id="sfarc-load-bar" class="loading-bar"></div>
+                    </div>
+                    <div id="sfarc-load-pct" class="loading-pct">0%</div>
+                </div>
+            </div>
+            <div id="loading" class="loading" style="display:none;">Loading log...</div>
+        </div>
+    </div>
+
+    <div id="content-details" class="tab-content" style="display:none;">
+        <div class="details-grid" id="details-container">Loading details...</div>
+    </div>
+
+    <!-- Execution group: Execution Order | Flow Analysis | Raw Tree -->
+    <div id="content-execution" class="tab-content" style="display:none; flex-direction: column; overflow: hidden;">
+        <div class="viewer-subtabs">
+            <button type="button" class="viewer-subtab sfarc-active" data-subtarget="order"><i class="fa-solid fa-diagram-project"></i> Execution Order</button>
+            <button type="button" class="viewer-subtab" data-subtarget="flow"><i class="fa-solid fa-sitemap"></i> Flow Analysis</button>
+            <button type="button" class="viewer-subtab" data-subtarget="raw-tree"><i class="fa-solid fa-code-branch"></i> Raw Tree</button>
+        </div>
+        <div id="content-order" class="sub-tab-content" style="display:flex; flex:1; min-height:0;">
+            <div class="order-layout-wrapper">
+                <div style="flex:1; display:flex; flex-direction:column; min-width:0; overflow:hidden;">
+                    <div class="order-toolbar">
+                        <span class="order-toolbar-title"><i class="fa-solid fa-diagram-project"></i> Execution Order</span>
+                        <div class="step-controls">
+                            <button id="reset-order-btn" class="viewer-btn" title="Reset"><i class="fa-solid fa-rotate-left"></i></button>
+                            <button id="step-order-btn" class="viewer-btn" title="Step through execution"><i class="fa-solid fa-arrow-right-to-bracket"></i> Step</button>
+                            <button id="animate-order-btn" class="viewer-btn primary-btn" title="Animate execution order"><i class="fa-solid fa-play"></i> Animate</button>
+                        </div>
+                    </div>
+                    <div id="order-container">Processing...</div>
+                </div>
+                <div class="order-sidebar">
+                    <div class="sidebar-header">
+                        <h3>Component Summary</h3>
+                        <div class="sidebar-subtitle">Classes, triggers, flows &amp; validations executed</div>
+                    </div>
+                    <div class="sidebar-content" id="order-summary-table"><div class="loading-sidebar">Analyzing execution...</div></div>
+                </div>
+            </div>
+        </div>
+        <div id="content-flow" class="sub-tab-content" style="display:none; flex:1; min-height:0;">
+            <div class="table-container" id="flow-container">No flow events found</div>
+        </div>
+        <div id="content-raw-tree" class="sub-tab-content" style="display:none; flex:1; min-height:0;">
+            <div class="tree-container" id="raw-tree-container">Processing...</div>
+        </div>
+    </div>
+
+    <!-- Data Ops group: SOQL Analysis | SOQL Board | DML Analysis -->
+    <div id="content-data-ops" class="tab-content" style="display:none; flex-direction: column; overflow: hidden;">
+        <div class="viewer-subtabs">
+            <button type="button" class="viewer-subtab sfarc-active" data-subtarget="queries"><i class="fa-solid fa-database"></i> SOQL Analysis</button>
+            <button type="button" class="viewer-subtab" data-subtarget="soql-board"><i class="fa-solid fa-table-list"></i> SOQL Board</button>
+            <button type="button" class="viewer-subtab" data-subtarget="dml"><i class="fa-solid fa-pen-to-square"></i> DML Analysis</button>
+        </div>
+        <div id="content-queries" class="sub-tab-content" style="display:flex; flex:1; min-height:0;">
+            <div class="table-container" id="queries-container">No SOQL found</div>
+        </div>
+        <div id="content-soql-board" class="sub-tab-content" style="display:none; flex:1; min-height:0;">
+            <div class="table-container" id="soql-board-container">Processing...</div>
+        </div>
+        <div id="content-dml" class="sub-tab-content" style="display:none; flex:1; min-height:0;">
+            <div class="table-container" id="dml-container">No DML operations found</div>
+        </div>
+    </div>
+
+    <div id="content-user-debug" class="tab-content" style="display:none; flex-direction: column;">
+        <div class="debug-view-bar">
+            <button id="toggle-debug-view" class="viewer-btn" title="Toggle between raw lines and container cards">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="3" width="12" height="2" rx="1" fill="currentColor"/>
+                    <rect x="2" y="7" width="12" height="2" rx="1" fill="currentColor"/>
+                    <rect x="2" y="11" width="12" height="2" rx="1" fill="currentColor"/>
+                </svg>
+                Container View
+            </button>
+        </div>
+        <div class="log-container" id="user-debug-container" style="flex:1;">No debug found</div>
+        <div class="debug-lines-container" id="debug-lines-container" style="display:none;"></div>
+    </div>
+
+    <!-- Timeline Removed -->
+
+    <div id="content-security-impact" class="tab-content" style="display:none; flex-direction: column; overflow: hidden;">
+        <div class="viewer-subtabs">
+            <button type="button" class="viewer-subtab sfarc-active" data-subtarget="security"><i class="fa-solid fa-shield-halved"></i> Security Analysis</button>
+            <button type="button" class="viewer-subtab" data-subtarget="field-impact"><i class="fa-solid fa-wand-magic-sparkles"></i> Field Impact</button>
+        </div>
+        <div id="content-security" class="sub-tab-content" style="display:flex; flex:1; min-height:0;">
+            <div class="table-container" id="security-container">No security or sharing issues identified in the log</div>
+        </div>
+        <div id="content-field-impact" class="sub-tab-content" style="display:none; flex:1; min-height:0; overflow-y: auto; padding: 16px; gap: 16px; box-sizing: border-box; flex-direction: column;">
+            <!-- Filter & Header Bar -->
+            <div
+                style="display: flex; align-items: center; justify-content: space-between; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); padding: 12px 18px; border-radius: 10px; flex-shrink: 0;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="font-size: 18px; color: var(--sfarc-accent-glow, #38bdf8);"></i>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700; color: #f8fafc;">Field Impact & Mutation Analyzer
+                        </div>
+                        <div style="font-size: 11px; color: #94a3b8;">Instantly identifies which Flow, Workflow Rule, or
+                            Apex Method updated a specific record field.</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="text" id="sfarc-fi-search" placeholder="Filter field (e.g. Phone, Status)..."
+                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); padding: 6px 12px; border-radius: 6px; color: #fff; font-size: 12px; outline: none; width: 220px;">
+                    <span id="sfarc-fi-count-badge"
+                        style="background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.2); color: var(--sfarc-accent-glow, #38bdf8); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 9999px;">0
+                        Updates</span>
+                </div>
+            </div>
+
+            <!-- Cards Container -->
+            <div id="sfarc-fi-cards-container" style="display: flex; flex-direction: column; gap: 12px;">
+                <div style="text-align: center; color: #94a3b8; padding: 40px; font-size: 13px;">
+                    Load a debug log to inspect field updates and component mutations.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="content-gov-limits" class="tab-content" style="display:none;">
+        <div class="table-container" id="gov-limits-container">No limits info found</div>
+    </div>
+
+    <div id="content-var-tracker" class="tab-content"
+        style="display:none; flex-direction: column; height: calc(100vh - 65px); padding: 12px; gap: 12px; box-sizing: border-box; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;">
+        <!-- Top Stepper Control Bar -->
+        <div class="sfarc-vt-bar"
+            style="display: flex; align-items: center; justify-content: space-between; background: var(--vt-header-bg); border: 1px solid var(--vt-header-border); padding: 8px 16px; border-radius: 10px; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span
+                    style="font-size: 13px; font-weight: 700; color: var(--vt-text-main); display: flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-circle-dot" style="color: #ef4444; animation: blink 1.5s infinite;"></i> Live
+                    Apex Variable Debugger
+                </span>
+                <select id="sfarc-vt-class-select"
+                    style="background: var(--vt-input-bg); border: 1px solid var(--vt-input-border); color: var(--vt-input-text); padding: 4px 10px; border-radius: 6px; font-size: 12px; outline: none;">
+                    <option value="">All Executed Classes & Methods</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button id="sfarc-vt-btn-first" title="First Step" class="sfarc-vt-btn"
+                    style="background: var(--vt-btn-bg); border: 1px solid var(--vt-btn-border); color: var(--vt-btn-text); padding: 4px 10px; border-radius: 6px; cursor: pointer;"><i
+                        class="fa-solid fa-backward-step"></i></button>
+                <button id="sfarc-vt-btn-prev" title="Previous Step" class="sfarc-vt-btn"
+                    style="background: var(--vt-btn-bg); border: 1px solid var(--vt-btn-border); color: var(--vt-btn-text); padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;"><i
+                        class="fa-solid fa-chevron-left"></i> Prev</button>
+                <button id="sfarc-vt-btn-play" title="Play / Pause" class="sfarc-vt-btn"
+                    style="background: var(--sfarc-accent, #2196f3); border: none; color: #fff; padding: 4px 14px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600;"><i
+                        class="fa-solid fa-play"></i> Play</button>
+                <button id="sfarc-vt-btn-next" title="Next Step" class="sfarc-vt-btn"
+                    style="background: var(--vt-btn-bg); border: 1px solid var(--vt-btn-border); color: var(--vt-btn-text); padding: 4px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">Next
+                    <i class="fa-solid fa-chevron-right"></i></button>
+                <button id="sfarc-vt-btn-last" title="Last Step" class="sfarc-vt-btn"
+                    style="background: var(--vt-btn-bg); border: 1px solid var(--vt-btn-border); color: var(--vt-btn-text); padding: 4px 10px; border-radius: 6px; cursor: pointer;"><i
+                        class="fa-solid fa-forward-step"></i></button>
+                <span id="sfarc-vt-step-counter"
+                    style="font-size: 12px; color: var(--vt-text-muted); font-weight: 600; min-width: 100px; text-align: center;">Step
+                    0 / 0</span>
+            </div>
+            <div style="flex: 1; min-width: 150px; display: flex; align-items: center; gap: 8px;">
+                <input type="range" id="sfarc-vt-scrubber" min="0" max="0" value="0"
+                    style="flex: 1; cursor: pointer;">
+            </div>
+        </div>
+
+        <!-- 3-Column Workspace -->
+        <div style="display: flex; gap: 12px; flex: 1; min-height: 0;">
+            <!-- Column 1: Variable Timeline -->
+            <div
+                style="flex: 1; background: var(--vt-panel-bg); border: 1px solid var(--vt-panel-border); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden;">
+                <div
+                    style="padding: 10px 14px; background: var(--vt-panel-header-bg); border-bottom: 1px solid var(--vt-panel-header-border); font-weight: 600; font-size: 13px; color: var(--vt-text-main); display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fa-solid fa-list-check"></i> Variable Timelines</span>
+                    <input type="text" id="sfarc-vt-var-search" placeholder="Filter vars..."
+                        style="background: var(--vt-input-bg); border: 1px solid var(--vt-input-border); color: var(--vt-input-text); padding: 3px 8px; border-radius: 4px; font-size: 11px; width: 110px; outline: none;">
+                </div>
+                <div id="sfarc-vt-var-list" style="flex: 1; overflow-y: auto; padding: 10px;">
+                    <!-- Variable assignment timelines populated here -->
+                </div>
+            </div>
+
+            <!-- Column 2: Live Execution & Active Scope -->
+            <div
+                style="flex: 1.3; background: var(--vt-panel-bg); border: 1px solid var(--vt-panel-border); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden;">
+                <div
+                    style="padding: 10px 14px; background: var(--vt-panel-header-bg); border-bottom: 1px solid var(--vt-panel-header-border); font-weight: 600; font-size: 13px; color: var(--vt-text-main); display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fa-solid fa-code"></i> Execution Context & Live Scope</span>
+                    <span id="sfarc-vt-current-location"
+                        style="font-size: 11px; color: var(--vt-text-muted); font-weight: 400;">--</span>
+                </div>
+                <div id="sfarc-vt-step-detail"
+                    style="padding: 12px; background: var(--vt-step-detail-bg); border-bottom: 1px solid var(--vt-panel-header-border); font-family: monospace; font-size: 12px; color: var(--vt-step-detail-text); min-height: 50px;">
+                    Select or step through execution to inspect variables.
+                </div>
+                <div
+                    style="padding: 8px 14px; font-size: 11px; font-weight: 600; color: var(--vt-text-muted); background: var(--vt-scope-header-bg); border-bottom: 1px solid var(--vt-panel-header-border);">
+                    Variables Currently in Scope:
+                </div>
+                <div id="sfarc-vt-live-scope" style="flex: 1; overflow-y: auto; padding: 10px;">
+                    <!-- Active variables at current step -->
+                </div>
+            </div>
+
+            <!-- Column 3: Causal Origin Trace -->
+            <div
+                style="flex: 1.1; background: var(--vt-panel-bg); border: 1px solid var(--vt-panel-border); border-radius: 10px; display: flex; flex-direction: column; overflow: hidden;">
+                <div
+                    style="padding: 10px 14px; background: var(--vt-panel-header-bg); border-bottom: 1px solid var(--vt-panel-header-border); font-weight: 600; font-size: 13px; color: var(--vt-text-main); display: flex; align-items: center; justify-content: space-between;">
+                    <span><i class="fa-solid fa-dna"></i> "Why did this value become X?"</span>
+                </div>
+                <div id="sfarc-vt-causal-tree" style="flex: 1; overflow-y: auto; padding: 12px; font-size: 12px;">
+                    <div style="color: #94a3b8; font-style: italic; text-align: center; margin-top: 40px;">
+                        Click any variable assignment to trace its origin backward line-by-line.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="viewer-footer">
+        <div class="viewer-summary" id="log-summary">
+            <!-- Populated via JS -->
+            <div class="summary-item" title="Log Size">0.00 MB</div>
+            <div class="summary-item" title="Duration">0.000 s</div>
+            <div class="summary-item error" title="Issues">0 issues</div>
+        </div>
+        <div class="viewer-actions">
+            <button id="download-btn" class="viewer-btn icon-btn" title="Download Log">
+                <i class="fa-solid fa-download"></i>
+            </button>
+            <button id="delete-btn" class="viewer-btn icon-btn delete" title="Delete Log">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+            <button id="report-bugs-btn" class="viewer-btn icon-btn" title="Report Bugs">
+                <i class="fa-solid fa-bug"></i>
+            </button>
+        </div>
+    </div>
+
+    
+    
+    
+    
+
+<script>
+window.currentLogBody = '01:00:00.000 (1)|USER_DEBUG|[1]|DEBUG|hi';
+window.currentLogMeta = null;
+function renderOrder(t){ document.getElementById('order-container').innerHTML = '<div class="mock">Execution Order rendered</div>'; }
+function renderFlowAnalysis(t){ document.getElementById('flow-container').innerHTML = '<div class="mock">Flow Analysis rendered</div>'; }
+function renderRawTree(t){ document.getElementById('raw-tree-container').innerHTML = '<div class="mock">Raw Tree rendered</div>'; }
+function renderQueries(t){ document.getElementById('queries-container').innerHTML = '<div class="mock">SOQL rendered</div>'; }
+function renderSoqlBoard(t){ document.getElementById('soql-board-container').innerHTML = '<div class="mock">Board rendered</div>'; }
+function renderDML(t){ document.getElementById('dml-container').innerHTML = '<div class="mock">DML rendered</div>'; }
+function renderSecurityAnalysis(t){ document.getElementById('security-container').innerHTML = '<div class="mock">Security rendered</div>'; }
+function renderGovLimits(t){ document.getElementById('gov-limits-container').innerHTML = '<div class="mock">Limits rendered</div>'; }
+function renderUserDebug(t){ document.getElementById('user-debug-container').innerHTML = '<div class="mock">Debug rendered</div>'; }
+function renderLogDetails(){ document.getElementById('details-container').innerHTML = '<div class="mock">Details rendered</div>'; }
+function performLogViewerSearch(){}
+window.ApexVariableTracker = { parseLog: function(){} };
+window.FieldImpactAnalyzer = { parseLog: function(t){ document.getElementById('sfarc-fi-cards-container').innerHTML = '<div class="mock">Field Impact rendered</div>'; } };
+</script>
+<script>
+// copy of the real tab logic from log-viewer.js (setupTabs + activateSubTab)
+function activateSubTab(subTab) {
+    if (!subTab) return;
+    const group = subTab.closest('.tab-content');
+    if (!group) return;
+    const subtarget = subTab.dataset.subtarget;
+    group.querySelectorAll('.viewer-subtab').forEach(s => s.classList.remove('sfarc-active'));
+    subTab.classList.add('sfarc-active');
+    group.querySelectorAll('.sub-tab-content').forEach(c => c.style.display = 'none');
+    const targetContent = document.getElementById('content-' + subtarget);
+    if (targetContent) targetContent.style.display = 'flex';
+    if (subtarget === 'field-impact') window.FieldImpactAnalyzer.parseLog(window.currentLogBody);
+    else if (subtarget === 'order' && window.currentLogBody) renderOrder(window.currentLogBody);
+    else if (subtarget === 'flow' && window.currentLogBody) renderFlowAnalysis(window.currentLogBody);
+}
+function setupTabs() {
+    document.querySelectorAll('.viewer-subtab').forEach(subTab => {
+        subTab.addEventListener('click', () => { activateSubTab(subTab); performLogViewerSearch(); });
+    });
+    document.querySelectorAll('.viewer-tab').forEach(tab => {
+        tab.classList.remove('disabled');
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.viewer-tab').forEach(t => t.classList.remove('sfarc-active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+            tab.classList.add('sfarc-active');
+            const targetId = tab.dataset.target;
+            const targetContent = document.getElementById('content-' + targetId);
+            if (targetContent) {
+                targetContent.style.display = 'flex';
+                if (targetId === 'details') targetContent.style.display = 'block';
+            }
+            if (targetId === 'var-tracker') { targetContent.style.display = 'flex'; window.ApexVariableTracker.parseLog(window.currentLogBody); }
+            else if (targetId === 'details' && window.currentLogMeta) renderLogDetails();
+            if (targetContent && targetContent.querySelector('.viewer-subtab')) activateSubTab(targetContent.querySelector('.viewer-subtab'));
+            const legend = document.getElementById('legend-container');
+            legend.style.display = (targetId === 'log') ? 'flex' : 'none';
+            performLogViewerSearch();
+        });
+    });
+}
+setupTabs();
+// render a fake log so containers have content
+renderOrder(window.currentLogBody); renderFlowAnalysis(window.currentLogBody); renderRawTree(window.currentLogBody);
+renderQueries(window.currentLogBody); renderSoqlBoard(window.currentLogBody); renderDML(window.currentLogBody);
+renderSecurityAnalysis(window.currentLogBody); renderGovLimits(window.currentLogBody); renderUserDebug(window.currentLogBody);
+renderLogDetails();
+document.querySelector('.viewer-tab[data-target="log"]').classList.add('sfarc-active');
+</script>
+</body>
+</html>

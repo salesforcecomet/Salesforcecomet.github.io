@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="theme-manager.js"></script>
+    <title>Salesforce Comet Completion</title>
+    <script src="/src/utils.js"></script>
+    <script src="/src/extensionState.js"></script>
+    <script src="/src/heuristicsRedefinitions.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        .completion-item {
+            padding: 4px;
+            cursor: pointer;
+        }
+
+        .completion-item:hover {
+            background: #eee;
+        }
+    </style>
+    <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+
+<body>
+    <div id="completion-list"></div>
+    <script src="custom-dropdown.js"></script>
+</body>
+
+</html>

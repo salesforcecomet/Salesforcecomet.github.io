@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="theme-manager.js"></script>
+  <meta charset="utf-8">
+  <title>Salesforce Comet — Export / Import / Limits / Metadata</title>
+  <link rel="stylesheet" href="button.css">
+  <link rel="stylesheet" href="styles/slds/slds.css">
+  <link rel="stylesheet" href="styles/sfir.css">
+  <link rel="stylesheet" href="glass-toast.css">
+  <link rel="stylesheet" href="sfir-shell.css">
+  <link rel="stylesheet" href="custom-dropdown.css">
+  <link rel="stylesheet" href="controls.css">
+  <script src="custom-tooltip.js"></script>
+  <script src="favicon-glyphs.js"></script>
+  <script src="colored-favicon.js"></script>
+  <script src="custom-dropdown.js"></script>
+  <link rel="icon" href="../icons/icon-48.png" type="image/png">
+</head>
+
+<body>
+  <!-- Persistent top bar — rendered once, never reloads on tab switch. -->
+  <header id="sfir-shell-header" class="slds-builder-header sfir-header-override">
+    <!-- Nav pills (the active pill slides via theme-manager) -->
+    <nav class="slds-builder-header__item slds-builder-header__nav sfir-border-none">
+      <ul id="sfir-shell-nav" class="slds-builder-header__nav-list">
+        <li class="sfir-nav-slider sfir-nav-slider-init" aria-hidden="true"></li>
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" data-page="export">
+            <svg class="sfir-nav-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            <span class="sfir-nav-label">Export</span>
+          </a>
+        </li>
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" data-page="import">
+            <svg class="sfir-nav-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 8l5-5 5 5"/><path d="M12 3v12"/></svg>
+            <span class="sfir-nav-label">Import</span>
+          </a>
+        </li>
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" data-page="limits">
+            <svg class="sfir-nav-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <span class="sfir-nav-label">Limits</span>
+          </a>
+        </li>
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" data-page="metadata">
+            <svg class="sfir-nav-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+            <span class="sfir-nav-label">Metadata</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+
+    <!-- Center: Logo + Title -->
+    <div class="sfir-header-center-title-container">
+      <img id="sfarc-comet-logo" class="sfir-header-title-logo" alt="Comet Logo">
+      <span class="sfir-header-title-text">Salesforce Comet </span>
+    </div>
+
+    <!-- Page-specific utilities — the active tab's own controls (Tooling/QueryAll
+         toggles on Export, Help on Import, Refresh + host pill on
+         Limits/Metadata) are rendered INTO this single bar by
+         sfir-shell.js, swapping when the tab changes. There is no second
+         header row anywhere: pages render body-only in embed mode. -->
+    <div class="slds-builder-header__item slds-builder-header__utilities sfir-border-none">
+      <div id="sfir-shell-utils" class="sfir-shell-utils"></div>
+
+      <!-- Right: Combined Org + User Badge -->
+      <div class="slds-builder-header__utilities-item sfir-border-none slds-p-horizontal_xxx-small">
+        <div class="sfir-combined-badge sfir-display-popover-trigger">
+          <a id="sfarc-home-link" href="#" title="Home" data-tooltip-side="bottom" class="sfir-combined-badge-org">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+              <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span class="sfir-combined-badge-org-text" id="sfarc-nav-org">…</span>
+          </a>
+          <span class="sfir-combined-badge-divider"></span>
+          <div class="sfir-combined-badge-user" id="sfir-shell-user-initials">VG</div>
+          <section class="sfir-display-popover-target slds-popover slds-nubbin_top-right"
+            style="position: absolute; right: 0px; top: calc(100% + 8px);">
+            <div id="popover-body-id" class="slds-popover__body">
+              <p><strong class="slds-truncate" id="sfir-shell-user-name">Loading…</strong></p>
+              <p class="slds-truncate" id="sfir-shell-user-email"></p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tab bodies live in iframes; the shell never unmounts them, so each tab
+       keeps its state when you switch away and back. -->
+  <div id="sfir-tab-host"></div>
+
+  <script type="module" src="sfir-shell.js"></script>
+</body>
+
+</html>

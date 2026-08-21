@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Problems Panel — Light Theme Colors</title>
+<style>
+    body {
+        margin: 0;
+        padding: 28px;
+        font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+        display: flex;
+        justify-content: center;
+    }
+    .frame {
+        width: 980px;
+        max-width: 97vw;
+        background: #17181c;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .frame.light {
+        background: #ffffff;
+        border-color: rgba(15,23,42,0.14);
+    }
+    .bar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 12px;
+        background: #252526;
+        border-bottom: 1px solid #333;
+    }
+    .frame.light .bar { background: #f3f3f3; border-bottom-color: #e5e5e5; }
+    .bar button {
+        padding: 6px 14px;
+        font-size: 11.5px;
+        font-weight: 600;
+        border-radius: 6px;
+        border: 1px solid rgba(128,128,128,0.35);
+        background: transparent;
+        color: #ccc;
+        cursor: pointer;
+    }
+    .frame.light .bar button { color: #333; }
+    .bar .spacer { flex: 1; }
+    .bar .hint { font-size: 11px; color: #888; }
+    .frame.light .bar .hint { color: #616161; }
+
+    .terminal-body-problems {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px 14px;
+        background: #181818;
+        min-height: 260px;
+        font-family: 'Fira Code', 'Consolas', monospace;
+    }
+    .frame.light .terminal-body-problems { background: #ffffff; }
+
+    #terminal-body-problems .pi-table-wrap { max-height: 420px; }
+
+
+        :root {
+            --text-main: #cccccc;
+            --text-muted: #858585;
+            --text-active: #ffffff;
+            --sfarc-accent: #7c3aed;
+            --sfarc-accent-rgb: 124, 58, 237;
+            --sfarc-accent-light: #b49be8;
+            --sfarc-accent-dark: #5b21b6;
+            --sfarc-accent-dark-rgb: 91, 33, 182;
+            --sfarc-accent-glow: #a78bfa;
+            --sfarc-accent-glow-rgb: 167, 139, 250;
+        }
+        body[data-theme="sfarc-light"] {
+            --text-main: #333333;
+            --text-muted: #616161;
+            --text-active: #000000;
+        }
+        body[data-theme="sfarc-light"] #terminal-body-problems .pi-summary {
+            border-bottom-color: rgba(15, 23, 42, 0.15);
+        }
+        body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-pos {
+            color: #64748b;
+        }
+        body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-msg {
+            color: #374151;
+        }
+        body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-file {
+            color: #0f172a;
+        }
+
+#terminal-body-problems .pi-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+    font-size: 11px;
+}
+
+#terminal-body-problems .pi-sum-title {
+    font-weight: 600;
+    color: var(--text-active);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#terminal-body-problems .pi-sum-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: rgba(15, 18, 24, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+#terminal-body-problems .pi-sum-chip b {
+    font-weight: 700;
+}
+
+#terminal-body-problems .pi-sum-chip.error {
+    color: #fda4af;
+    border-color: rgba(248, 113, 113, 0.45);
+}
+
+#terminal-body-problems .pi-sum-chip.warning {
+    color: #fcd34d;
+    border-color: rgba(251, 191, 36, 0.45);
+}
+
+#terminal-body-problems .pi-sum-chip.info {
+    color: var(--sfarc-accent-glow, #38bdf8);
+    border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.45);
+}
+
+#terminal-body-problems .pi-clear {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    color: var(--text-muted);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+#terminal-body-problems .pi-clear:hover {
+    color: var(--text-active);
+    border-color: rgba(248, 113, 113, 0.5);
+    background: rgba(248, 113, 113, 0.1);
+}
+
+/* Problems as a simple table — sticky header, alternating rows */
+#terminal-body-problems .pi-table-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    border: 1px solid rgba(128, 128, 128, 0.22);
+    border-radius: 8px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+#terminal-body-problems table.pi-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+}
+
+#terminal-body-problems .pi-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    text-align: left;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(128, 128, 128, 0.28);
+    padding: 6px 10px;
+    white-space: nowrap;
+}
+
+#terminal-body-problems .pi-table th.pi-th-sev,
+#terminal-body-problems .pi-table td.pi-sev {
+    width: 34px;
+    padding: 5px 6px 5px 10px;
+}
+
+#terminal-body-problems .pi-table th.pi-th-action,
+#terminal-body-problems .pi-table td.pi-action {
+    width: 104px;
+    text-align: right;
+    padding-right: 8px;
+}
+
+#terminal-body-problems .pi-table td {
+    padding: 5px 10px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.12);
+    vertical-align: middle;
+}
+
+#terminal-body-problems .pi-table tbody tr {
+    cursor: pointer;
+}
+
+#terminal-body-problems .pi-table tbody tr:nth-child(odd) td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+#terminal-body-problems .pi-table tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.07);
+}
+
+/* Severity accent on the row's left edge */
+#terminal-body-problems .pi-table tbody tr.error td:first-child {
+    border-left: 3px solid #f87171;
+}
+
+#terminal-body-problems .pi-table tbody tr.warning td:first-child {
+    border-left: 3px solid #fbbf24;
+}
+
+#terminal-body-problems .pi-table tbody tr.info td:first-child {
+    border-left: 3px solid var(--sfarc-accent-glow, #38bdf8);
+}
+
+#terminal-body-problems .pi-table td.pi-sev i {
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+}
+
+#terminal-body-problems .pi-table tbody tr.error td.pi-sev i {
+    color: #f87171;
+}
+
+#terminal-body-problems .pi-table tbody tr.warning td.pi-sev i {
+    color: #fbbf24;
+}
+
+#terminal-body-problems .pi-table tbody tr.info td.pi-sev i {
+    color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+#terminal-body-problems .pi-table td.pi-file {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-active);
+    white-space: nowrap;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#terminal-body-problems .pi-table td.pi-pos {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 10.5px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+#terminal-body-problems .pi-table td.pi-msg {
+    color: var(--text-main);
+    word-break: break-word;
+}
+
+#terminal-body-problems .pi-table td.pi-action .pi-jump {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--sfarc-accent-glow, #38bdf8);
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: background 0.15s ease;
+}
+
+#terminal-body-problems .pi-table td.pi-action .pi-jump:hover {
+    background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.12);
+}
+
+/* Light theme */
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table-wrap {
+    border-color: rgba(15, 23, 42, 0.14);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table thead th {
+    background: rgba(15, 23, 42, 0.04);
+    border-bottom-color: rgba(15, 23, 42, 0.14);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr:nth-child(odd) td {
+    background: rgba(15, 23, 42, 0.02);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr:hover td {
+    background: rgba(15, 23, 42, 0.06);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td {
+    border-bottom-color: rgba(15, 23, 42, 0.07);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-pos {
+    color: #64748b;
+}
+
+/* Light theme: info accents follow the ORG's dark accent shade
+   (var(--sfarc-accent-dark)) instead of the dark-theme glow or a
+   hard-coded blue, so they stay readable on white and match the
+   org favicon hue. Chip text/borders switch to the dark log palette. */
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr.info td.pi-sev i {
+    color: var(--sfarc-accent-dark, #0284c7);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr.info td:first-child {
+    border-left-color: var(--sfarc-accent-dark, #0284c7);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-action .pi-jump {
+    color: var(--sfarc-accent-dark, #0284c7);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-sum-chip {
+    background: #ffffff;
+    border-color: rgba(15, 23, 42, 0.25);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-sum-chip.error {
+    color: var(--log-error-color, #b91c1c);
+    border-color: rgba(185, 28, 28, 0.35);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-sum-chip.warning {
+    color: var(--log-warn-color, #b45309);
+    border-color: rgba(180, 83, 9, 0.4);
+}
+
+body[data-theme="sfarc-light"] #terminal-body-problems .pi-sum-chip.info {
+    color: var(--sfarc-accent-dark, #0284c7);
+    border-color: rgba(var(--sfarc-accent-dark-rgb, 2, 132, 199), 0.45);
+}
+</style>
+</head>
+<body>
+    <div class="frame" id="frame">
+        <div class="bar">
+            <span class="hint">Accent: purple org (#7c3aed) — dark shade #5b21b6, glow #a78bfa</span>
+            <span class="spacer"></span>
+            <button id="toggle">Toggle Light</button>
+        </div>
+        <div id="terminal-body-problems" class="terminal-body-problems">
+            <div class="pi-summary">
+                <span class="pi-sum-title"><i class="fa-solid fa-list-check"></i> Problems</span>
+                <span class="pi-sum-chip error"><b>0</b> errors</span>
+                <span class="pi-sum-chip warning"><b>0</b> warnings</span>
+                <span class="pi-sum-chip info"><b>2</b> info</span>
+                <button class="pi-clear" title="Clear all problems"><i class="fa-solid fa-broom"></i> Clear</button>
+            </div>
+            <div class="pi-table-wrap">
+                <table class="pi-table">
+                    <thead>
+                        <tr>
+                            <th class="pi-th-sev"></th>
+                            <th>File</th>
+                            <th>Line</th>
+                            <th>Message</th>
+                            <th class="pi-th-action"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="info problem-item">
+                            <td class="pi-sev"><i class="fa-solid fa-circle-info"></i></td>
+                            <td class="pi-file">AnimalsCallouts.cls</td>
+                            <td class="pi-pos">L2:5</td>
+                            <td class="pi-msg">Missing '{' at 'public'</td>
+                            <td class="pi-action"><button class="pi-jump">→ Jump to Line</button></td>
+                        </tr>
+                        <tr class="info problem-item">
+                            <td class="pi-sev"><i class="fa-solid fa-circle-info"></i></td>
+                            <td class="pi-file">AnimalsCallouts.cls</td>
+                            <td class="pi-pos">L1:1</td>
+                            <td class="pi-msg">Line 2, Col 5: Missing '{' at 'public'</td>
+                            <td class="pi-action"><button class="pi-jump">→ Jump to Line</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script>
+        const frame = document.getElementById('frame');
+        document.getElementById('toggle').addEventListener('click', () => {
+            const light = frame.classList.toggle('light');
+            document.body.setAttribute('data-theme', light ? 'sfarc-light' : 'sfarc-dark');
+            document.body.style.background = light ? '#eef2f7' : '#0d0e12';
+        });
+    </script>
+</body>
+</html>

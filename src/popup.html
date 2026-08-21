@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">    <script src="theme-manager.js"></script>
+    <title>Salesforce Comet</title>
+    <link rel="stylesheet" href="popup.css">
+    <script src="lib/font-awesome.min.js"></script>
+    <script src="custom-tooltip.js"></script>
+    <link href="local-fonts.css" rel="stylesheet">
+    <link rel="stylesheet" href="glass-toast.css">
+    <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="header-left" style="display: flex; align-items: center; gap: 8px;">
+            <img src="../icons/icon-48.png" alt="Logo" style="width: 24px; height: 24px; object-fit: contain;">
+            <h1 style="margin: 0;">Salesforce Comet</h1>
+        </div>
+        <div class="header-right">
+            <button id="import-accounts-btn" class="icon-btn" title="Import Accounts from JSON">
+                <i class="fa-solid fa-file-import"></i>
+            </button>
+            <button id="add-group-btn-header" class="icon-btn" title="Add New Group">
+                <i class="fa-solid fa-folder-plus"></i>
+            </button>
+            <button id="add-account-btn" class="icon-btn primary-icon-btn" title="Add New Account">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Quick Launch: Chrome-style context menu (Data Export / Comet Launcher / Code Editor) -->
+    <div class="comet-launcher" role="menu">
+      <button class="launcher-item" id="launch-data-export" role="menuitem" title="Open the Data Export tool">
+        <span class="launcher-icon launcher-icon-export"><i class="fa-solid fa-file-export"></i></span>
+        <span class="launcher-label">Data Export</span>
+        <span class="launcher-hint">SOQL</span>
+      </button>
+    </div>
+
+    <div class="search-container">
+        <div class="search-wrapper">
+            <i class="fa-solid fa-magnifying-glass search-icon"></i>
+            <input type="text" id="account-search" placeholder="Search accounts..." autofocus autocomplete="off" name="sfarc_account_search" data-1p-ignore="true" data-lpignore="true" data-bwignore="true" data-form-type="other" spellcheck="false">
+        </div>
+    </div>
+
+    <div class="vault-info-banner">
+        <i class="fa-solid fa-shield-halved vault-info-icon"></i>
+        <div class="vault-info-text">
+            <strong>Comet Account Vault:</strong> Save, group, and quick-login to your Salesforce accounts with 1 click. Passwords are stored locally in your browser's extension storage.
+        </div>
+    </div>
+
+    <!-- NEW: Active Session Panel (Lightning Studio Style) -->
+    <div id="active-session-panel" class="active-session-panel hidden">
+        <div class="session-header">
+            <div class="session-avatar"><i class="fa-solid fa-cloud"></i></div>
+            <div class="session-info">
+                <div id="active-org-username" class="session-username">Loading...</div>
+                <div id="active-org-url" class="session-url">Identifying Org...</div>
+            </div>
+        </div>
+        <div class="session-actions">
+            <button id="btn-copy-session" class="session-btn" title="Copy Raw Session ID">
+                <i class="fa-solid fa-key"></i> Copy Session ID
+            </button>
+            <button id="btn-copy-frontdoor" class="session-btn" title="Copy Login URL">
+                <i class="fa-solid fa-link"></i> Copy Frontdoor URL
+            </button>
+        </div>
+    </div>
+
+    <div class="flow-scanner-banner">
+        <div class="flow-scanner-label">
+            <i class="fa-solid fa-magnifying-glass-chart flow-scanner-icon"></i>
+            <span>Flow Scanner Button</span>
+        </div>
+        <label class="toggle-switch-container">
+            <input type="checkbox" id="toggle-flow-scanner-btn">
+            <span class="slider-round"></span>
+        </label>
+    </div>
+
+    <div class="main-content">
+        <div id="account-list" class="account-list">
+            <!-- Groups and Accounts will be injected here -->
+        </div>
+    </div>
+
+
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Account</h2>
+                <div class="modal-header-actions">
+                    <button id="save-account" class="icon-btn-save" title="Save Account">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button id="close-modal" class="close-btn" title="Close">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Name (Alias)</label>
+                    <input type="text" id="acc-name" placeholder="e.g. My Dev Org">
+                </div>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="acc-username" placeholder="user@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="acc-password" placeholder="Password">
+                        <button type="button" id="toggle-password-visibility" class="icon-btn-small">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Login URL</label>
+                    <select id="acc-login-url">
+                        <option value="https://login.salesforce.com">Production / Developer</option>
+                        <option value="https://test.salesforce.com">Sandbox</option>
+                        <option value="custom">Custom Domain</option>
+                    </select>
+                    <input type="text" id="acc-custom-url" class="hidden"
+                        placeholder="https://my-domain.my.salesforce.com">
+                </div>
+                <div class="form-group">
+                    <label>Org Theme Color</label>
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <input type="color" id="acc-color" value="#2196f3"
+                            style="width: 50px; height: 40px; padding: 2px; cursor: pointer; border: 1px solid #e0e0e0; border-radius: 8px;">
+                        <span style="font-size: 11px; color: #888;">This color will be used for the browser tab
+                            icon.</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Add/Edit Group Modal -->
+    <div id="group-modal" class="modal hidden">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h2 id="group-modal-title">Add Group</h2>
+                <div class="modal-header-actions">
+                    <button id="save-group" class="icon-btn-save" title="Save Group">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button id="close-group-modal" class="close-btn" title="Close">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Group Name</label>
+                    <input type="text" id="group-name-input" placeholder="e.g. Production, Sandbox">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paste JSON Modal -->
+    <div id="paste-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Paste Account JSON</h2>
+                <div class="modal-header-actions">
+                    <button id="confirm-paste" class="icon-btn-save" title="Import JSON">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button id="close-paste-modal" class="close-btn" title="Close">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>JSON Data</label>
+                    <textarea id="json-paste-area" placeholder='{"groups": [...] }'
+                        style="width: 100%; height: 200px; padding: 12px; border: 1px solid #e0e0e0; border-radius: 12px; font-family: monospace; font-size: 11px; background: #fbffff; resize: none; box-sizing: border-box;"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="import-file-input" accept=".json" class="hidden">
+
+    <!-- Vault unlock / setup modal -->
+    <div id="vault-modal" class="modal hidden">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <h2 id="vault-modal-title">Unlock Vault</h2>
+                <div class="modal-header-actions">
+                    <button id="vault-modal-submit" class="icon-btn-save" title="Confirm">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button id="vault-modal-close" class="close-btn" title="Close">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label id="vault-modal-label">Enter your master passphrase</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="vault-passphrase" placeholder="Master passphrase" autocomplete="off" data-1p-ignore="true" data-lpignore="true" data-bwignore="true">
+                        <button type="button" id="toggle-vault-password" class="icon-btn-small">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <p id="vault-modal-hint" style="font-size: 11px; color: #888; margin-top: 8px; line-height: 1.5;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="glass-toast.js"></script>
+    <script src="vault-crypto.js"></script>
+    <script src="popup.js"></script>
+    <script src="custom-dropdown.js"></script>
+    <script src="close-on-outside.js"></script>
+</body>
+
+</html>

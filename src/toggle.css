@@ -1,0 +1,39 @@
+/* Salesforce Comet - Toggle Button Minimal Styles */
+:root {
+    --sfarc-duration-fast: 140ms;
+    --sfarc-ease-soft: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+#sfarc-toggle {
+    position: fixed !important;
+    top: 50% !important;
+    right: 0 !important;
+    transform: translateY(-50%) !important;
+    width: 30px !important;
+    height: 50px !important;
+    border-radius: 10px 0 0 10px !important;
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    border-right: none !important;
+    color: white !important;
+    font-size: 20px !important;
+    cursor: pointer !important;
+    z-index: 2147483647 !important;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transition: transform var(--sfarc-duration-fast) var(--sfarc-ease-soft), box-shadow var(--sfarc-duration-fast) ease, background var(--sfarc-duration-fast) ease !important;
+}
+
+#sfarc-toggle:hover {
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 1) !important;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-50%) scale(1.04) !important;
+}
+
+#sfarc-toggle.sfarc-hidden {
+    display: none !important;
+}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><title>Favicon design iteration</title>
+<style>
+body { font-family: -apple-system, sans-serif; padding: 20px; background: #f4f6f8; }
+.row { display: flex; gap: 24px; flex-wrap: wrap; align-items: flex-start; }
+.box { background: #fff; border: 1px solid #d8dde6; border-radius: 10px; padding: 12px; }
+pre { font: 10px/1.05 monospace; }
+canvas { image-rendering: pixelated; }
+.controls { margin: 16px 0; }
+button { padding: 6px 12px; border-radius: 6px; border: 1px solid #999; background: #fff; cursor: pointer; margin-right: 8px; }
+input { width: 420px; font: 11px monospace; padding: 4px; }
+</style></head>
+<body>
+<h3>Favicon design — cloud + comet (real logo reference)</h3>
+<div class="controls">
+  <input id="path" value="M8 60 C4 60 2 56 2 52 C2 48 4 44 8 44 C7 34 14 26 24 26 C25 18 34 12 44 14 C50 8 62 8 68 14 C76 7 87 11 90 20 C96 22 98 28 95 33 C99 39 99 47 93 51 C91 58 83 60 77 60 Z" spellcheck="false">
+  <button id="apply">Apply cloud path</button>
+  <button id="dark">Toggle dark bg</button>
+</div>
+<div class="row">
+  <div class="box">
+    <b>Rendered (32px)</b><br>
+    <canvas id="c32" width="32" height="32" style="width:96px;height:96px;border:1px solid #ccc"></canvas>
+  </div>
+  <div class="box">
+    <b>ASCII 48x20</b>
+    <pre id="ascii"></pre>
+  </div>
+  <div class="box">
+    <b>Reference (real logo, cloud region)</b>
+    <pre id="ref">                    #
+              #############      ##############
+            ################## ###################
+          #########################################
+         ############################################ ##########   ######
+        ################################################################
+        ##############################################################
+        ##############################################################
+        ##############################################################
+        ###############################################################
+        ###############################################################
+         ###############################################################
+      ######################################################################
+    ##########################################################################
+   ############################################################################
+  ##############################################################################
+ ##############################################################################
+###############################################################################
+###############################################################################
+ ##############################################################################
+ ##############################################################################
+   ############################################################################
+     ########################################################################
+       ####################################################################
+            ##########################################################
+             ############################################
+             ####################### ##################
+              ######################   ##############
+               ####################        ######
+                #################
+                  #############
+                        ##</pre>
+  </div>
+</div>
+<script>
+var cloud = "M8 60 C4 60 2 56 2 52 C2 48 4 44 8 44 C7 34 14 26 24 26 C25 18 34 12 44 14 C50 8 62 8 68 14 C76 7 87 11 90 20 C96 22 98 28 95 33 C99 39 99 47 93 51 C91 58 83 60 77 60 Z";
+var sparkle = "M83 8 Q85.5 10.5 88 8 Q86.5 12 88 14 Q85.5 12.5 83 14 Q84.5 12 83 8 Z";
+var tail = "M92 6 Q94 10 96 13 Q92 12 89 10 Q90 8 92 6 Z";
+var dark = false;
+function svgToDataUri() {
+  var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 76" width="32" height="32">' +
+    '<path d="' + cloud + '" fill="' + (dark ? '#3b82f6' : '#0176d3') + '"/>' +
+    '<path d="' + sparkle + '" fill="#ffffff"/>' +
+    '<path d="' + tail + '" fill="#ffffff"/>' +
+    '</svg>';
+  return 'data:image/svg+xml;base64,' + btoa(s);
+}
+function draw() {
+  var img = new Image();
+  img.onload = function () {
+    var c = document.getElementById('c32');
+    var ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, 32, 32);
+    if (dark) { ctx.fillStyle = '#1e1e1e'; ctx.fillRect(0, 0, 32, 32); }
+    ctx.drawImage(img, 0, 0, 32, 32);
+    var data = ctx.getImageData(0, 0, 32, 32).data;
+    var cols = 48, rows = 20, lines = [];
+    for (var ry = 0; ry < rows; ry++) {
+      var line = '';
+      for (var cx = 0; cx < cols; cx++) {
+        var px = Math.floor(cx * 32 / cols);
+        var py = Math.floor(ry * 32 / rows);
+        var i = (py * 32 + px) * 4;
+        var a = data[i + 3];
+        if (a < 40) { line += ' '; continue; }
+        line += '#';
+      }
+      lines.push(line);
+    }
+    document.getElementById('ascii').textContent = lines.join('\n');
+  };
+  img.src = svgToDataUri();
+}
+document.getElementById('apply').addEventListener('click', function () {
+  cloud = document.getElementById('path').value.trim();
+  draw();
+});
+document.getElementById('dark').addEventListener('click', function () {
+  dark = !dark;
+  document.getElementById('dark').textContent = dark ? 'Light bg' : 'Dark bg';
+  draw();
+});
+draw();
+</script>
+</body></html>

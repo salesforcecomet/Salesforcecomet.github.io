@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Per-Tool Browser Favicons (org color)</title>
+<style>
+  body { background: #101216; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; padding: 24px; }
+  h2 { color: #f8fafc; margin: 0 0 4px; font-size: 16px; }
+  .sub { color: #94a3b8; font-size: 12px; margin-bottom: 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; max-width: 900px; }
+  .card { background: #1b1e24; border: 1px solid #2a2e37; border-radius: 10px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 8px; animation: in .4s ease both; }
+  .cell { width: 44px; height: 44px; border-radius: 8px; background: #23272f; display: flex; align-items: center; justify-content: center; }
+  .lbl { font-size: 11px; color: #cbd5e1; text-align: center; }
+  @keyframes in { from { opacity: 0; transform: translateY(6px); } }
+  button { margin-bottom: 16px; padding: 6px 12px; border-radius: 8px; border: 1px solid #333; background: #1e2024; color: #e2e8f0; cursor: pointer; font-size: 12px; }
+</style>
+</head>
+<body>
+<h2>Browser-tab favicons — each tool's glyph in the org color</h2>
+<div class="sub">colored-favicon.js renders these when each page opens in a new tab (e.g. ?host=…)</div>
+<button onclick="cycle()">Cycle org color</button>
+<div class="grid">
+  <div class="card" style="animation-delay: 0s">
+    <div class="cell" id="cell-0" data-paths='["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M7 10l5 5 5-5","M12 15V3"]'><img width="32" height="32"></div>
+    <div class="lbl">Data Export</div>
+  </div>
+  <div class="card" style="animation-delay: 0.03s">
+    <div class="cell" id="cell-1" data-paths='["M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4","M17 8l-5-5-5 5","M12 3v12"]'><img width="32" height="32"></div>
+    <div class="lbl">Data Import</div>
+  </div>
+  <div class="card" style="animation-delay: 0.06s">
+    <div class="cell" id="cell-2" data-paths='["M22 12h-4l-3 9L9 3l-3 9H2"]'><img width="32" height="32"></div>
+    <div class="lbl">Org Limits</div>
+  </div>
+  <div class="card" style="animation-delay: 0.09s">
+    <div class="cell" id="cell-3" data-paths='["M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z","M3.27 6.96 12 12.01l8.73-5.05","M12 22.08V12"]'><img width="32" height="32"></div>
+    <div class="lbl">Metadata Exporter</div>
+  </div>
+  <div class="card" style="animation-delay: 0.12s">
+    <div class="cell" id="cell-4" data-paths='["M22 2 11 13","M22 2 15 22l-4-9-9-4z"]'><img width="32" height="32"></div>
+    <div class="lbl">REST Explorer</div>
+  </div>
+  <div class="card" style="animation-delay: 0.15s">
+    <div class="cell" id="cell-5" data-paths='["M18 8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z","M6 16a3 3 0 1 0 0 6 3 3 0 0 0 0-6z","M18 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z","M8.59 13.51 15.42 17.49","M15.41 6.51 8.59 10.49"]'><img width="32" height="32"></div>
+    <div class="lbl">GraphQL Explorer</div>
+  </div>
+  <div class="card" style="animation-delay: 0.18s">
+    <div class="cell" id="cell-6" data-paths='["M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2z","M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"]'><img width="32" height="32"></div>
+    <div class="lbl">Record Clone</div>
+  </div>
+  <div class="card" style="animation-delay: 0.21s">
+    <div class="cell" id="cell-7" data-paths='["M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"]'><img width="32" height="32"></div>
+    <div class="lbl">Bulk Permission Wizard</div>
+  </div>
+  <div class="card" style="animation-delay: 0.24s">
+    <div class="cell" id="cell-8" data-paths='["M22 11.08V12a10 10 0 1 1-5.93-9.14","M22 4 12 14.01l-3-3"]'><img width="32" height="32"></div>
+    <div class="lbl">Code Coverage</div>
+  </div>
+  <div class="card" style="animation-delay: 0.27s">
+    <div class="cell" id="cell-9" data-paths='["M5 12.55a11 11 0 0 1 14.08 0","M1.42 9a16 16 0 0 1 21.16 0","M8.53 16.11a6 6 0 0 1 6.95 0","M12 20h.01"]'><img width="32" height="32"></div>
+    <div class="lbl">Event Monitor</div>
+  </div>
+  <div class="card" style="animation-delay: 0.3s">
+    <div class="cell" id="cell-10" data-paths='["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6","M16 13H8","M16 17H8","M10 9H8"]'><img width="32" height="32"></div>
+    <div class="lbl">Log Viewer</div>
+  </div>
+  <div class="card" style="animation-delay: 0.32999999999999996s">
+    <div class="cell" id="cell-11" data-paths='["M4 17l6-6-6-6","M12 19h8"]'><img width="32" height="32"></div>
+    <div class="lbl">Anonymous Apex</div>
+  </div>
+  <div class="card" style="animation-delay: 0.36s">
+    <div class="cell" id="cell-12" data-paths='["M6 3v12","M18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z","M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z","M18 9a9 9 0 0 1-9 9"]'><img width="32" height="32"></div>
+    <div class="lbl">Automation Cascade</div>
+  </div>
+  <div class="card" style="animation-delay: 0.39s">
+    <div class="cell" id="cell-13" data-paths='["M18 20V10","M12 20V4","M6 20v-6"]'><img width="32" height="32"></div>
+    <div class="lbl">API Statistics</div>
+  </div>
+  <div class="card" style="animation-delay: 0.42s">
+    <div class="cell" id="cell-14" data-paths='["M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z","M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"]'><img width="32" height="32"></div>
+    <div class="lbl">Record Viewer</div>
+  </div>
+  <div class="card" style="animation-delay: 0.44999999999999996s">
+    <div class="cell" id="cell-15" data-paths='["M12 3h7a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-7m0-18H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h7m0-18v18"]'><img width="32" height="32"></div>
+    <div class="lbl">Bulk Field Builder</div>
+  </div>
+  <div class="card" style="animation-delay: 0.48s">
+    <div class="cell" id="cell-16" data-paths='["M22 9H2M14 17.5L16.5 15L14 12.5M10 12.5L7.5 15L10 17.5M2 7.8L2 16.2C2 17.8802 2 18.7202 2.32698 19.362C2.6146 19.9265 3.07354 20.3854 3.63803 20.673C4.27976 21 5.11984 21 6.8 21H17.2C18.8802 21 19.7202 21 20.362 20.673C20.9265 20.3854 21.3854 19.9265 21.673 19.362C22 18.7202 22 17.8802 22 16.2V7.8C22 6.11984 22 5.27977 21.673 4.63803C21.3854 4.07354 20.9265 3.6146 20.362 3.32698C19.7202 3 18.8802 3 17.2 3L6.8 3C5.11984 3 4.27976 3 3.63803 3.32698C3.07354 3.6146 2.6146 4.07354 2.32698 4.63803C2 5.27976 2 6.11984 2 7.8Z"]'><img width="32" height="32"></div>
+    <div class="lbl">Code Editor</div>
+  </div>
+  <div class="card" style="animation-delay: 0.51s">
+    <div class="cell" id="cell-17" data-paths='["M12 8c4.97 0 9-1.34 9-3s-4.03-3-9-3-9 1.34-9 3 4.03 3 9 3z","M21 12c0 1.66-4 3-9 3s-9-1.34-9-3","M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"]'><img width="32" height="32"></div>
+    <div class="lbl">Data Builder</div>
+  </div>
+  <div class="card" style="animation-delay: 0.54s">
+    <div class="cell" id="cell-18" data-paths='["M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z","M14 2v6h6","M9 13h6","M9 17h4"]'><img width="32" height="32"></div>
+    <div class="lbl">Diff Checker</div>
+  </div></div>
+<script>(function () {
+    if (window.__sfarcColoredFaviconLoaded) return;
+    window.__sfarcColoredFaviconLoaded = true;
+
+    // DJB2 Hash Algorithm for high-entropy hashing
+    function djb2Hash(str) {
+        let hash = 5381;
+        for (let i = 0; i < str.length; i++) {
+            hash = ((hash << 5) + hash) + str.charCodeAt(i);
+        }
+        return Math.abs(hash);
+    }
+
+    let cachedSubdomain = null;
+
+    // Extract unique org subdomain prefix
+    function getOrgSubdomain() {
+        if (cachedSubdomain) return cachedSubdomain;
+        const host = window.location.hostname.toLowerCase();
+        if (host && (host.includes('salesforce') || host.includes('force.com'))) {
+            const parts = host.split('.');
+            let sub = parts[0] || 'salesforce';
+            cachedSubdomain = sub.replace(/--c$/, '');
+            return cachedSubdomain;
+        }
+
+        try {
+            const params = new URLSearchParams(window.location.search);
+            const hostParam = params.get('host');
+            if (hostParam) {
+                const parts = hostParam.split('.');
+                cachedSubdomain = parts[0].replace(/--c$/, '');
+                return cachedSubdomain;
+            }
+        } catch (e) { }
+
+        try {
+            const raw = localStorage.getItem('sfarc_logged_in_user');
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.username && parsed.username.includes('@')) {
+                    const domainPart = parsed.username.split('@')[1];
+                    if (domainPart) {
+                        cachedSubdomain = domainPart.split('.')[0];
+                        return cachedSubdomain;
+                    }
+                }
+            }
+        } catch (e) { }
+
+        return 'salesforce';
+    }
+
+    function detectDarkScheme() {
+        try {
+            return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    function hslToRgb(h, s, l) {
+        s /= 100; l /= 100;
+        const k = n => (n + h / 30) % 12;
+        const a = s * Math.min(l, 1 - l);
+        const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, Math.min(9 - k(n), 1)));
+        return { r: Math.round(255 * f(0)), g: Math.round(255 * f(8)), b: Math.round(255 * f(4)) };
+    }
+
+    function getLuminance({ r, g, b }) {
+        const toLin = c => {
+            const s = c / 255;
+            return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+        };
+        return 0.2126 * toLin(r) + 0.7152 * toLin(g) + 0.0722 * toLin(b);
+    }
+
+    function contrastRatio(l1, l2) {
+        const L1 = Math.max(l1, l2);
+        const L2 = Math.min(l1, l2);
+        return (L1 + 0.05) / (L2 + 0.05);
+    }
+
+    function getOrgColor() {
+        const sub = getOrgSubdomain();
+        const hue = djb2Hash(sub) % 360;
+
+        const isDarkBg = detectDarkScheme();
+
+        let sat = 80;
+        let light = isDarkBg ? 62 : 48;
+
+        let attempts = 0;
+        while (attempts++ < 20) {
+            const bgRgb = hslToRgb(hue, sat, light);
+            const bgLum = getLuminance(bgRgb);
+            const fgRgb = isDarkBg ? { r: 0, g: 0, b: 0 } : { r: 255, g: 255, b: 255 };
+            const fgLum = getLuminance(fgRgb);
+            const chromeTabRgb = isDarkBg ? { r: 41, g: 42, b: 47 } : { r: 230, g: 232, b: 234 };
+            const chromeLum = getLuminance(chromeTabRgb);
+
+            const vsChrome = contrastRatio(bgLum, chromeLum);
+            const vsFg = contrastRatio(bgLum, fgLum);
+
+            if (vsChrome >= 1.6 && vsFg >= 3.2) {
+                break;
+            }
+
+            if (vsChrome < 1.6) {
+                light = isDarkBg ? Math.min(85, light + 3) : Math.max(15, light - 3);
+            }
+            if (vsFg < 3.2) {
+                sat = Math.max(40, sat - 2);
+                light = isDarkBg ? Math.min(85, light + 2) : Math.max(15, light - 2);
+            }
+        }
+
+        return `hsl(${hue}, ${sat}%, ${light}%)`;
+    }
+
+    // The official Salesforce cloud mark (the cloud-only logo, no wordmark),
+    // traced verbatim from Salesforce's published cloud SVG. It's the classic
+    // wide cloud with a two-lobe top — filled with the org color, transparent
+    // background. No text anywhere: just the cloud + the comet sparkle below.
+    const COMET_CLOUD_PATH =
+        'M416.224 76.763c32.219-33.57 77.074-54.391 126.682-54.391 65.946 0 123.48 36.772 154.12 91.361 26.626-11.896 56.098-18.514 87.106-18.514 118.94 0 215.368 97.268 215.368 217.247 0 119.993-96.428 217.261-215.368 217.261a213.735 213.735 0 0 1-42.422-4.227c-26.981 48.128-78.397 80.646-137.412 80.646-24.705 0-48.072-5.706-68.877-15.853-27.352 64.337-91.077 109.448-165.348 109.448-77.344 0-143.261-48.939-168.563-117.574-11.057 2.348-22.513 3.572-34.268 3.572C75.155 585.74.5 510.317.5 417.262c0-62.359 33.542-116.807 83.378-145.937-10.26-23.608-15.967-49.665-15.967-77.06C67.911 87.25 154.79.5 261.948.5c62.914 0 118.827 29.913 154.276 76.263';
+
+    // Salesforce Comet favicon as an SVG data URI: no background, just the
+    // official cloud mark filled with the org color. No text, no sparkle, no
+    // white dots — the cloud alone, like the reference logo.
+    // A page can opt into a different glyph by setting
+    // window.__sfarcFaviconPaths (array of SVG path d strings, stroked in the
+    // org color) before this script runs — e.g. Data Export shows a download
+    // arrow, the Code Editor shows its code-brackets mark. Each new-tab tool
+    // page gets its own matching glyph, still org-colored.
+    function createColoredFaviconDataUrl(color, withGreenDot) {
+        const dot = withGreenDot
+            ? '<circle cx="819.6" cy="603.2" r="70" fill="#ffffff"/><circle cx="819.6" cy="603.2" r="50" fill="#22c55e"/>'
+            : '';
+        let custom = window.__sfarcFaviconPaths;
+        if (!custom && window.__sfarcFaviconStrokePath) {
+            custom = [window.__sfarcFaviconStrokePath];
+        }
+        let svg;
+        if (custom && custom.length) {
+            const paths = custom.map(d =>
+                `<path d="${d}" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`
+            ).join('');
+            svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">${paths}${dot}</svg>`;
+        } else {
+            svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 999.5 699.74" width="32" height="32"><path d="${COMET_CLOUD_PATH}" fill="${color}"/>${dot}</svg>`;
+        }
+        return 'data:image/svg+xml;base64,' + btoa(svg);
+    }
+
+    let isApplying = false;
+    let panelIndicatorActive = false;
+
+    function applyFavicon() {
+        if (isApplying) return;
+        isApplying = true;
+
+        try {
+            const color = getOrgColor();
+            // Expose the org color so in-page icons (e.g. the Comet header's
+            // Code Editor icon) can match the favicon tint.
+            try {
+                document.documentElement.style.setProperty('--sfarc-org-color', color);
+            } catch (e) { }
+            const dataUrl = createColoredFaviconDataUrl(color, panelIndicatorActive);
+
+            const head = document.head || document.getElementsByTagName('head')[0];
+            if (!head) return;
+
+            let favicons = head.querySelectorAll("link[rel*='icon']");
+            let targetLink = document.getElementById('sfarc-colored-favicon');
+
+            if (!targetLink) {
+                targetLink = document.createElement('link');
+                targetLink.id = 'sfarc-colored-favicon';
+                targetLink.rel = 'shortcut icon';
+                targetLink.type = 'image/svg+xml';
+                head.appendChild(targetLink);
+            } else {
+                targetLink.type = 'image/svg+xml';
+            }
+
+            targetLink.href = dataUrl;
+
+            // Remove standard default favicons so ours takes priority
+            favicons.forEach(link => {
+                if (link !== targetLink && link.id !== 'sfarc-colored-favicon' && link.id !== 'sfarc-custom-favicon') {
+                    link.remove();
+                }
+            });
+        } catch (e) {
+            console.error('[salesforce comet] Colored Favicon error:', e);
+        } finally {
+            isApplying = false;
+        }
+    }
+
+    // Exposed globally so main.js can toggle the green dot on panel open/close
+    window.__sfarcSetPanelIndicator = function (show) {
+        const newState = !!show;
+        if (panelIndicatorActive === newState) return;
+        panelIndicatorActive = newState;
+        applyFavicon();
+    };
+
+    function initColoredFavicon() {
+        const host = window.location.hostname.toLowerCase();
+        if (host === 'login.salesforce.com' || host === 'test.salesforce.com') return;
+
+        applyFavicon();
+
+        if (window.chrome && chrome.storage && chrome.storage.local) {
+            chrome.storage.local.get(['sfarcLoggedInUser'], (res) => {
+                if (res && res.sfarcLoggedInUser && res.sfarcLoggedInUser.username) {
+                    const domainPart = res.sfarcLoggedInUser.username.split('@')[1];
+                    if (domainPart) {
+                        cachedSubdomain = domainPart.split('.')[0];
+                        applyFavicon();
+                    }
+                }
+            });
+        }
+
+        try {
+            const mql = window.matchMedia('(prefers-color-scheme: dark)');
+            const handler = () => applyFavicon();
+            if (mql.addEventListener) {
+                mql.addEventListener('change', handler);
+            } else if (mql.addListener) {
+                mql.addListener(handler);
+            }
+        } catch (e) { }
+
+        // Observe document.head to re-apply if Salesforce Lightning SPA overwrites
+        // favicon, or if another extension (e.g. Salesforce Inspector) injects or
+        // replaces a favicon link AFTER us. Re-assert ours whenever our link is
+        // missing OR any foreign favicon link exists.
+        const targetHead = document.head || document.getElementsByTagName('head')[0];
+        if (targetHead) {
+            const observer = new MutationObserver(() => {
+                const ourLink = document.getElementById('sfarc-colored-favicon');
+                const foreign = Array.from(document.querySelectorAll("link[rel*='icon']")).filter(l =>
+                    l !== ourLink && l.id !== 'sfarc-colored-favicon' && l.id !== 'sfarc-custom-favicon' && document.head.contains(l));
+                if (!ourLink || !document.head.contains(ourLink) || foreign.length) {
+                    applyFavicon();
+                }
+            });
+
+            observer.observe(targetHead, { childList: true, subtree: true });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initColoredFavicon);
+    } else {
+        initColoredFavicon();
+    }
+})();
+</script>
+<script>
+  const colors = ['#38bdf8', '#f472b6', '#4ade80', '#facc15', '#a78bfa'];
+  let ci = 0;
+  function cycle() {
+    ci = (ci + 1) % colors.length;
+    document.documentElement.style.setProperty('--sfarc-org-color', colors[ci]);
+    render();
+  }
+  function render() {
+    document.querySelectorAll('.cell').forEach(cell => {
+      const paths = JSON.parse(cell.dataset.paths);
+      if (!paths || !paths.length) return;
+      const color = getComputedStyle(document.documentElement).getPropertyValue('--sfarc-org-color').trim() || '#38bdf8';
+      const dot = '';
+      const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32">' +
+        paths.map(d => '<path d="' + d + '" stroke="' + color + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>').join('') + dot + '</svg>';
+      cell.querySelector('img').src = 'data:image/svg+xml;base64,' + btoa(svg);
+    });
+  }
+  document.documentElement.style.setProperty('--sfarc-org-color', colors[0]);
+  render();
+</script>
+</body>
+</html>

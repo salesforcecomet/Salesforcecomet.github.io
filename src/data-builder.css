@@ -1,0 +1,1579 @@
+/* Test Data Builder Styles */
+.sfarc-builder-layout {
+    display: flex;
+    height: 100%;
+    gap: 16px;
+    overflow: hidden;
+    position: relative;
+    /* For absolute positioning of drawer */
+}
+
+.sfarc-builder-main {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    /* Split View */
+    gap: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.sfarc-details-panel {
+    width: 400px;
+    background: white;
+    border-right: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    z-index: 10;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.sfarc-canvas-panel {
+    flex: 1;
+    background: #f4f6f9;
+    position: relative;
+    overflow: auto;
+    /* Scrollable canvas */
+    display: flex;
+    justify-content: center;
+    /* Center content initially */
+    padding: 40px;
+
+    /* Background Color Only (Body) */
+    background-color: #1a1a1a;
+    position: relative;
+    /* Ensure relative for absolute pseudo */
+
+    /* Dynamic Grid Position Variables */
+    --grid-x: 0px;
+    --grid-y: 0px;
+}
+
+/* Grid Layer (Between Body and Flow Chart) */
+.sfarc-canvas-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+
+    /* Strong Grid Pattern (40% Opacity) */
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: var(--grid-x) var(--grid-y);
+}
+
+/* Light Theme overrides */
+.sfarc-light-theme .sfarc-canvas-panel {
+    background-color: #f4f6f9;
+}
+
+.sfarc-light-theme .sfarc-canvas-panel::before {
+    background-image:
+        linear-gradient(#ccc 1px, transparent 1px),
+        linear-gradient(90deg, #ccc 1px, transparent 1px);
+}
+
+.sfarc-canvas-content {
+    position: relative;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: 1;
+    /* Above Grid */
+}
+
+/* Node Styles */
+.sfarc-node {
+    position: absolute;
+    width: 120px;
+    /* Fixed Skinny Width */
+    padding: 8px 8px 8px 12px;
+    /* Extra left padding for accent */
+    border-radius: 6px;
+    /* Slightly squarer for professional look */
+    background: white;
+    border: 1px solid #e0e0e0;
+    /* Thinner border */
+    border-left-width: 4px;
+    /* thick left accent */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Soft shadow */
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    /* Vertical Stack */
+    align-items: flex-start;
+    /* Left align text */
+    gap: 2px;
+    font-weight: 500;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    color: #1f2937;
+    /* Darker gray text */
+    z-index: 2;
+    transform: translateX(-50%);
+    overflow: hidden;
+    /* Ensure truncation works */
+}
+
+/* Ensure text truncates properly */
+.sfarc-node span {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.sfarc-node:hover {
+    transform: translate(-50%, -4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Lift effect */
+}
+
+.sfarc-node.sfarc-active {
+    box-shadow: 0 0 0 2px var(--sfarc-accent, #2196f3), 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    /* Ring focus */
+    border-color: var(--sfarc-accent, #2196f3);
+}
+
+/* Node Colors by Depth */
+/* Depth Colors - Applied to Left Border */
+.sfarc-node-depth-0 {
+    border-left-color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-node-depth-1 {
+    border-left-color: #22c55e;
+}
+
+.sfarc-node-depth-2 {
+    border-left-color: #f97316;
+}
+
+.sfarc-node-depth-3 {
+    border-left-color: #ef4444;
+}
+
+.sfarc-node-depth-4 {
+    border-left-color: #a855f7;
+}
+
+/* Remove old full border colors to keep it clean */
+.sfarc-node-depth-0,
+.sfarc-node-depth-1,
+.sfarc-node-depth-2,
+.sfarc-node-depth-3,
+.sfarc-node-depth-4 {
+    border-top-color: #e0e0e0;
+    border-right-color: #e0e0e0;
+    border-bottom-color: #e0e0e0;
+    background: white;
+    /* Clean white bg */
+    color: #333;
+}
+
+.sfarc-node-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    /* Smaller icon */
+    height: 18px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    font-size: 10px;
+}
+
+/* Details Panel Header */
+/* Details Panel Header */
+/* Details Panel Header */
+.sfarc-details-header {
+    padding: 0;
+    /* Full Width Input */
+    border-bottom: 1px solid #e0e0e0;
+    /* Light Border */
+    background: #fff;
+    /* Light Theme Default */
+    display: flex;
+    flex-direction: column;
+}
+
+.sfarc-details-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    /* Remove padding to let sticky header touch edges */
+}
+
+/* Container for buttons in header */
+/* Container for buttons in header */
+.sfarc-details-header>div:last-child {
+    padding: 2px 16px;
+    /* Ultra slim: 2px */
+    /* Restore padding for buttons */
+    background: #f8f9fa;
+    /* Light grey for button area */
+}
+
+/* Dark Theme Header Overrides */
+.sfarc-dark-theme .sfarc-details-header {
+    background: #333;
+    border-bottom-color: #3a3a3a;
+}
+
+.sfarc-dark-theme .sfarc-details-header>div:last-child {
+    background: #2d2d2d;
+}
+
+/* Code Preview Popup - Gradient Theme */
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.sfarc-builder-sidebar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    bottom: auto;
+    width: 600px;
+    max-height: 85vh;
+    /* Base styles (hidden) */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Standard Builder Sidebar (Light) */
+.sfarc-builder-sidebar.open {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid #ddd;
+
+    /* Removed Glassmorphism/Gradient */
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    animation: none;
+}
+
+/* Dark Theme Sidebar */
+.sfarc-dark-theme .sfarc-builder-sidebar.open {
+    background: #2b2b2b;
+    border-color: #444;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    color: #e0e0e0;
+}
+
+.sfarc-dark-theme .sfarc-builder-sidebar {
+    /* Base for dark theme if needed */
+}
+
+.sfarc-builder-sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    border-bottom: 1px solid #eee;
+    padding: 12px 16px;
+    background: transparent;
+}
+
+.sfarc-dark-theme .sfarc-builder-sidebar-header {
+    border-bottom-color: #444;
+}
+
+.sfarc-builder-sidebar-header h3 {
+    color: #333;
+    font-weight: 500;
+    font-size: 16px;
+    margin: 0;
+}
+
+.sfarc-dark-theme .sfarc-builder-sidebar-header h3 {
+    color: #f0f0f0;
+}
+
+.sfarc-dark-theme .sfarc-builder-sidebar-header h3 {
+    color: #333;
+    /* Keep dark text on gradient */
+}
+
+/* Sidebar Close Button - Minimal */
+.sfarc-builder-sidebar-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    /* Slightly smaller icon */
+    cursor: pointer;
+    cursor: pointer;
+    color: #444;
+    /* Darker for better visibility */
+    padding: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    /* Circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.sfarc-builder-sidebar-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    /* Subtle gray hover */
+    color: #333;
+    transform: none;
+    /* No rotation needed for simple close */
+    box-shadow: none;
+}
+
+/* Optional: Make it red only on sfarc-active click or very subtle hover if desired,
+   but "ugly" usually implies the big red block.
+   Let's keep it safe with gray hover. */
+
+.sfarc-dark-theme .sfarc-builder-card-close {
+    background: #2b2b2b;
+}
+
+/* Copy Button Styling to match */
+.sfarc-builder-icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 4px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.sfarc-builder-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+.sfarc-dark-theme .sfarc-builder-icon-btn {
+    color: #666;
+    /* Keep dark icon on gradient */
+}
+
+.sfarc-dark-theme .sfarc-builder-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: #000;
+}
+
+.sfarc-builder-code {
+    background: rgba(255, 255, 255, 0.1);
+    /* Transparent to sfarc-show gradient */
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.95);
+    /* Opaque white for readability on gradient */
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin: 0;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    height: 300px;
+    overflow-y: auto;
+    color: #333;
+    position: relative;
+}
+
+/* Syntax Highlighting (Light Theme Defaults) */
+.sfarc-code-keyword {
+    color: #a626a4;
+    font-weight: bold;
+}
+
+.sfarc-code-type {
+    color: #c18401;
+}
+
+.sfarc-code-string {
+    color: #50a14f;
+}
+
+.sfarc-code-number {
+    color: #986801;
+}
+
+/* Animated Code Lines */
+/* Animated Code Lines */
+.sfarc-code-line {
+    opacity: 0;
+    /* Start hidden */
+    animation: sfiSlideInReveal 0.4s ease-out forwards;
+    min-height: 1.5em;
+    /* Ensure empty lines have height */
+    will-change: transform, opacity;
+}
+
+@keyframes sfiSlideInReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Background Wave Animation */
+@keyframes sfiBgWave {
+    0% {
+        transform: translateY(-100%) rotate(-45deg);
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(200%) rotate(-45deg);
+        opacity: 0;
+    }
+}
+
+/* Add wave effect to sidebar when open */
+.sfarc-builder-sidebar.open::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(to bottom,
+            transparent 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 100%);
+    pointer-events: none;
+    z-index: 1;
+    animation: sfiBgWave 2.5s ease-in-out forwards;
+    /* Run once */
+    transform: translateY(-100%) rotate(-45deg);
+}
+
+/* Syntax Highlighting (Dark Theme) */
+.sfarc-dark-theme .sfarc-code-keyword {
+    color: #c678dd;
+}
+
+/* Purple */
+.sfarc-dark-theme .sfarc-code-type {
+    color: #e5c07b;
+}
+
+/* Yellow/Gold */
+.sfarc-dark-theme .sfarc-code-string {
+    color: #98c379;
+}
+
+/* Green */
+.sfarc-dark-theme .sfarc-code-number {
+    color: #d19a66;
+}
+
+/* Orange */
+
+.sfarc-dark-theme .sfarc-builder-code {
+    background: rgba(20, 20, 20, 0.95);
+    /* Nearly opaque dark background for readability */
+    color: #abb2bf;
+    /* Standard Grey Text */
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.sfarc-dark-theme .sfarc-builder-sidebar-header h3 {
+    color: #f1f5f9;
+    /* Light header text */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    /* Better contrast against glass */
+}
+
+.sfarc-dark-theme .sfarc-details-panel {
+    background: #2d2d2d;
+    border-right-color: #444;
+    color: #e0e0e0;
+    /* Fix: Light text for readability */
+}
+
+/* Canvas Panel - Ensure clips content */
+.sfarc-canvas-panel {
+    background: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+    /* Hide overflow for panning */
+    cursor: grab;
+    /* Default cursor for pan */
+}
+
+.sfarc-canvas-panel:sfarc-active {
+    cursor: grabbing;
+}
+
+.sfarc-canvas-content {
+    /* Important for smooth panning */
+    transform-origin: 0 0;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+}
+
+.sfarc-dark-theme .sfarc-canvas-panel {
+    background: #1e1e1e;
+}
+
+/* Dark Mode Node Colors - Keep them colorful but readable */
+.sfarc-dark-theme .sfarc-node {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.sfarc-dark-theme .sfarc-node-depth-0 {
+    border-left-color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-dark-theme .sfarc-node-depth-1 {
+    border-left-color: #22c55e;
+}
+
+.sfarc-dark-theme .sfarc-node-depth-2 {
+    border-left-color: #f97316;
+}
+
+.sfarc-dark-theme .sfarc-node-depth-3 {
+    border-left-color: #ef4444;
+}
+
+.sfarc-dark-theme .sfarc-node-depth-4 {
+    border-left-color: #a855f7;
+}
+
+.sfarc-dark-theme .sfarc-details-header {
+    background: #333;
+    border-bottom-color: #444;
+}
+
+.sfarc-dark-theme .sfarc-builder-sidebar-close {
+    color: #aaa;
+}
+
+.sfarc-builder-header {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.sfarc-builder-select {
+    flex: 1;
+    padding: 0 10px;
+    border: 1px solid #d0d0d0;
+    border-radius: 9999px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.2s ease;
+    background-color: #fff;
+    color: #333;
+    height: 34px;
+    /* Standard inputs */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Specific Slim Style for Top Object Select (Glassy) */
+/* Specific Slim Style for Top Object Select (LIGHT THEME DEFAULT) */
+#sfarc-builder-object-select {
+    display: block;
+    box-sizing: border-box;
+    height: 32px;
+    /* Reduced to 32px */
+    padding: 4px 12px;
+    margin: 10px 20px 6px 20px;
+    width: calc(100% - 40px);
+    border: 1px solid #ddd;
+    /* Light Border */
+    border-radius: 9999px;
+    /* Restored comfortable radius */
+    background: #fff;
+    /* White BG */
+    color: #333;
+    /* Dark Text */
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+/* Dark Theme Top Select */
+.sfarc-dark-theme #sfarc-builder-object-select {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: white;
+    backdrop-filter: blur(5px);
+}
+
+#sfarc-builder-object-select:focus {
+    box-shadow: none;
+    border-color: var(--sfarc-accent, #2196f3);
+    /* Removed dark background change */
+}
+
+.sfarc-builder-select:focus {
+    border-color: var(--sfarc-accent, #2196f3);
+    box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.15);
+}
+
+.sfarc-dark-theme .sfarc-builder-select {
+    background-color: #444;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+/* Reset Icon Button */
+.sfarc-btn-icon {
+    width: 32px;
+    /* Reduced from 40px */
+    height: 32px;
+    /* Reduced from 40px */
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 0;
+}
+
+.sfarc-btn-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: rotate(180deg);
+}
+
+/* Neon Gradient Button */
+/* Gradient Text Button (Clean Dark Style) */
+.sfarc-btn-gradient {
+    background: transparent;
+    /* Transparent bg */
+    border: none;
+    padding: 6px 12px;
+    height: 34px;
+    border-radius: 9999px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: none;
+}
+
+.sfarc-btn-gradient:hover {
+    background: rgba(255, 255, 255, 0.05);
+    /* Subtle hover */
+}
+
+.sfarc-btn-gradient-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, #FF8C42, #FF4081, #9C27B0);
+    /* Gradient Text */
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.sfarc-gradient-icon {
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(90deg, #FF8C42, #FF4081);
+    /* Gradient Icon */
+    -webkit-mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z"/><path d="M14 2V8H20"/><path d="M8 13H16"/><path d="M8 17H12"/><path d="M16 17L21 17M21 17L19 15M21 17L19 19"/></svg>') no-repeat center;
+    mask: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z"/><path d="M14 2V8H20"/><path d="M8 13H16"/><path d="M8 17H12"/><path d="M16 17L21 17M21 17L19 15M21 17L19 19"/></svg>') no-repeat center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    display: inline-block;
+}
+
+
+
+.sfarc-dark-theme .sfarc-btn-gradient {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.sfarc-dark-theme .sfarc-btn-gradient:hover {
+    background: rgba(255, 255, 255, 0.05);
+    /* White hover for dark theme */
+}
+
+/* Legacy Card Styles (Used in Details Panel) */
+.sfarc-builder-section {
+    margin-bottom: 24px;
+}
+
+.sfarc-builder-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    /* For SVG positioning */
+}
+
+.sfarc-builder-connections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    /* Behind cards */
+    overflow: visible;
+}
+
+.sfarc-connection-line {
+    fill: none;
+    stroke-width: 2px;
+    opacity: 0.6;
+    transition: d 0.3s ease;
+}
+
+/* Connection Colors by Depth */
+.sfarc-connection-depth-0 {
+    stroke: var(--sfarc-accent, #2196f3);
+}
+
+/* Blue */
+.sfarc-connection-depth-1 {
+    stroke: #4bca81;
+}
+
+/* Green */
+.sfarc-connection-depth-2 {
+    stroke: #ffb75d;
+}
+
+/* Orange */
+.sfarc-connection-depth-3 {
+    stroke: #d83a00;
+}
+
+/* Red */
+.sfarc-connection-depth-4 {
+    stroke: #9050e9;
+}
+
+/* Purple */
+.sfarc-connection-depth-5 {
+    stroke: #00a1e0;
+}
+
+/* Cyan */
+
+/* Connection Label on the line - HTML Pill Style */
+.sfarc-connection-label {
+    position: absolute;
+    /* HTML absolute positioning */
+    font-size: 10px;
+    font-weight: 500;
+    text-align: center;
+    pointer-events: none;
+    background: white;
+    border: 1px solid #e5e7eb;
+    padding: 2px 8px;
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    /* Center on the calculated point */
+    z-index: 1;
+    /* Below nodes but above lines (lines are z-0) */
+    color: #6b7280;
+    /* Gray text */
+}
+
+/* Color accents for labels matches the line color if desired, or simpler gray */
+.sfarc-connection-depth-0 {
+    border-color: var(--sfarc-accent, #2196f3);
+    color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-connection-depth-1 {
+    border-color: #22c55e;
+    color: #166534;
+}
+
+.sfarc-connection-depth-2 {
+    border-color: #f97316;
+    color: #9a3412;
+}
+
+.sfarc-connection-depth-3 {
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
+.sfarc-connection-depth-4 {
+    border-color: #a855f7;
+    color: #6b21a8;
+}
+
+.sfarc-connection-depth-5 {
+    border-color: #00a1e0;
+    color: #0075a3;
+}
+
+.sfarc-dark-theme .sfarc-connection-label {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #e0e0e0;
+}
+
+.sfarc-builder-card {
+    background: white;
+    color: #444;
+    border: 1px solid #ccc;
+    border-radius: 9999px;
+    margin-right: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    animation: slideIn 0.3s ease-out;
+    position: relative;
+    /* Ensure z-index works */
+    z-index: 1;
+    /* Above lines */
+}
+
+.sfarc-dark-theme .sfarc-builder-card {
+    background: #333;
+    border-color: #555;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.sfarc-builder-card-header {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sfarc-dark-theme .sfarc-builder-card-header {
+    background: #444;
+    border-bottom-color: #555;
+}
+
+.sfarc-builder-card-title {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Node Badge (Relationship Name) - Minimal Text Only */
+.sfarc-node-badge {
+    font-size: 9px;
+    /* Smaller */
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    /* No background */
+    border: none;
+    /* No border */
+    color: inherit;
+    opacity: 0.7;
+    /* Subtle */
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sfarc-builder-card-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: #e2e2e2;
+    border-radius: 4px;
+    color: #555;
+}
+
+.sfarc-builder-card-badge.primary {
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12);
+    color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-builder-card-body {
+    padding: 0;
+    /* Remove padding to allow full width header */
+    display: flex;
+    /* Flex helps with sticky */
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sfarc-builder-section {
+    margin-bottom: 24px;
+}
+
+/* Sticky Header Wrapper (Light Theme Default) */
+/* Sticky Header Wrapper (Light Theme Default - Glassmorphism) */
+.sfarc-details-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    /* User Requested Glassmorphism (Light) */
+    background: rgba(255, 255, 255, 0.21);
+    border-radius: 0 0 16px 16px;
+    /* Matched radius 16px but kept top flat for sticky */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.9px);
+    -webkit-backdrop-filter: blur(6.9px);
+
+    padding-bottom: 0;
+    margin: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    /* Subtle white border for glass edge */
+    overflow: hidden;
+    min-height: auto;
+    flex-shrink: 0;
+}
+
+/* Dark Theme Sticky Header (Glass) */
+.sfarc-dark-theme .sfarc-details-sticky-header {
+    /* User Requested Glassmorphism (Dark) */
+    background: rgba(0, 0, 0, 0.21);
+    border-radius: 0 0 16px 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8.8px);
+    -webkit-backdrop-filter: blur(8.8px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sfarc-builder-card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 6px 20px;
+    /* Ultra slim: 6px */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Ensure title has no background */
+.sfarc-details-header-content h3 {
+    background: transparent !important;
+    color: #333;
+    /* Default Dark Text */
+}
+
+.sfarc-dark-theme .sfarc-details-header-content h3 {
+    color: #e0e0e0;
+    /* Light Text */
+}
+
+/* Ensure title and badge group together, close button pushed right */
+.sfarc-details-header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* Badge spacing */
+.sfarc-details-header-content .sfarc-node-badge,
+.sfarc-details-header-content .sfarc-builder-card-badge {
+    margin-left: 12px !important;
+    /* Space between Name and Badge */
+}
+
+/* Push close button to far right */
+/* Restore Close Button */
+.sfarc-builder-card-close {
+    display: flex;
+    margin-left: auto;
+    background: rgba(0, 0, 0, 0.05);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    transition: all 0.2s;
+}
+
+.sfarc-builder-card-close:hover {
+    background: #ef4444;
+    color: white;
+}
+
+/* Tabs - Light Theme Segmented Control */
+.sfarc-details-tabs {
+    flex: 1;
+    display: flex;
+    background: #f3f4f6;
+    /* Light Grey BG */
+    padding: 3px;
+    border-radius: 8px;
+    gap: 4px;
+    margin: 0 20px 6px 20px;
+    margin-top: 14px;
+    position: relative;
+    border: 1px solid #e5e7eb;
+}
+
+.sfarc-details-tab {
+    flex: 1;
+    text-align: center;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    /* Grey Text */
+    background: transparent;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sfarc-details-tab:hover {
+    color: #374151;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.sfarc-details-tab.sfarc-active {
+    background: white;
+    color: var(--sfarc-accent, #2196f3);
+    /* Blue Active */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    font-weight: 500;
+}
+
+/* Dark Theme Segmented Control */
+.sfarc-dark-theme .sfarc-details-tabs {
+    background: #333;
+    border-color: #444;
+}
+
+.sfarc-dark-theme .sfarc-details-tab {
+    color: #bbb;
+}
+
+.sfarc-dark-theme .sfarc-details-tab:hover {
+    color: #ddd;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.sfarc-dark-theme .sfarc-details-tab.sfarc-active {
+    background: #4a4a4a;
+    color: var(--sfarc-accent-light, #5eb4ff);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Tab Content - Add padding back here */
+.sfarc-tab-content {
+    display: none !important;
+    animation: fadeIn 0.3s ease;
+    padding: 16px;
+    /* Restore padding for content */
+}
+
+.sfarc-tab-content.sfarc-active {
+    display: flex !important;
+    /* Force flex when sfarc-active */
+    flex-direction: column;
+    gap: 8px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sfarc-builder-section h4 {
+    display: none;
+    /* Hide old section headers if we use tabs */
+}
+
+/* Base list style if needed, but overridden by tab content now */
+.sfarc-builder-field-list {
+    /* display: flex;  <-- Removed to prevent conflict, handled by .sfarc-active */
+    flex-direction: column;
+    gap: 8px;
+    /* Breathing room */
+    max-height: none;
+    /* Let container handle scroll if needed */
+}
+
+/* Custom Checkbox Field Item */
+.sfarc-builder-field-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+}
+
+.sfarc-builder-field-item:hover {
+    color: var(--sfarc-accent, #2196f3);
+}
+
+/* Field Type Badge (Right Side) */
+/* Field Type Badge (Light Theme) */
+.sfarc-field-type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid #e0e0e0;
+    border-radius: 9999px !important;
+    padding: 6px 12px;
+    background: transparent;
+    margin-left: 8px;
+    flex-shrink: 0;
+    cursor: help;
+    transition: all 0.2s;
+}
+
+.sfarc-field-type-badge svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    stroke-width: 2px;
+}
+
+.sfarc-field-type-badge:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: white;
+}
+
+.sfarc-dark-theme .sfarc-field-type-badge {
+    border-color: #555;
+    color: #999;
+}
+
+.sfarc-dark-theme .sfarc-field-type-badge:hover {
+    border-color: #777;
+    color: #fff;
+}
+
+/* Hide native checkbox */
+.sfarc-builder-field-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #d1d5db;
+    /* Gray-300 */
+    border-radius: 4px;
+    background: white;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+
+.sfarc-builder-field-item input[type="checkbox"]:checked {
+    background-color: var(--sfarc-accent, #2196f3);
+    border-color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-builder-field-item input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.sfarc-builder-field-item input[type="checkbox"]:hover {
+    border-color: var(--sfarc-accent, #2196f3);
+    box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+}
+
+/* Dark Theme Adjustments */
+.sfarc-dark-theme .sfarc-builder-section h4 {
+    color: #94a3b8;
+}
+
+.sfarc-dark-theme .sfarc-builder-field-item {
+    color: #cbd5e1;
+}
+
+.sfarc-dark-theme .sfarc-builder-field-item:hover {
+    color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+.sfarc-dark-theme .sfarc-builder-field-item input[type="checkbox"] {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+.sfarc-dark-theme .sfarc-builder-field-item input[type="checkbox"]:checked {
+    background-color: var(--sfarc-accent, #2196f3);
+    border-color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-dark-theme .sfarc-builder-field-item input[type="checkbox"]:hover {
+    border-color: var(--sfarc-accent-light, #5eb4ff);
+    box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-light-rgb, 94, 180, 255), 0.2);
+}
+
+/* Custom Scrollbar for details body */
+.sfarc-details-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sfarc-details-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sfarc-details-body::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.5);
+    border-radius: 3px;
+}
+
+.sfarc-details-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.8);
+}
+
+
+
+.sfarc-empty-state-builder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-size: 14px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Utility classes */
+.sfarc-btn-primary {
+    background: var(--sfarc-accent, #2196f3);
+    color: white;
+    border-color: var(--sfarc-accent, #2196f3);
+    border-radius: 9999px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.sfarc-btn-primary:hover {
+    background: var(--sfarc-accent-dark, #1976d2);
+}
+
+.sfarc-btn-secondary {
+    background: white;
+    color: var(--sfarc-accent, #2196f3);
+    border: 1px solid var(--sfarc-accent, #2196f3);
+    padding: 8px 16px;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.sfarc-btn-secondary:hover {
+    background: #f4f6f9;
+}
+
+.sfarc-full-width {
+    width: 100%;
+}
+
+/* Close Button Redesign */
+.sfarc-builder-card-close {
+    width: 20px;
+    /* Ultra slim: 20px */
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--sfarc-border-color, #e5e5e5);
+    background: var(--sfarc-bg-color, #ffffff);
+    color: var(--sfarc-text-secondary, #666);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    margin-left: 12px;
+    padding: 0;
+    outline: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
+    /* Prevent shrinking */
+}
+
+.sfarc-builder-card-close:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: #d9d9d9;
+    color: #333;
+    transform: none;
+    box-shadow: none;
+}
+
+.sfarc-dark-theme .sfarc-builder-card-close {
+    background: #2b2b2b;
+    border-color: #444;
+    color: #aaa;
+}
+
+.sfarc-dark-theme .sfarc-builder-card-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #555;
+    color: #fff;
+}
+
+/* Details Header Layout */
+.sfarc-details-header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.sfarc-details-header-content h3 {
+    margin: 0;
+    margin-right: 8px;
+    /* Tighter gap */
+    font-size: 14px;
+    /* Ultra slim: 14px */
+    font-weight: 500;
+    color: var(--sfarc-text-primary, #333);
+}
+
+.sfarc-details-header-content h3.sfarc-node-depth-0 {
+    color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-details-header-content h3.sfarc-node-depth-1 {
+    color: #16a34a;
+    /* Slightly darker green for text */
+}
+
+.sfarc-details-header-content h3.sfarc-node-depth-2 {
+    color: #ea580c;
+    /* Slightly darker orange */
+}
+
+.sfarc-details-header-content h3.sfarc-node-depth-3 {
+    color: #dc2626;
+    /* Slightly darker red */
+}
+
+.sfarc-details-header-content h3.sfarc-node-depth-4 {
+    color: #9333ea;
+    /* Slightly darker purple */
+}
+
+.sfarc-builder-card-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    /* Ultra slim padding */
+    border-radius: 12px;
+    font-size: 9px;
+    /* Smaller font */
+    font-weight: 500;
+    background: #e6f7ff;
+    color: #1890ff;
+    border: 1px solid #91d5ff;
+    white-space: nowrap;
+}
+
+.sfarc-builder-card-badge.primary {
+    background: #f6ffed;
+    color: #52c41a;
+    border-color: #b7eb8f;
+}
+
+/* Toast Notification */
+.sfarc-toast {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.sfarc-toast.sfarc-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Field Search Input (Light Theme Default) */
+.sfarc-field-search-input {
+    display: block;
+    box-sizing: border-box;
+    width: auto;
+    height: 32px;
+    /* Reduced to 32px */
+    width: calc(100% - 40px);
+    margin: 0 20px 10px 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    border: 1px solid #ddd;
+    border-radius: 9999px;
+    /* Match Object Select */
+    background: #fff;
+    outline: none;
+    transition: all 0.2s;
+    color: #333;
+}
+
+.sfarc-field-search-input:focus {
+    box-shadow: none;
+    border-color: var(--sfarc-accent, #2196f3);
+    /* Clean focus like top bar */
+}
+
+/* Dark Theme Overrides */
+.sfarc-dark-theme .sfarc-field-search-input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #eee;
+    backdrop-filter: blur(5px);
+}
+
+.sfarc-dark-theme .sfarc-field-search-input:focus {
+    /* Kept clean, no dark bg addition */
+    border-color: var(--sfarc-accent-light, #5eb4ff);
+    box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-light-rgb, 94, 180, 255), 0.2);
+}
+
+/* Zoom Controls */
+.sfarc-zoom-controls {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 100;
+}
+
+.sfarc-zoom-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #555;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sfarc-zoom-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    color: var(--sfarc-accent, #2196f3);
+}
+
+.sfarc-dark-theme .sfarc-zoom-btn {
+    background: #333;
+    color: #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.sfarc-dark-theme .sfarc-zoom-btn:hover {
+    background: #444;
+    color: var(--sfarc-accent-glow, #38bdf8);
+}

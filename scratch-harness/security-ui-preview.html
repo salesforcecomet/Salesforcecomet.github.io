@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Security &amp; Health Audit — Glassmorphism Preview</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<style>
+
+  :root {
+    --text-active: #e2e8f0;
+    --text-muted: #94a3b8;
+    --bg-main: #1e1e1e;
+    --bg-terminal: #181818;
+    --bg-terminal-header: #252526;
+    --border-color: #252526;
+    --icon-color: #9ca3af;
+    --text-main: #d4d4d4;
+    --sfarc-accent-glow: #38bdf8;
+    --sfarc-accent-glow-rgb: 56, 189, 248;
+    --accent-green: #2ea043;
+  }
+  body { margin: 0; font-family: Inter, -apple-system, sans-serif; background: #111418; }
+
+.main-editor-area { flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            /* Ambient glows sit behind the frosted terminal so the glass
+               backdrop-filter has light to refract (blur over flat same-color
+               paint is invisible). The glows concentrate near the bottom edge
+               where the terminal panel lives. */
+            background:
+                radial-gradient(130% 70% at 12% 100%, rgba(56, 189, 248, 0.22), transparent 62%),
+                radial-gradient(130% 70% at 88% 100%, rgba(139, 92, 246, 0.18), transparent 62%),
+                var(--bg-main); }
+.terminal-panel { height: 160px;
+            background: rgba(34, 39, 50, 0.55);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transition: height 0.2s ease;
+            overflow: hidden;
+            backdrop-filter: blur(18px) saturate(1.5);
+            -webkit-backdrop-filter: blur(18px) saturate(1.5);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06); }
+.terminal-panel.collapsed { height: 28px !important;
+            min-height: 28px !important;
+            max-height: 28px !important; }
+.terminal-panel.collapsed .terminal-body { display: none !important; }
+.terminal-panel.maximized { height: 65vh !important; }
+.terminal-header { height: 28px;
+            background: rgba(42, 48, 60, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            user-select: none;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px); }
+.terminal-tabs { display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            flex: 1;
+            min-width: 0; }
+.terminal-tabs::-webkit-scrollbar { display: none; }
+.terminal-tab { font-size: 11.5px;
+            font-weight: 400;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 6px;
+            border-bottom: 2px solid transparent;
+            white-space: nowrap;
+            flex-shrink: 0;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.15s ease; }
+.terminal-tab * { pointer-events: none; }
+.terminal-tab:hover { color: var(--text-active);
+            background: rgba(255, 255, 255, 0.05); }
+.terminal-tab.active { color: var(--text-active);
+            border-bottom-color: var(--sfarc-accent-glow, #38bdf8);
+            background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.1); }
+.terminal-controls { display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--icon-color);
+            font-size: 13px; }
+.terminal-controls i,
+        .terminal-controls .term-control-btn { cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 4px;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center; }
+.terminal-controls i:hover,
+        .terminal-controls .term-control-btn:hover { color: var(--text-active);
+            background: var(--item-hover); }
+.terminal-body { flex: 1;
+            padding: 8px 14px;
+            overflow-y: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background: rgba(24, 26, 33, 0.42);
+            color: var(--text-main); }
+.terminal-panel { animation: ce-rise 0.32s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both; }
+.terminal-tab { transition: color 0.18s ease, background 0.2s ease, border-color 0.25s ease; }
+.terminal-tab.active { animation: ce-slide-down 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+/* ── Security & Health audit report ── */
+        #terminal-body-security .sec-report { display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+#terminal-body-security .sec-header { display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(128, 128, 128, 0.14); }
+#terminal-body-security .sec-title { display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 650;
+            color: var(--text-active);
+            min-width: 0; }
+#terminal-body-security .sec-title i { color: var(--sfarc-accent-glow, #38bdf8);
+            font-size: 13px; }
+#terminal-body-security .sec-file { font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 10.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.1);
+            border: 1px solid rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.22);
+            padding: 1px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 45%; }
+#terminal-body-security .sec-score { display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0; }
+#terminal-body-security .sec-ring { position: relative;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: conic-gradient(var(--sec-color, #2ea043) calc(var(--score-val, 100) * 1%), rgba(128, 128, 128, 0.18) 0); }
+#terminal-body-security .sec-ring::before { content: '';
+            position: absolute;
+            inset: 5px;
+            border-radius: 50%;
+            background: rgba(24, 24, 24, 0.55); }
+#terminal-body-security .sec-ring-num { position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--sec-color, #2ea043);
+            white-space: nowrap; }
+#terminal-body-security .sec-verdict { display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.4;
+            background: rgba(46, 160, 67, 0.1);
+            border: 1px solid rgba(46, 160, 67, 0.26);
+            color: #2ea043; }
+#terminal-body-security .sec-verdict.warn { background: rgba(251, 191, 36, 0.08);
+            border-color: rgba(251, 191, 36, 0.26);
+            color: #fbbf24; }
+#terminal-body-security .sec-verdict i { font-size: 11px;
+            flex-shrink: 0; }
+#terminal-body-security .sec-verdict strong { font-weight: 650; }
+#terminal-body-security .sec-verdict .sec-muted { color: var(--text-muted); }
+#terminal-body-security .sec-item { display: flex;
+            align-items: flex-start;
+            gap: 9px;
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            border-radius: 8px;
+            padding: 7px 10px;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease; }
+#terminal-body-security .sec-item:hover { background: rgba(255, 255, 255, 0.07);
+            border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.35); }
+#terminal-body-security .sec-line { flex-shrink: 0;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 9.5px;
+            font-weight: 600;
+            background: rgba(148, 163, 184, 0.14);
+            color: var(--text-muted);
+            padding: 2px 6px;
+            border-radius: 5px;
+            margin-top: 1px;
+            min-width: 26px;
+            text-align: center; }
+#terminal-body-security .sec-item-body { min-width: 0;
+            flex: 1; }
+#terminal-body-security .sec-item-head { display: flex;
+            align-items: center;
+            gap: 8px; }
+#terminal-body-security .sec-item-title { font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-active);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            min-width: 0;
+            flex: 1;
+            word-break: break-word; }
+#terminal-body-security .sec-item-title i { color: var(--sev, #f87171);
+            font-size: 11px;
+            flex-shrink: 0; }
+#terminal-body-security .sec-item-desc { font-size: 10.5px;
+            color: var(--text-muted);
+            margin-top: 2px;
+            line-height: 1.4; }
+#terminal-body-security .sec-sev { flex-shrink: 0;
+            font-size: 8.5px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            padding: 2px 7px;
+            border-radius: 5px;
+            text-transform: uppercase; }
+#terminal-body-security .sec-sev.high { background: rgba(248, 113, 113, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(248, 113, 113, 0.3); }
+#terminal-body-security .sec-sev.medium { background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3); }
+#terminal-body-security .sec-sev.low { background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.1);
+            color: var(--sfarc-accent-glow, #38bdf8);
+            border: 1px solid rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.3); }
+/* Light mode — surfaces flip to soft slate tints on the white terminal */
+        body[data-theme="sfarc-light"] #terminal-body-security .sec-item { background: rgba(15, 23, 42, 0.03);
+            border-color: rgba(15, 23, 42, 0.09); }
+body[data-theme="sfarc-light"] #terminal-body-security .sec-item:hover { background: rgba(15, 23, 42, 0.05);
+            border-color: rgba(2, 132, 199, 0.3); }
+body[data-theme="sfarc-light"] #terminal-body-security .sec-sev.high { background: #fef2f2;
+            color: #dc2626;
+            border-color: #fca5a5; }
+body[data-theme="sfarc-light"] #terminal-body-security .sec-sev.medium { background: #fffbeb;
+            color: #b45309;
+            border-color: #fde68a; }
+body[data-theme="sfarc-light"] #terminal-body-security .sec-sev.low { background: #f0f9ff;
+            color: #0284c7;
+            border-color: #bae6fd; }
+body[data-theme="sfarc-light"] #terminal-body-security .sec-verdict { background: #f0fdf4;
+            border-color: #86efac;
+            color: #15803d; }
+body[data-theme="sfarc-light"] #terminal-body-security .sec-verdict.warn { background: #fffbeb;
+            border-color: #fde68a;
+            color: #b45309; }
+/* Report cards — soft entrance + lift */
+        #terminal-body-security .sec-item { animation: ce-slide-left 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+</style>
+</head>
+<body>
+<div class="main-editor-area">
+  
+  <div style="flex: 1; padding: 16px 20px; font-family: 'Fira Code', monospace; font-size: 13px; line-height: 1.7; color: #d4d4d4; position: relative; overflow: hidden; background: #1e1e1e;">
+    <div style="color: #38bdf8; font-weight: 600; margin-bottom: 6px;">AccountHandler.cls — Monaco Editor</div>
+    <div><span style="color:#4b5563; display:inline-block; width:26px;">1</span> <span style="color:#a5b4fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">2</span> <span style="color:#7dd3fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">3</span> <span style="color:#a5b4fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">4</span> <span style="color:#7dd3fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">5</span> <span style="color:#a5b4fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">6</span> <span style="color:#7dd3fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">7</span> <span style="color:#a5b4fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">8</span> <span style="color:#7dd3fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">9</span> <span style="color:#a5b4fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">10</span> <span style="color:#7dd3fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">11</span> <span style="color:#a5b4fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div><div><span style="color:#4b5563; display:inline-block; width:26px;">12</span> <span style="color:#7dd3fc">public class Demo</span> { <span style="color:#f9a8d4">String</span> a = <span style="color:#fde68a">'hello'</span>; }</div>
+  </div>
+
+  
+  <div id="terminal-panel" class="terminal-panel">
+    <div class="terminal-header">
+      <div class="terminal-tabs">
+        <div class="terminal-tab"><span style="font-size:15px;">🐞</span> Live Variables &amp; Logs</div>
+        <div class="terminal-tab"><span style="font-size:15px;">&gt;_</span> Output / Console</div>
+        <div class="terminal-tab"><span style="font-size:15px;">⚠</span> Problems</div>
+        <div class="terminal-tab active"><span style="font-size:15px;">🛡</span> Security &amp; Health <span style="background: rgba(239,68,68,0.2); color:#f87171; padding:1px 6px; border-radius:999px; font-size:10px;">45/100</span></div>
+        <div class="terminal-tab"><span style="font-size:15px;">◔</span> Code Coverage</div>
+        <div class="terminal-tab"><span style="font-size:15px;">🕘</span> Revisions</div>
+      </div>
+      <div class="terminal-controls"><span>🗑</span><span>⛶</span><span>⌄</span></div>
+    </div>
+    <div class="terminal-body" id="terminal-body-security">
+    <div class="sec-report">
+        <div class="sec-header">
+            <div class="sec-title">
+                <i class="fa-solid fa-shield-halved"></i> Security & Health Audit
+                <span class="sec-file" title="TestPmdController.cls">TestPmdController.cls</span>
+            </div>
+            <div class="sec-score">
+                <div class="sec-ring" style="--score-val: 45; --sec-color: #f87171;" title="Health Score: 45/100">
+                    <span class="sec-ring-num">45</span>
+                </div>
+            </div>
+        </div>
+        <div class="sec-verdict warn">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span><strong>3 risks detected</strong> <span class="sec-muted">Click any finding to jump to its line.</span></span>
+        </div>
+        
+    <div class="sec-item" style="--sev: #f87171;" data-line="11" title="Click to jump to line 11">
+        <span class="sec-line">L11</span>
+        <div class="sec-item-body">
+            <div class="sec-item-head">
+                <div class="sec-item-title"><i class="fa-solid fa-triangle-exclamation"></i> DML Statement inside Loop</div>
+                <span class="sec-sev high">HIGH</span>
+            </div>
+            <div class="sec-item-desc">Governor Limit Risk: DML statement inside a loop can hit the 150 DML statements governor limit.</div>
+        </div>
+    </div>
+
+    <div class="sec-item" style="--sev: #f87171;" data-line="11" title="Click to jump to line 11">
+        <span class="sec-line">L11</span>
+        <div class="sec-item-body">
+            <div class="sec-item-head">
+                <div class="sec-item-title"><i class="fa-solid fa-shield-halved"></i> Apex PMD: AvoidDmlInLoops</div>
+                <span class="sec-sev high">HIGH</span>
+            </div>
+            <div class="sec-item-desc">PMD Rule (AvoidDmlInLoops): Avoid executing DML operations inside loops.</div>
+        </div>
+    </div>
+
+    <div class="sec-item" style="--sev: #fbbf24;" data-line="11" title="Click to jump to line 11">
+        <span class="sec-line">L11</span>
+        <div class="sec-item-body">
+            <div class="sec-item-head">
+                <div class="sec-item-title"><i class="fa-solid fa-shield-halved"></i> Apex PMD: ApexCRUDViolation</div>
+                <span class="sec-sev medium">MEDIUM</span>
+            </div>
+            <div class="sec-item-desc">PMD Rule (ApexCRUDViolation): Ensure CRUD/FLS permissions are checked or Security.stripInaccessible() is used before DML operations.</div>
+        </div>
+    </div>
+
+    </div>
+</div>
+  </div>
+
+</div>
+</body>
+</html>

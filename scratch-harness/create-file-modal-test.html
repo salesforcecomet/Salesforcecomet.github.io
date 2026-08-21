@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Create File Modal Theme Test</title>
+<style>
+  body { font-family: -apple-system, 'Segoe UI', sans-serif; margin: 0; background: #666; }
+  body[data-theme="sfarc-light"] { background: #e2e4e8; }
+
+  .modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.65) !important;
+    display: flex; align-items: center; justify-content: center; z-index: 9999;
+  }
+  .modal-card {
+    background: #18181b !important;
+    border: 1px solid #27272a !important;
+    border-radius: 12px !important;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.7) !important;
+    display: flex; flex-direction: column; gap: 14px; padding: 18px 22px 16px;
+  }
+  .modal-title { font-size: 15px; font-weight: 700; color: var(--text-active); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .modal-title-left { display: flex; align-items: center; gap: 8px; }
+
+  /* ===== the rules added to code-editor.html ===== */
+  #create-file-modal .modal-card { background: #18181b !important; border-color: #27272a !important; box-shadow: 0 16px 32px rgba(0,0,0,0.6) !important; }
+  #create-file-modal .modal-title span { color: #f4f4f5 !important; }
+  #create-file-modal .modal-close-btn { color: #a1a1aa !important; }
+  #create-file-modal label { color: #a1a1aa !important; }
+  #create-file-modal .form-control { background: #27272a !important; border-color: #3f3f46 !important; color: #f4f4f5 !important; }
+  #create-file-modal .form-control::placeholder { color: #71717a !important; }
+  #create-file-modal #create-file-bundle-name { color: #38bdf8 !important; }
+  #create-file-modal .ce-modal-hint { background: rgba(255,255,255,0.03) !important; border-color: #27272a !important; color: #a1a1aa !important; }
+  #create-file-modal .ce-modal-hint-title { color: #cbd5e1 !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .modal-card { background: #ffffff !important; border-color: #d8dee6 !important; box-shadow: 0 16px 32px rgba(15,23,42,0.18) !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .modal-title span { color: #1f2328 !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .modal-close-btn { color: #64748b !important; }
+  body[data-theme="sfarc-light"] #create-file-modal label { color: #4b5563 !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .form-control { background: #ffffff !important; border-color: #d1d5db !important; color: #111827 !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .form-control::placeholder { color: #9ca3af !important; }
+  body[data-theme="sfarc-light"] #create-file-modal #create-file-bundle-name { color: #0284c7 !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .ce-modal-hint { background: #f6f8fa !important; border-color: #d8dde6 !important; color: #475569 !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .ce-modal-hint-title { color: #0f172a !important; }
+  body[data-theme="sfarc-light"] #create-file-modal .create-file-modal-error { background: #fef2f2 !important; border-color: #fca5a5 !important; color: #b91c1c !important; }
+</style>
+</head>
+<body>
+  <div id="create-file-modal" class="modal-overlay" style="display:flex;">
+    <div class="modal-card" style="width:420px; padding:18px; border-radius:10px; background:#18181b; border:1px solid #27272a; box-shadow:0 16px 32px rgba(0,0,0,0.6);">
+      <div class="modal-title" style="margin-bottom:12px; border-bottom:1px solid #27272a; padding-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+        <span class="modal-title-left" style="font-size:14px; font-weight:700; color:#f4f4f5; display:flex; align-items:center; gap:6px;">
+          <i class="fa-solid fa-file-circle-plus" style="color:#38bdf8; font-size:14px;"></i> New File in LWC Bundle
+        </span>
+        <button id="create-file-modal-cancel-btn" class="modal-close-btn" style="background:transparent; border:none; color:#a1a1aa; cursor:pointer; font-size:14px;"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#a1a1aa; margin-bottom:4px; display:block;">Target Component Bundle</label>
+        <input type="text" id="create-file-bundle-name" class="form-control" style="background:#27272a; border:1px solid #3f3f46; color:#38bdf8; font-weight:600; padding:5px 8px; border-radius:5px; font-size:12px; height:30px; box-sizing:border-box; width:100%;" readonly value="account">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label style="font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#a1a1aa; margin-bottom:4px; display:block;">New File Name</label>
+        <input type="text" id="create-file-input-name" class="form-control" style="background:#27272a; border:1px solid #3f3f46; color:#f4f4f5; padding:5px 8px; border-radius:5px; font-size:12px; height:30px; box-sizing:border-box; width:100%;" placeholder="e.g. helper.js, styles.css, icon.svg, template.html">
+      </div>
+      <div class="ce-modal-hint" style="font-size:11px; color:#a1a1aa; margin-bottom:14px; background:rgba(255,255,255,0.03); padding:8px 10px; border-radius:6px; border:1px solid #27272a;">
+        <span class="ce-modal-hint-title" style="color:#cbd5e1; font-weight:600;">Supported file extensions:</span><br>
+        <code>.js</code> (helper module), <code>.css</code> (stylesheet), <code>.svg</code> (icon), <code>.html</code> (template), <code>.json</code> (data)
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:4px;">
+        <button id="create-file-modal-confirm-btn" class="btn btn-primary" style="padding:6px 14px; font-size:12px; font-weight:600; background:#0284c7; color:white; border:none; border-radius:5px; cursor:pointer;">Create File</button>
+      </div>
+    </div>
+  </div>
+  <button onclick="document.body.setAttribute('data-theme', document.body.getAttribute('data-theme')==='sfarc-light' ? 'sfarc-dark' : 'sfarc-light')" style="position:fixed; bottom:10px; left:10px; z-index:10000;">🌗 Toggle</button>
+</body>
+</html>

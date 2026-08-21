@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="theme-manager.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diff Checker - salesforce comet</title>
+    <script src="lib/font-awesome.min.js" defer></script>
+    <link rel="stylesheet" href="inspector.css">
+    <link rel="stylesheet" href="glass-toast.css">
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-deep: #000000;
+            --border: #333;
+            --text: #e0e0e0;
+            --accent: var(--sfarc-accent, #2196f3);
+            --diff-add: rgba(46, 160, 67, 0.15);
+            --diff-remove: rgba(248, 81, 70, 0.15);
+            --diff-add-text: #3fb950;
+            --diff-remove-text: #f85149;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #444;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .toolbar {
+            background: var(--bg-dark);
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #diff-editor-container {
+            flex: 1;
+            margin: 20px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-dark);
+            position: relative;
+            min-height: 180px;
+        }
+
+        .toolbar-group { display: flex; align-items: center; gap: 8px; }
+        .toolbar-separator { width: 1px; height: 26px; background: var(--border); }
+        .toolbar select { height: 32px; padding: 0 30px 0 9px; border-radius: 4px; border: 1px solid var(--border); background: #292929; color: white; }
+        .diff-option { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #cbd5e1; }
+        .diff-stats { margin-left: auto; color: #a1a1aa; font-size: 12px; white-space: nowrap; }
+        .diff-stats .added { color: #3fb950; }
+        .diff-stats .removed { color: #f85149; }
+        .diff-loading { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: var(--bg-dark); color: #a1a1aa; font-size: 13px; }
+        .diff-spinner { width: 24px; height: 24px; border: 3px solid #444; border-top-color: var(--accent); border-radius: 50%; animation: diff-spin .8s linear infinite; }
+        @keyframes diff-spin { to { transform: rotate(360deg); } }
+        .diff-error { color: #f87171; max-width: 520px; text-align: center; line-height: 1.5; }
+        button:disabled { opacity: .5; cursor: not-allowed; }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            background: #333;
+            color: white;
+            border: 1px solid var(--border);
+            padding: 6px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .diff-line {
+            display: block;
+            padding: 0 4px;
+        }
+
+        .line-added {
+            background: var(--diff-add);
+            color: var(--diff-add-text);
+        }
+
+        .line-removed {
+            background: var(--diff-remove);
+            color: var(--diff-remove-text);
+        }
+    </style>
+    <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+
+        <script src="favicon-glyphs.js"></script>
+    <script src="colored-favicon.js" defer></script>
+</head>
+
+<body class="sfarc-dark-theme">
+    <div class="header">
+        <i class="fa-solid fa-columns"></i>
+        <span>Diff Checker</span>
+    </div>
+
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <button id="compare-btn" class="btn-primary" disabled>COMPARE</button>
+            <button id="clear-btn" class="btn-secondary" disabled>CLEAR</button>
+            <button id="swap-btn" class="btn-secondary" disabled><i class="fa-solid fa-right-left"></i> SWAP</button>
+            <button id="view-btn" class="btn-secondary" disabled title="Toggle comparison layout">INLINE VIEW</button>
+        </div>
+        <div class="toolbar-separator"></div>
+        <div class="toolbar-group">
+            <button id="load-left-btn" class="btn-secondary" disabled>OPEN LEFT</button>
+            <button id="load-right-btn" class="btn-secondary" disabled>OPEN RIGHT</button>
+            <button id="copy-left-right-btn" class="btn-secondary" disabled title="Replace right with left">LEFT → RIGHT</button>
+            <button id="copy-right-left-btn" class="btn-secondary" disabled title="Replace left with right">LEFT ← RIGHT</button>
+            <input id="left-file-input" type="file" hidden><input id="right-file-input" type="file" hidden>
+        </div>
+        <div class="toolbar-separator"></div>
+        <div class="toolbar-group">
+            <select id="language-select" aria-label="Comparison language" disabled>
+                <option value="plaintext">Plain text</option><option value="java">Apex / Java</option><option value="javascript">JavaScript</option><option value="html">HTML</option><option value="xml">XML</option><option value="css">CSS</option><option value="json">JSON</option>
+            </select>
+            <label class="diff-option"><input id="ignore-whitespace" type="checkbox" checked disabled> Ignore trim whitespace</label>
+            <button id="prev-change-btn" class="btn-secondary" disabled title="Previous difference (Shift+F7)">↑ CHANGE</button>
+            <button id="next-change-btn" class="btn-secondary" disabled title="Next difference (F7)">↓ CHANGE</button>
+        </div>
+        <div id="diff-stats" class="diff-stats" aria-live="polite">Loading editor…</div>
+    </div>
+
+    <div id="diff-editor-container"><div id="diff-loading" class="diff-loading" role="status"><span class="diff-spinner"></span><span>Loading comparison editor…</span></div></div>
+
+    <script src="../lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="glass-toast.js"></script>
+    <script src="diff-checker.js"></script>
+    <script src="custom-dropdown.js"></script>
+</body>
+
+</html>

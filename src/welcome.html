@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="theme-manager.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#070a0f">
+    <title>Salesforce Comet — Welcome</title>
+
+    <link href="local-fonts.css" rel="stylesheet">
+    <link rel="stylesheet" href="glass-toast.css">
+    <link rel="icon" href="../icons/icon-48.png" type="image/png">
+
+    <style>
+        :root {
+            --bg: #070a0f;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --subtle: #64748b;
+            --line: rgba(255, 255, 255, 0.09);
+            --line-strong: rgba(255, 255, 255, 0.15);
+            --accent: var(--sfarc-accent-glow, #38bdf8);
+            --accent-2: #2dd4bf;
+            --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 50% 42%, rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.055), transparent 28%),
+                radial-gradient(circle at 50% 60%, rgba(45, 212, 191, 0.035), transparent 34%),
+                var(--bg);
+            color: var(--text);
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient premium lighting */
+        .ambient {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .ambient::before {
+            content: "";
+            position: absolute;
+            width: 620px;
+            height: 620px;
+            left: 50%;
+            top: 47%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(circle,
+                    rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.075) 0%,
+                    rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.025) 30%,
+                    transparent 68%);
+            filter: blur(18px);
+            opacity: 0;
+            animation: ambientIn 1.6s var(--ease) 0.15s forwards;
+        }
+
+        .ambient::after {
+            content: "";
+            position: absolute;
+            width: 360px;
+            height: 220px;
+            left: 50%;
+            top: 45%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: radial-gradient(ellipse,
+                    rgba(45, 212, 191, 0.055),
+                    transparent 70%);
+            filter: blur(30px);
+            opacity: 0;
+            animation: ambientIn 1.8s var(--ease) 0.3s forwards;
+        }
+
+        /* Very subtle center surface */
+        /* Premium glassmorphism surface with softly faded corners */
+        .surface {
+            position: absolute;
+            width: min(760px, 88vw);
+            height: min(590px, 82vh);
+            border-radius: 42px;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            opacity: 0;
+            transform: scale(0.97);
+            animation: surfaceIn 1s var(--ease) forwards;
+
+            /* Fade the physical card itself toward the edges/corners */
+            -webkit-mask-image: radial-gradient(ellipse 72% 70% at 50% 50%,
+                    #000 45%,
+                    rgba(0, 0, 0, 0.88) 60%,
+                    rgba(0, 0, 0, 0.42) 76%,
+                    transparent 100%);
+            mask-image: radial-gradient(ellipse 72% 70% at 50% 50%,
+                    #000 45%,
+                    rgba(0, 0, 0, 0.88) 60%,
+                    rgba(0, 0, 0, 0.42) 76%,
+                    transparent 100%);
+        }
+
+        .content {
+            position: relative;
+            z-index: 5;
+            width: min(700px, 90vw);
+            padding: 34px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(12px);
+            animation: contentIn 1s var(--ease) 0.25s forwards;
+        }
+
+        /* Logo */
+        .brand-mark {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 25px;
+            display: grid;
+            place-items: center;
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            animation: logoFloat 5s ease-in-out infinite;
+        }
+
+        .brand-mark::before {
+            content: "";
+            position: absolute;
+            inset: -26px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent 0deg, rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.5) 42deg, transparent 95deg, transparent 175deg, rgba(45, 212, 191, 0.42) 225deg, transparent 275deg, transparent 360deg);
+            -webkit-mask-image: radial-gradient(circle, transparent 62%, #000 67%, #000 78%, transparent 82%);
+            mask-image: radial-gradient(circle, transparent 62%, #000 67%, #000 78%, transparent 82%);
+            animation: ringSpin 7s linear infinite;
+            opacity: 0.9;
+            pointer-events: none;
+        }
+
+        .brand-mark::after {
+            content: "";
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.3), transparent 65%);
+            filter: blur(10px);
+            animation: logoGlow 3.2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .brand-mark img {
+            position: relative;
+            z-index: 2;
+            width: 170px;
+            height: 170px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 16px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.45));
+        }
+
+        @keyframes ringSpin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes logoGlow {
+
+            0%,
+            100% {
+                opacity: 0.65;
+                transform: scale(0.95);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.06);
+            }
+        }
+
+        /* Brand title */
+        .eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: var(--sfarc-accent-light, #5eb4ff);
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .eyebrow-dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 12px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.75);
+        }
+
+        .title {
+            min-height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-size: clamp(36px, 5vw, 50px);
+            line-height: 1.05;
+            font-weight: 300 !important;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+
+        #typewriterText {
+            font-weight: 300 !important;
+            background: linear-gradient(110deg, #ffffff 18%, rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.25) 42%, var(--sfarc-accent-light, #5eb4ff) 62%, #ffffff 84%);
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleShimmer 7s linear infinite;
+        }
+
+        @keyframes titleShimmer {
+            0% {
+                background-position: 120% center;
+            }
+
+            100% {
+                background-position: -80% center;
+            }
+        }
+
+        .title-accent {
+            font-weight: 300 !important;
+            background: linear-gradient(110deg,
+                    #ffffff 15%,
+                    rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.25) 42%,
+                    var(--sfarc-accent-light, #5eb4ff) 60%,
+                    #ffffff 82%);
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: titleShimmer 7s linear infinite;
+        }
+
+        .cursor {
+            width: 2px;
+            height: 42px;
+            margin-left: 8px;
+            border-radius: 2px;
+            background: var(--sfarc-accent-glow, #38bdf8);
+            box-shadow: 0 0 14px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.55);
+            animation: cursorBlink 0.85s ease-in-out infinite;
+        }
+
+        /* Secondary content */
+        .secondary {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 28px;
+            opacity: 0;
+            transform: translateY(12px);
+            transition:
+                opacity 0.9s var(--ease),
+                transform 0.9s var(--ease);
+        }
+
+        .secondary.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .description {
+            margin-bottom: 28px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.6;
+            letter-spacing: -0.1px;
+        }
+
+        .description strong,
+        .description span {
+            color: #e2e8f0;
+            font-weight: 400;
+        }
+
+        /* Shortcut */
+        .shortcut {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .key {
+            position: relative;
+            width: 108px;
+            height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-radius: 14px;
+            background:
+                linear-gradient(180deg,
+                    rgba(255, 255, 255, 0.09),
+                    rgba(255, 255, 255, 0.03) 72%,
+                    rgba(0, 0, 0, 0.1));
+            border: 1px solid var(--line-strong);
+            box-shadow:
+                0 3px 0 rgba(0, 0, 0, 0.32),
+                0 12px 30px rgba(0, 0, 0, 0.24),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition:
+                transform 0.2s var(--ease),
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .key::after {
+            content: "";
+            position: absolute;
+            inset: 1px;
+            border-radius: 15px;
+            pointer-events: none;
+            background: linear-gradient(135deg,
+                    rgba(255, 255, 255, 0.035),
+                    transparent 50%);
+        }
+
+        .key-symbol {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            place-items: center;
+            color: #e2e8f0;
+            line-height: 1;
+        }
+
+        .key-symbol svg {
+            display: block;
+        }
+
+        .key-label {
+            position: relative;
+            z-index: 1;
+            color: #64748b;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .key.active {
+            transform: translateY(-3px) scale(1.015);
+            border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.7);
+            background:
+                linear-gradient(180deg,
+                    rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.17),
+                    rgba(45, 212, 191, 0.075));
+            box-shadow:
+                0 12px 38px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.16),
+                0 0 0 1px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.06),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .key.active .key-symbol {
+            color: #fff;
+        }
+
+        .key.active .key-label {
+            color: #93c5fd;
+        }
+
+        .plus {
+            width: 20px;
+            height: 20px;
+            display: grid;
+            place-items: center;
+            color: #475569;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .shortcut-caption {
+            margin-bottom: 30px;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.4px;
+            text-transform: uppercase;
+        }
+
+        /* Bottom controls */
+        .bottom-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 14px;
+            border-radius: 999px;
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.18);
+            color: #6ee7b7;
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #34d399;
+            box-shadow: 0 0 10px rgba(52, 211, 153, 0.65);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 8px rgba(52, 211, 153, 0.55);
+            }
+
+            50% {
+                opacity: 0.55;
+                box-shadow: 0 0 14px rgba(52, 211, 153, 0.85);
+            }
+        }
+
+        .divider {
+            width: 1px;
+            height: 16px;
+            background: var(--line);
+        }
+
+        /* Launch state */
+        body.launching .content,
+        body.launching .surface {
+            opacity: 0;
+            transform: scale(0.98);
+            transition:
+                opacity 0.42s ease,
+                transform 0.42s var(--ease);
+        }
+
+        body.launching .ambient::before,
+        body.launching .ambient::after {
+            opacity: 0 !important;
+            transition: opacity 0.4s ease;
+        }
+
+        @keyframes ambientIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.86);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        @keyframes surfaceIn {
+            from {
+                opacity: 0;
+                transform: scale(0.97);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes contentIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes logoFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes cursorBlink {
+
+            0%,
+            45% {
+                opacity: 1;
+            }
+
+            50%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes titleShimmer {
+            0% {
+                background-position: 200% center;
+            }
+
+            100% {
+                background-position: -20% center;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .content {
+                padding: 24px;
+            }
+
+            .title {
+                font-size: 34px;
+                letter-spacing: -1.5px;
+            }
+
+            .key {
+                width: 96px;
+                height: 64px;
+            }
+
+            .description {
+                font-size: 13px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+
+<body>
+    <div class="ambient"></div>
+    <div class="surface"></div>
+
+    <main class="content">
+        <div class="brand-mark">
+            <img src="../icons/icon-128.png" alt="Salesforce Comet" id="extensionIcon">
+        </div>
+
+        <h1 class="title">
+            <span id="typewriterText"></span>
+            <span class="cursor" id="typewriterCursor"></span>
+        </h1>
+
+        <section class="secondary" id="secondaryContent">
+            <p class="description">
+                Your faster workspace for <span style="color: #e2e8f0; font-weight: 400;">Salesforce development, inspection &amp; debugging.</span>
+            </p>
+
+            <div class="shortcut" aria-label="Shift plus Space shortcut">
+                <div class="key" id="keyBoxShift">
+                    <div class="key-symbol">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                    </div>
+                    <div class="key-label">Shift</div>
+                </div>
+
+                <div class="plus">+</div>
+
+                <div class="key" id="keyBoxSpace">
+                    <div class="key-symbol">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 10v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4"/></svg>
+                    </div>
+                    <div class="key-label">Space</div>
+                </div>
+            </div>
+
+            <div class="shortcut-caption">Press to launch Comet</div>
+
+            <div class="bottom-row">
+                <div class="status">
+                    <span class="status-dot"></span>
+                    Ready to launch
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="glass-toast.js"></script>
+    <script src="welcome-onboarding.js"></script>
+    <script src="custom-dropdown.js"></script>
+</body>
+
+</html>

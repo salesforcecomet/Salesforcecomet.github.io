@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Review Banner Preview</title>
+<style>
+html, body { margin: 0; background: #f1f5f9; font-family: Inter, -apple-system, sans-serif; }
+#sfarc-panel {
+  position: fixed; inset: 0; display: flex; flex-direction: column;
+  --primary-color: #0176d3; --primary-hover: #005fb2;
+  --sfarc-text: #1e293b; --sfarc-secondary-text: #64748b;
+  --sfarc-border: #cbd5e1; --sfarc-bg: #ffffff;
+  background: #f8fafc;
+}
+.controls { display: flex; gap: 12px; padding: 10px 14px; align-items: center; border-bottom: 1px solid #e2e8f0; background: #fff; font-size: 12px; }
+.controls label { display: flex; align-items: center; gap: 6px; }
+.controls button { border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:4px 10px;cursor:pointer;font-size:12px }
+#sfarc-panel.sfarc-dark-theme {
+  background: #121214;
+  --sfarc-text: #f8fafc; --sfarc-secondary-text: #94a3b8;
+  --sfarc-border: #334155; --sfarc-bg: #1e293b;
+}
+/* ── Review & Feedback banner (glassmorphism) ─────────────────────────── */
+#sfarc-panel .sfarc-rb-banner {
+    display: none;
+    margin: 10px 12px 0 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    position: relative;
+    font-family: var(--sfarc-font-family, sans-serif);
+    background: rgba(255, 255, 255, 0.72);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    animation: sfarc-rb-in 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#sfarc-panel.sfarc-dark-theme .sfarc-rb-banner {
+    background: rgba(30, 34, 45, 0.82);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+@keyframes sfarc-rb-in {
+    from { opacity: 0; transform: translateY(-6px) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#sfarc-panel .sfarc-rb-step {
+    gap: 10px;
+}
+
+#sfarc-panel .sfarc-rb-step.sfarc-rb-row {
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    animation: sfarc-rb-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#sfarc-panel .sfarc-rb-message {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--sfarc-text, #1e293b);
+}
+
+#sfarc-panel .sfarc-rb-message strong {
+    font-weight: 700;
+    color: var(--primary-color, #0176d3);
+}
+
+#sfarc-panel .sfarc-rb-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+}
+
+#sfarc-panel .sfarc-rb-icon-sparkle {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.12);
+}
+
+#sfarc-panel .sfarc-rb-icon-star {
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.12);
+}
+
+#sfarc-panel .sfarc-rb-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#sfarc-panel .sfarc-rb-btn {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 26px;
+    padding: 0 12px;
+    border-radius: 7px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#sfarc-panel .sfarc-rb-btn svg {
+    flex-shrink: 0;
+}
+
+#sfarc-panel .sfarc-rb-btn-primary {
+    background: var(--primary-color, #0176d3);
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(1, 118, 211, 0.3);
+}
+
+#sfarc-panel .sfarc-rb-btn-primary:hover {
+    background: var(--primary-hover, #005fb2);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(1, 118, 211, 0.38);
+}
+
+#sfarc-panel .sfarc-rb-btn-ghost {
+    background: rgba(15, 23, 42, 0.05);
+    color: var(--sfarc-text, #334155);
+    border-color: rgba(15, 23, 42, 0.16);
+}
+
+#sfarc-panel .sfarc-rb-btn-ghost:hover {
+    background: rgba(15, 23, 42, 0.09);
+    border-color: rgba(15, 23, 42, 0.28);
+    transform: translateY(-1px);
+}
+
+#sfarc-panel .sfarc-rb-btn-success {
+    background: #059669;
+    color: #ffffff;
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3);
+}
+
+#sfarc-panel .sfarc-rb-btn-success:hover {
+    background: #047857;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 14px rgba(5, 150, 105, 0.38);
+}
+
+#sfarc-panel .sfarc-rb-btn-text {
+    background: transparent;
+    color: var(--sfarc-secondary-text, #64748b);
+    border-color: transparent;
+    padding: 0 6px;
+}
+
+#sfarc-panel .sfarc-rb-btn-text:hover {
+    color: var(--sfarc-text, #1e293b);
+    background: rgba(15, 23, 42, 0.06);
+}
+
+#sfarc-panel.sfarc-dark-theme .sfarc-rb-btn-ghost {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--sfarc-text, #cbd5e1);
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+#sfarc-panel.sfarc-dark-theme .sfarc-rb-btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.28);
+}
+
+#sfarc-panel.sfarc-dark-theme .sfarc-rb-btn-text {
+    color: var(--sfarc-secondary-text, #94a3b8);
+}
+
+#sfarc-panel.sfarc-dark-theme .sfarc-rb-btn-text:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#sfarc-panel .sfarc-rb-feedback-head {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--sfarc-text, #1e293b);
+    margin-bottom: 8px;
+}
+
+#sfarc-panel .sfarc-rb-feedback-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+#sfarc-panel .sfarc-rb-input {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    border-radius: 7px;
+    border: 1px solid var(--sfarc-border, #cbd5e1);
+    background: var(--sfarc-bg, #ffffff);
+    color: var(--sfarc-text, #0f172a);
+    outline: none;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+#sfarc-panel .sfarc-rb-input:focus {
+    border-color: var(--primary-color, #0176d3);
+    box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.15);
+}
+
+#sfarc-panel.sfarc-dark-theme .sfarc-rb-input {
+    background: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: var(--sfarc-text, #f8fafc);
+}
+
+#sfarc-panel .sfarc-rb-step-feedback {
+    flex-direction: column;
+    gap: 8px;
+}
+</style></head>
+<body>
+<div id="sfarc-panel">
+  <div class="controls">
+    <label><input type="checkbox" id="darkTgl" onchange="document.getElementById('sfarc-panel').classList.toggle('sfarc-dark-theme', this.checked)"> Dark</label>
+    <button onclick="showStep(1)">Step 1: Question</button>
+    <button onclick="showStep(2)">Step 2: Review</button>
+    <button onclick="showStep(3)">Step 3: Feedback</button>
+  </div>
+<div id="sfarc-review-banner" class="sfarc-rb-banner" style="display: none;">
+                        <!-- Step 1: Initial Question -->
+                        <div id="sfarc-rb-step-1" class="sfarc-rb-step sfarc-rb-row" style="display: flex;">
+                            <div class="sfarc-rb-message">
+                                <span class="sfarc-rb-icon sfarc-rb-icon-sparkle"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path><path d="M5 3v4"></path><path d="M19 17v4"></path><path d="M3 5h4"></path><path d="M17 19h4"></path></svg></span>
+                                <span class="sfarc-rb-text">Has <strong>salesforce comet</strong> been helpful for your dev work?</span>
+                            </div>
+                            <div class="sfarc-rb-actions">
+                                <button id="sfarc-rb-yes-btn" class="sfarc-rb-btn sfarc-rb-btn-primary">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
+                                    Yes, useful
+                                </button>
+                                <button id="sfarc-rb-feedback-btn" class="sfarc-rb-btn sfarc-rb-btn-ghost">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                    Feedback
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Review Prompt -->
+                        <div id="sfarc-rb-step-2" class="sfarc-rb-step sfarc-rb-row" style="display: none;">
+                            <div class="sfarc-rb-message">
+                                <span class="sfarc-rb-icon sfarc-rb-icon-star"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></span>
+                                <span class="sfarc-rb-text">Awesome! An honest Chrome Web Store review would mean the world to us.</span>
+                            </div>
+                            <div class="sfarc-rb-actions">
+                                <a id="sfarc-rb-rate-link" class="sfarc-rb-btn sfarc-rb-btn-success" href="https://chromewebstore.google.com/detail/pigmbghmkdaalhebdhfoeldcekhiemhi?utm_source=item-share-cb" target="_blank">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    Leave Review
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Feedback Input -->
+                        <div id="sfarc-rb-step-feedback" class="sfarc-rb-step sfarc-rb-step-feedback" style="display: none;">
+                            <div class="sfarc-rb-feedback-head">What could we improve? Share your thoughts:</div>
+                            <div class="sfarc-rb-feedback-row">
+                                <input type="text" id="sfarc-rb-feedback-text" class="sfarc-rb-input" placeholder="Tell us about a missing feature or bug...">
+                                <button id="sfarc-rb-send-feedback-btn" class="sfarc-rb-btn sfarc-rb-btn-primary">Send</button>
+                                <button id="sfarc-rb-cancel-feedback-btn" class="sfarc-rb-btn sfarc-rb-btn-text">Cancel</button>
+                            </div>
+                        </div>
+</div>
+<script>
+function showStep(n) {
+  const steps = ['sfarc-rb-step-1','sfarc-rb-step-2','sfarc-rb-step-feedback'];
+  steps.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = (i === n-1) ? 'flex' : 'none';
+  });
+}
+const banner = document.getElementById('sfarc-review-banner');
+if (banner) banner.style.display = 'block';
+showStep(1);
+</script>
+</body></html>

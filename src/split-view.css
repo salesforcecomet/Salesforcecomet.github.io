@@ -1,0 +1,95 @@
+/* Split View Layout */
+.sfarc-split-view {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #fff;
+}
+
+.sfarc-dark-theme .sfarc-split-view {
+    background: #1e1e1e;
+}
+
+/* Left Pane (List & Search) */
+.sfarc-split-left {
+    width: 240px;
+    min-width: 180px;
+    max-width: 320px;
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e0e0e0;
+    background: #f9f9f9;
+}
+
+.sfarc-dark-theme .sfarc-split-left {
+    border-right-color: #3a3a3a;
+    background: #252525;
+}
+
+/* Right Pane (Details) */
+.sfarc-split-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    /* Scroll inside content */
+    background: #fff;
+    position: relative;
+    padding: 0 20px 20px 20px;
+    overflow-y: auto;
+}
+
+.sfarc-dark-theme .sfarc-split-right {
+    background: #1e1e1e;
+}
+
+/* Local Search in Split View */
+.sfarc-local-search-container {
+    padding: 12px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+    z-index: 10;
+}
+
+.sfarc-dark-theme .sfarc-local-search-container {
+    border-bottom-color: #3a3a3a;
+    background: #252525;
+}
+
+/* List Container within Left Pane */
+.sfarc-split-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 10px 0;
+}
+
+/* Detail Panel Content */
+.sfarc-detail-panel {
+    width: 100%;
+    height: 100%;
+}
+
+.sfarc-detail-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #888;
+    text-align: center;
+}
+
+.sfarc-dark-theme .sfarc-detail-placeholder {
+    color: #aaa;
+}
+
+/* Recent Shortcuts Grid (Right Pane style) */
+.sfarc-shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 16px;
+    padding: 10px;
+}

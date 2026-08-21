@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tap Outside to Close — Drawer Demo</title>
+<style>
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1e1f24, #17181c);
+        font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        color: #e2e8f0;
+    }
+    .hint { font-size: 12.5px; color: #94a3b8; max-width: 520px; text-align: center; line-height: 1.6; }
+    .hint b { color: #7dd3fc; }
+    .open-btn {
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 9px 16px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+    }
+    .open-btn:hover { background: #1d4ed8; }
+    .open-btn + .open-btn { background: #7c3aed; }
+    .open-btn + .open-btn:hover { background: #6d28d9; }
+
+    /* ── Panel frame (mimics the Salesforce page the panel floats over) ── */
+    #panel-frame {
+        position: relative;
+        width: 900px;
+        max-width: 94vw;
+        height: 560px;
+        border-radius: 12px;
+        background:
+            radial-gradient(600px 300px at 20% 10%, rgba(56, 189, 248, 0.10), transparent),
+            linear-gradient(160deg, #24262e, #1a1c22);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+    }
+    /* fake panel content */
+    .fake-content {
+        padding: 30px;
+        color: #94a3b8;
+        font-size: 12px;
+        letter-spacing: 0.04em;
+    }
+
+    /* ── Drawer modal (same behavior as #sfarc-level-modal) ── */
+    .sfarc-drawer-modal {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.45);
+        display: none;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 10px;
+        box-sizing: border-box;
+        z-index: 10;
+    }
+    .sfarc-drawer-modal[style*="display: flex"] { display: flex !important; }
+    .sfarc-modal-content {
+        width: 420px;
+        max-width: calc(100% - 20px);
+        height: 100%;
+        background: #161922;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .sfarc-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sfarc-modal-header h3 { margin: 0; font-size: 15px; font-weight: 700; color: #fff; }
+    .sfarc-modal-header-actions { display: flex; align-items: center; gap: 8px; }
+    .sfarc-btn-primary {
+        background: #2563eb; color: #fff; border: none; border-radius: 8px;
+        font-size: 12px; font-weight: 600; padding: 6px 12px; cursor: pointer;
+        display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+    }
+    .sfarc-btn-primary:hover { background: #1d4ed8; }
+    .sfarc-modal-close {
+        background: rgba(255, 255, 255, 0.08); color: #e2e8f0; border: none;
+        border-radius: 8px; width: 28px; height: 28px; font-size: 16px; cursor: pointer; line-height: 1;
+    }
+    .sfarc-modal-close:hover { background: rgba(255, 255, 255, 0.16); }
+    .sfarc-modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+    .sfarc-form-group label { font-size: 12px; color: #94a3b8; display: block; margin-bottom: 6px; }
+    .sfarc-form-group label i { color: #ef4444; font-style: normal; }
+    .sfarc-form-group input {
+        width: 100%; box-sizing: border-box; padding: 8px 10px;
+        background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+        color: #f1f5f9; font-size: 12.5px; outline: none;
+    }
+    .sfarc-level-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 11.5px; }
+    .sfarc-level-table th {
+        text-align: left; text-transform: uppercase; font-size: 9.5px; letter-spacing: 0.05em;
+        color: #64748b; padding: 6px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sfarc-level-table th:not(:first-child) { text-align: center; }
+    .sfarc-level-table td { padding: 6px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); color: #cbd5e1; }
+    .sfarc-level-table td:not(:first-child) { text-align: center; }
+    .sfarc-level-table input[type="radio"] { accent-color: #2563eb; }
+</style>
+</head>
+<body>
+    <div class="hint">This is the panel's <b>Create Log Level</b> drawer (and a second stacked drawer).<br>
+    Tap the dark area <b>outside</b> the card — or press <b>Esc</b> — and the drawer closes.</div>
+
+    <div style="display:flex; gap:10px;">
+        <button class="open-btn" id="open-level">Create Log Level</button>
+        <button class="open-btn" id="open-trace">Stack Trace Drawer</button>
+    </div>
+
+    <div id="panel-frame">
+        <div class="fake-content">SALESFORCE PAGE · the panel floats over this</div>
+
+        <!-- Trace drawer -->
+        <div id="sfarc-trace-modal" class="sfarc-drawer-modal" style="display: none;">
+            <div class="sfarc-modal-content">
+                <div class="sfarc-modal-header">
+                    <h3>New Trace Flag</h3>
+                    <div class="sfarc-modal-header-actions">
+                        <button class="sfarc-modal-close">&times;</button>
+                    </div>
+                </div>
+                <div class="sfarc-modal-body" style="color:#94a3b8; font-size:12px;">Trace flag drawer content…</div>
+            </div>
+        </div>
+
+        <!-- Create Log Level drawer -->
+        <div id="sfarc-level-modal" class="sfarc-drawer-modal" style="display: none;">
+            <div class="sfarc-modal-content">
+                <div class="sfarc-modal-header">
+                    <h3>Create Log Level</h3>
+                    <div class="sfarc-modal-header-actions">
+                        <button class="sfarc-btn-primary" id="save-level">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                            Save Log Level
+                        </button>
+                        <button class="sfarc-modal-close">&times;</button>
+                    </div>
+                </div>
+                <div class="sfarc-modal-body">
+                    <div class="sfarc-form-group">
+                        <label>Name <i>*</i></label>
+                        <input type="text" placeholder="My Debug Level">
+                    </div>
+                    <table class="sfarc-level-table">
+                        <thead><tr><th>Category</th><th>None</th><th>Error</th><th>Warn</th><th>Info</th><th>Debug</th><th>Fine</th></tr></thead>
+                        <tbody>
+                            <tr><td>Database</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                            <tr><td>Workflow</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                            <tr><td>Validation</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                            <tr><td>Callout</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                            <tr><td>Apex Code</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                            <tr><td>Visualforce</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                            <tr><td>System</td><td></td><td></td><td></td><td></td><td><input type="radio" checked></td><td></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+/* ==== the real src/close-on-outside.js, inlined for the self-contained preview ==== */
+(function () {
+    'use strict';
+    if (window.__sfarcCloseOnOutside) return;
+    window.__sfarcCloseOnOutside = true;
+
+    const BACKDROP_SELECTOR = [
+        '.sfarc-modal',
+        '.sfarc-drawer-modal',
+        '.sfarc-modal-backdrop',
+        '.modal-overlay',
+        '.sfarc-modal-overlay',
+        '.modal',
+        '.drawer-overlay',
+        '.sfarc-glass-modal-overlay',
+        '.sfarc-code-drawer-overlay'
+    ].join(', ');
+
+    const NAKED_DRAWER_SELECTOR = '#history-drawer';
+
+    function close(el) {
+        if (!el || !el.isConnected) return;
+        if (el.classList.contains('open')) { el.classList.remove('open'); return; }
+        if (el.classList.contains('hidden')) return;
+        if (el.style && el.style.display && el.style.display !== 'none') {
+            el.style.display = 'none';
+            return;
+        }
+        el.classList.add('hidden');
+    }
+
+    function isVisible(el) {
+        return el && el.isConnected && !el.hidden &&
+            getComputedStyle(el).display !== 'none';
+    }
+
+    document.addEventListener('click', (e) => {
+        const t = e.target;
+        const naked = document.querySelector(NAKED_DRAWER_SELECTOR);
+        if (naked && naked.classList.contains('open') && !naked.contains(t)) {
+            close(naked);
+        }
+        if (t instanceof Element && t.matches && t.matches(BACKDROP_SELECTOR) && isVisible(t)) {
+            close(t);
+        }
+    }, false);
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const all = document.querySelectorAll(BACKDROP_SELECTOR);
+        for (let i = all.length - 1; i >= 0; i--) {
+            const el = all[i];
+            if (isVisible(el)) { close(el); return; }
+        }
+        const naked = document.querySelector(NAKED_DRAWER_SELECTOR);
+        if (naked && naked.classList.contains('open')) close(naked);
+    }, false);
+})();
+
+/* openers + close buttons */
+const level = document.getElementById('sfarc-level-modal');
+const trace = document.getElementById('sfarc-trace-modal');
+document.getElementById('open-level').addEventListener('click', () => {
+    trace.style.display = 'none';
+    level.style.display = 'flex';
+});
+document.getElementById('open-trace').addEventListener('click', () => {
+    trace.style.display = 'flex';
+    level.style.display = 'flex';
+});
+document.querySelectorAll('.sfarc-modal-close').forEach((b) =>
+    b.addEventListener('click', (e) => {
+        e.stopPropagation();
+        b.closest('.sfarc-drawer-modal').style.display = 'none';
+    })
+);
+document.getElementById('save-level').addEventListener('click', () => {
+    level.style.display = 'none';
+});
+</script>
+</body>
+</html>

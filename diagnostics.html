@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script src="src/theme-manager.js"></script>
+    <title>Salesforce Comet - Session Diagnostics</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 20px;
+            background: #f3f2f2;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #0070d2;
+        }
+
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #eefdf6;
+            border-left: 4px solid #04844b;
+        }
+
+        .error {
+            background: #fff1f0;
+            border-left: 4px solid #c23934;
+        }
+
+        .info {
+            background: #f3f2f2;
+            border-left: 4px solid #0070d2;
+        }
+
+        pre {
+            background: #f3f2f2;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #0070d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+    <link rel="icon" href="icons/icon-48.png?v=2" type="image/png">
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔍 Session Diagnostics</h1>
+        <button onclick="runDiagnostics()">Run Diagnostics</button>
+        <div id="results"></div>
+    </div>
+    <script src="src/api.js"></script>
+    <script>
+        async function runDiagnostics() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p>Running diagnostics...</p>';
+
+            let html = '';
+
+            // Check 1: Current URL
+            html += `<div class="status info">
+                <strong>Current URL:</strong><br>
+                <code>${window.location.href}</code>
+            </div>`;
+
+            // Check 2: Is this a Salesforce domain?
+            const isSalesforceDomain = /salesforce|force\.com/.test(window.location.hostname);
+            html += `<div class="status ${isSalesforceDomain ? 'success' : 'error'}">
+                <strong>Salesforce Domain:</strong> ${isSalesforceDomain ? '✅ Yes' : '❌ No'}
+            </div>`;
+
+            // Check 3: Document cookies
+            html += `<div class="status info">
+                <strong>Document Cookies:</strong><br>
+                <pre>${document.cookie || '(none)'}</pre>
+            </div>`;
+
+            // Check 4: Try to initialize API
+            try {
+                await window.sfApi.init();
+
+                if (window.sfApi.sessionId) {
+                    html += `<div class="status success">
+                        <strong>✅ Session ID Found!</strong><br>
+                        Session ID: <code>${window.sfApi.sessionId.substring(0, 20)}...</code><br>
+                        Instance URL: <code>${window.sfApi.instanceUrl}</code>
+                    </div>`;
+                } else {
+                    html += `<div class="status error">
+                        <strong>❌ No Session ID Found</strong><br>
+                        The extension is running in Demo Mode.
+                    </div>`;
+                }
+            } catch (err) {
+                html += `<div class="status error">
+                    <strong>Error initializing API:</strong><br>
+                    <code>${err.message}</code>
+                </div>`;
+            }
+
+            // Check 5: Session info from page context
+            if (window.__SF_SESSION_INFO__) {
+                html += `<div class="status info">
+                    <strong>Page Context Session Info:</strong><br>
+                    <pre>${JSON.stringify(window.__SF_SESSION_INFO__, null, 2)}</pre>
+                </div>`;
+            }
+
+            // Check 6: Test query
+            html += `<div class="status info">
+                <strong>Testing Query...</strong><br>
+            </div>`;
+
+            try {
+                const result = await window.sfApi.query('SELECT Id FROM User LIMIT 1');
+                if (result.records && result.records.length > 0) {
+                    html += `<div class="status success">
+                        <strong>✅ Query Successful!</strong><br>
+                        Retrieved real data from Salesforce.
+                    </div>`;
+                } else {
+                    html += `<div class="status error">
+                        <strong>⚠️ Query returned demo data</strong><br>
+                        You are seeing sample data because no session was found.
+                    </div>`;
+                }
+            } catch (err) {
+                html += `<div class="status error">
+                    <strong>Query Error:</strong><br>
+                    <code>${err.message}</code>
+                </div>`;
+            }
+
+            // Recommendations
+            html += `<div class="status info">
+                <strong>💡 Troubleshooting Tips:</strong><br>
+                1. Make sure you're on a Salesforce page (*.salesforce.com or *.force.com)<br>
+                2. Make sure you're logged into Salesforce<br>
+                3. Try refreshing the page<br>
+                4. Check the browser console for errors<br>
+                5. Ensure the extension has the necessary permissions
+            </div>`;
+
+            resultsDiv.innerHTML = html;
+        }
+
+        // Auto-run on load
+        window.addEventListener('load', () => {
+            setTimeout(runDiagnostics, 500);
+        });
+    </script>
+</body>
+
+</html>

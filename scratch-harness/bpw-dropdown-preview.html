@@ -1,0 +1,1887 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BPW Permission Set — searchable dropdown</title>
+<script>
+// chrome stub for theme-manager-less pages (custom-dropdown has no chrome use,
+// but keep parity with other harnesses).
+window.chrome = window.chrome || { storage: { sync: { get: (k, cb) => cb && cb({}) }, local: { get: (k, cb) => cb && cb({}) }, onChanged: { addListener() {} } }, runtime: { getURL: (p) => p } };
+</script>
+<style>
+:root { --sfarc-accent: #2196f3; --sfarc-accent-rgb: 33, 150, 243; }
+/* custom-dropdown.css */
+
+/* NUKE native styles from wrapper container, beating inspector.css specificity */
+html body .sfarc-custom-dropdown-container,
+body.sfarc-dark-theme .sfarc-custom-dropdown-container.sfarc-custom-dropdown-container,
+html body #sfarc-panel .sfarc-custom-dropdown-container,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container,
+html body #sfarc-panel .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel .sfarc-custom-dropdown-container:focus,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container:focus,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container:focus {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    font-family: inherit;
+    /* Reset all native select styles that leaked in via copied classes.
+       The container must stay an invisible layout box even when the copied
+       select classes (e.g. .sfir-header-select) bring themed backgrounds
+       and borders — otherwise a sharp square outline renders behind the
+       rounded trigger. body.sfarc-dark-theme html body … raises the
+       specificity above every theme rule that matches those copied classes. */
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-color: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+}
+
+/* Hide the original native select but keep it in DOM for events/forms */
+select.sfarc-custom-dropdown-hidden-select,
+body select.sfarc-custom-dropdown-hidden-select,
+html body select.sfarc-custom-dropdown-hidden-select {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.sfarc-custom-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 10px;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    /* Flat control: uniform boundary on all four sides, no resting drop
+       shadow (the Asset Type / API Version pickers and other triggers must
+       read as plain inputs, not raised buttons). */
+    box-shadow: none !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.sfarc-custom-dropdown-trigger:hover {
+    background: rgba(255, 255, 255, 0.88) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.sfarc-custom-dropdown-trigger[data-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(244, 244, 245, 0.5) !important;
+}
+
+.sfarc-custom-dropdown-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+}
+
+.sfarc-custom-dropdown-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: transform 0.2s ease;
+}
+
+.sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.sfarc-custom-dropdown-container.sfarc-open {
+    z-index: 10000000 !important;
+}
+
+/* Glassmorphism Floating Menu Card */
+.sfarc-custom-dropdown-menu.sfarc-custom-dropdown-menu-wide {
+    min-width: 480px;
+}
+
+.sfarc-custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 220px;
+    width: max-content;
+    max-width: 320px;
+    max-height: 420px;
+    overflow-y: auto;
+    /* True frosted glass — mostly transparent so the page behind shows
+       through the heavy blur. Neutral white, no blue tint. */
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(28px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+    /* Border matches the trigger so the open menu reads as one surface. */
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+    z-index: 10000000;
+    opacity: 0;
+    visibility: hidden;
+    /* Liquid open: starts small + tucked under the trigger, then springs out
+       with a soft overshoot and settles into the resting shape. The transform
+       uses a springy curve while opacity/visibility stay quick, so the motion
+       reads as a smooth fluid release rather than a fade-in. */
+    transform: translateY(-8px) scaleY(0.92) scaleX(0.98);
+    transform-origin: top center;
+    transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.16s;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.sfarc-custom-dropdown-menu.sfarc-menu-open,
+.sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: all !important;
+    transform: translateY(0) scale(1) !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 2147483647 !important;
+}
+
+.sfarc-custom-dropdown-option {
+    display: flex !important;
+    align-items: center !important;
+    padding: 5px 10px 5px 28px !important;
+    min-height: 26px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    color: #1e293b !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    margin-bottom: 1px !important;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
+    position: relative !important;
+    user-select: none !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+.sfarc-custom-dropdown-option:hover {
+    background: var(--sfarc-accent, var(--sfarc-accent, #2196f3)) !important;
+    color: #ffffff !important;
+}
+
+.sfarc-custom-dropdown-option.sfarc-selected {
+    background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12) !important;
+    color: var(--sfarc-accent, #2196f3) !important;
+    font-weight: 600 !important;
+}
+
+/* The checkmark for selected options */
+.sfarc-custom-dropdown-checkmark {
+    position: absolute !important;
+    left: 8px !important;
+    display: none;
+    color: var(--sfarc-accent, #2196f3) !important;
+    width: 13px !important;
+    height: 13px !important;
+}
+
+.sfarc-custom-dropdown-option.sfarc-selected .sfarc-custom-dropdown-checkmark {
+    display: flex !important;
+}
+
+/* ── Search box at the top of the menu ─────────────────────────────────── */
+.sfarc-custom-dropdown-search {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.sfarc-custom-dropdown-search-icon {
+    position: absolute !important;
+    left: 10px !important;
+    top: 38% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #94a3b8 !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+}
+
+.sfarc-custom-dropdown-search-input,
+input.sfarc-custom-dropdown-search-input,
+html body .sfarc-custom-dropdown-search-input {
+    width: 100% !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 10px 0 32px !important;
+    padding-left: 32px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    color: #1e293b !important;
+    font-size: 12.5px !important;
+    font-weight: 400 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.sfarc-custom-dropdown-search-input:focus {
+    border-color: var(--sfarc-accent, #2196f3) !important;
+    box-shadow: 0 0 0 2.5px rgba(2, 132, 199, 0.16) !important;
+}
+
+.sfarc-custom-dropdown-search-input::placeholder {
+    color: #94a3b8 !important;
+}
+
+.sfarc-custom-dropdown-options {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.sfarc-custom-dropdown-empty {
+    padding: 10px 12px;
+    color: #71717a;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Dark Mode Glassmorphism Overrides — each selector also matches the
+   teleported menu carrying the .sfarc-dark-theme class on itself, because
+   menus are appended to <body> (outside the themed panel scope). */
+.sfarc-dark-theme .sfarc-custom-dropdown-search,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-icon,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-icon {
+    color: #9ca3af !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-input,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-input {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #e5e7eb !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-input:focus,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-input:focus {
+    border-color: var(--sfarc-accent-glow, #38bdf8) !important;
+    box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.2) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-input::placeholder,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-input::placeholder {
+    color: #8b949e !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-empty,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-empty {
+    color: #8b949e !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger {
+    background: rgba(15, 18, 24, 0.6) !important;
+    backdrop-filter: blur(14px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(150%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    color: #f1f5f9 !important;
+    box-shadow: none !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger:hover,
+.sfarc-dark-theme .sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-trigger {
+    background: rgba(22, 26, 34, 0.7) !important;
+    border-color: var(--sfarc-accent-glow, #38bdf8) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger[data-disabled="true"] {
+    background: rgba(24, 24, 27, 0.5) !important;
+    color: #71717a !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-menu,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme {
+    /* Neutral charcoal glass — no slate/navy blue cast. Low opacity + heavy
+       blur so the page genuinely shows through as frosted glass. */
+    background: rgba(10, 13, 18, 0.55) !important;
+    backdrop-filter: blur(28px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(150%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.55), 0 4px 16px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option {
+    color: #cbd5e1 !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option:hover,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option:hover {
+    background: var(--sfarc-accent, var(--sfarc-accent, #2196f3)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.35) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected {
+    /* Tint with the ORG accent (not a hardcoded sky blue) so a lime org
+       shows a lime selection, a blue org a blue one. */
+    background: rgba(var(--sfarc-accent-rgb, 56, 189, 248), 0.16) !important;
+    color: var(--sfarc-accent-glow, #38bdf8) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected:hover,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected:hover {
+    background: var(--sfarc-accent, var(--sfarc-accent, #2196f3)) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.35) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-checkmark,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-checkmark {
+    color: var(--sfarc-accent-glow, #38bdf8) !important;
+}
+
+/* ==========================================================================
+   Bulk Permission Wizard — standalone page (opened in its own browser tab)
+   Light theme is the default; dark overrides live under body.sfarc-dark-theme
+   (theme-manager.js toggles that class, matching every other standalone page).
+   ========================================================================== */
+
+/* ---------- Page shell ---------- */
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #eef1f5;
+  color: #1e293b;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 13px;
+  overflow: hidden;
+}
+
+#bpw-root {
+  height: 100%;
+}
+
+.bpw-root {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 18px 16px;
+  gap: 12px;
+  background: linear-gradient(180deg, #eef1f5 0%, #e7ebf0 100%);
+}
+
+/* ---------- Header ---------- */
+.bpw-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.bpw-header-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bpw-header-title > i {
+  font-size: 18px;
+  color: var(--sfarc-accent, #2196f3);
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+  border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.26);
+  border-radius: 9px;
+  padding: 8px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.bpw-header-text h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+
+.bpw-header-text p {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.bpw-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Stepper ---------- */
+.bpw-stepper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #d8dde6;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.bpw-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.bpw-step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #eef2f7;
+  border: 1px solid #d8dde6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.bpw-step.active .bpw-step-circle {
+  background: var(--sfarc-accent, #2196f3);
+  border-color: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.16);
+}
+
+.bpw-step.active .bpw-step-label {
+  color: var(--sfarc-accent, #2196f3);
+  font-weight: 600;
+}
+
+.bpw-step-label {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.bpw-step-line {
+  flex: 1;
+  height: 2px;
+  min-width: 22px;
+  background: #d8dde6;
+  border-radius: 2px;
+  transition: background-color 0.25s ease;
+}
+
+.bpw-step-line.active {
+  background: var(--sfarc-accent, #2196f3);
+}
+
+/* ---------- Body / panels ---------- */
+.bpw-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.bpw-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  animation: bpwPanelIn 0.22s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes bpwPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Controls row ---------- */
+.bpw-controls {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.bpw-control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bpw-control-group .bpw-permset {
+  width: 280px;
+}
+
+.bpw-control-group.bpw-target-search {
+  flex: 1;
+  min-width: 220px;
+}
+
+.bpw-control-group.bpw-object-search {
+  flex: 1;
+  min-width: 240px;
+}
+
+/* ---------- Tool controls (label / input / select / button) ---------- */
+.tool-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #64748b;
+}
+
+.tool-input,
+.tool-select {
+  background: #ffffff;
+  border: 1px solid #cdd4dd;
+  border-radius: 8px;
+  color: #1e293b;
+  font-size: 12.5px;
+  padding: 0 12px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+  width: 100%;
+  box-sizing: border-box;
+  height: 30px;
+  min-height: 30px;
+  line-height: 1;
+}
+
+.tool-input::placeholder {
+  color: #94a3b8;
+}
+
+.tool-input:hover:not(:focus),
+.tool-select:hover:not(:focus) {
+  border-color: #b6bfca;
+}
+
+.tool-input:focus,
+.tool-select:focus {
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.14);
+  background: #ffffff;
+}
+
+.tool-select {
+  appearance: none;
+  -webkit-appearance: none;
+  /* The chevron is a positioned icon (.bpw-select-chevron), not a background
+     image — a background chevron could tile/repeat if another stylesheet's
+     `background` shorthand leaks in and resets background-repeat. */
+  padding-right: 30px; /* keep option text clear of the chevron icon */
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tool-select option {
+  background: #ffffff;
+  color: #1e293b;
+}
+
+/* ---------- Search bars (Target Name + Select Objects) ---------- */
+/* The icon is a plain inline <svg class="bpw-search-icon"> — unlike
+   <i class="fa-solid">, Font Awesome's JS never rewrites it, so the DOM and
+   this positioning are identical in every environment. */
+.bpw-search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bpw-select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.bpw-select-wrap > .bpw-select-chevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  color: #64748b;
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.15s ease;
+}
+
+.bpw-select-wrap:focus-within > .bpw-select-chevron {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+/* When the Permission Set select is enhanced into the custom searchable
+   dropdown (custom-dropdown.js), the native chevron is replaced by the
+   dropdown's own trigger chevron — hide this one to avoid a double arrow. */
+.bpw-select-wrap:has(.sfarc-custom-processed) > .bpw-select-chevron {
+  display: none;
+}
+
+.bpw-search-wrap > .bpw-search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 13px;
+  height: 13px;
+  color: #94a3b8;
+  pointer-events: none;
+  z-index: 1;
+  transition: color 0.15s ease;
+}
+
+.bpw-search-wrap:focus-within > .bpw-search-icon {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+.bpw-search-wrap .tool-input {
+  padding-left: 30px;
+  padding-right: 30px;
+  font-family: inherit;
+  font-size: 12.5px;
+}
+
+.bpw-search-clear {
+  position: absolute;
+  right: 6px;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-size: 11px;
+  line-height: 1;
+  transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.bpw-search-clear:hover {
+  background: rgba(100, 116, 139, 0.16);
+  color: #334155;
+}
+
+.bpw-search-wrap.has-text .bpw-search-clear {
+  display: flex;
+}
+
+/* ---------- List box ---------- */
+.bpw-list-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #ffffff;
+  border: 1px solid #d8dde6;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.bpw-list-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #d8dde6;
+  background: #f8fafc;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.bpw-select-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.bpw-select-all input[type="checkbox"],
+.bpw-object-check input[type="checkbox"],
+.bpw-rt-row input[type="checkbox"],
+.bpw-field-toggle input[type="checkbox"] {
+  accent-color: var(--sfarc-accent, #2196f3);
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+
+.bpw-count-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 12px;
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.08);
+  border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.24);
+  color: var(--sfarc-accent, #2196f3);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.bpw-list-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #d8dde6;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  background: #f1f5f9;
+  flex-shrink: 0;
+}
+
+.bpw-list-check {
+  width: 22px;
+  flex-shrink: 0;
+}
+
+.bpw-list-name {
+  flex: 1.2;
+  min-width: 0;
+}
+
+.bpw-list-desc {
+  flex: 1;
+  min-width: 0;
+}
+
+.bpw-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.bpw-object-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-bottom: 1px solid #eef2f7;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.bpw-object-row:hover {
+  background: #f8fafc;
+}
+
+.bpw-object-row.selected {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.06);
+}
+
+.bpw-object-row.selected .bpw-object-name {
+  color: var(--sfarc-accent, #2196f3);
+  font-weight: 600;
+}
+
+.bpw-object-check {
+  width: 22px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.bpw-object-name {
+  flex: 1.2;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  color: #1e293b;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpw-object-desc {
+  flex: 1;
+  font-size: 12px;
+  color: #64748b;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpw-empty {
+  padding: 26px 14px;
+  text-align: center;
+  color: #64748b;
+  font-size: 12.5px;
+}
+
+/* ---------- Footer / buttons ---------- */
+.bpw-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 4px 2px 2px;
+  flex-shrink: 0;
+}
+
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 30px;
+  background: #ffffff;
+  border: 1px solid #cdd4dd;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #1e293b;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.tool-btn:hover {
+  background: #f1f5f9;
+  border-color: #b6bfca;
+}
+
+.tool-btn.primary {
+  background: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  border-color: var(--sfarc-accent, #2196f3);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.3);
+}
+
+.tool-btn.primary:hover {
+  background: #0266b8;
+  border-color: #0266b8;
+  color: #ffffff;
+}
+
+.tool-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.bpw-back {
+  background: transparent;
+  border-color: #cdd4dd;
+}
+
+/* ---------- Record types ---------- */
+.bpw-rt-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  flex: 1;
+}
+
+.bpw-rt-group {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-rt-object {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sfarc-accent, #2196f3);
+  margin-bottom: 5px;
+}
+
+.bpw-rt-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bpw-rt-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #d8dde6;
+  font-size: 11.5px;
+  color: #334155;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.bpw-rt-row:hover {
+  border-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.4);
+}
+
+/* ---------- Fields ---------- */
+.bpw-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-field-name {
+  flex: 1.4;
+  min-width: 0;
+  font-size: 12.5px;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bpw-field-api {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  color: #64748b;
+  margin-left: 6px;
+}
+
+.bpw-field-type {
+  flex: 0.6;
+  font-size: 11px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.bpw-field-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #64748b;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.12s ease;
+}
+
+.bpw-field-toggle:has(input:checked) {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+/* ---------- Verify ---------- */
+.bpw-verify-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid #eef2f7;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.bpw-verify-row strong {
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.bpw-verify-object {
+  padding: 8px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-verify-objhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  color: #1e293b;
+}
+
+.bpw-verify-objhead span {
+  color: #64748b;
+  font-size: 11.5px;
+}
+
+.bpw-verify-sub {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 3px;
+}
+
+.bpw-verify-body {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.bpw-verify-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.bpw-verify-result.ok {
+  color: #059669;
+}
+
+.bpw-verify-result.err {
+  color: #dc2626;
+}
+
+.bpw-verify-result > i {
+  font-size: 20px;
+}
+
+.bpw-verify-result div {
+  display: flex;
+  flex-direction: column;
+}
+
+.bpw-verify-result strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bpw-verify-result span {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.bpw-verify-fail {
+  padding: 6px 14px;
+  font-size: 11.5px;
+  color: #dc2626;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* ==========================================================================
+   Dark theme (theme-manager.js adds .sfarc-dark-theme to <body>)
+   ========================================================================== */
+body.sfarc-dark-theme {
+  background: #0b0e13;
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .bpw-root {
+  background: linear-gradient(180deg, #0d1117 0%, #0a0d12 100%);
+}
+
+body.sfarc-dark-theme .bpw-header-title > i {
+  color: var(--sfarc-accent-glow, #38bdf8);
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.12);
+  border: 1px solid rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.28);
+}
+
+body.sfarc-dark-theme .bpw-header-text h2 {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-header-text p {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-stepper {
+  background: #17181c;
+  border-color: #27282e;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.sfarc-dark-theme .bpw-step {
+  color: #6b7686;
+}
+
+body.sfarc-dark-theme .bpw-step-circle {
+  background: #21262d;
+  border-color: #30363d;
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-step.active .bpw-step-circle {
+  background: var(--sfarc-accent-glow, #38bdf8);
+  border-color: var(--sfarc-accent-glow, #38bdf8);
+  color: #082f49;
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.16);
+}
+
+body.sfarc-dark-theme .bpw-step.active .bpw-step-label {
+  color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .bpw-step-line {
+  background: #27282e;
+}
+
+body.sfarc-dark-theme .bpw-step-line.active {
+  background: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .tool-label {
+  color: #9aa6b6;
+}
+
+body.sfarc-dark-theme .tool-input,
+body.sfarc-dark-theme .tool-select {
+  background: #0e0f12;
+  border-color: #30323a;
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .tool-input::placeholder {
+  color: #6b7686;
+}
+
+body.sfarc-dark-theme .tool-input:hover:not(:focus),
+body.sfarc-dark-theme .tool-select:hover:not(:focus) {
+  border-color: #3e4148;
+}
+
+body.sfarc-dark-theme .tool-input:focus,
+body.sfarc-dark-theme .tool-select:focus {
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.18);
+  background: #0e0f12;
+}
+
+body.sfarc-dark-theme .tool-select option {
+  background: #17181c;
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .bpw-search-wrap > .bpw-search-icon {
+  color: #6b7686;
+}
+
+body.sfarc-dark-theme .bpw-select-wrap > .bpw-select-chevron {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-search-wrap:focus-within > .bpw-search-icon {
+  color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .bpw-search-clear {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-search-clear:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e6e9ef;
+}
+
+body.sfarc-dark-theme .bpw-list-box {
+  background: #17181c;
+  border-color: #27282e;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+body.sfarc-dark-theme .bpw-list-toolbar {
+  background: #1a1c21;
+  border-bottom-color: #27282e;
+}
+
+body.sfarc-dark-theme .bpw-select-all {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-select-all input[type="checkbox"],
+body.sfarc-dark-theme .bpw-object-check input[type="checkbox"],
+body.sfarc-dark-theme .bpw-rt-row input[type="checkbox"],
+body.sfarc-dark-theme .bpw-field-toggle input[type="checkbox"] {
+  accent-color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+body.sfarc-dark-theme .bpw-count-badge {
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.14);
+  border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.3);
+  color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .bpw-list-head {
+  background: #1a1c21;
+  border-bottom-color: #27282e;
+  color: #9aa6b6;
+}
+
+body.sfarc-dark-theme .bpw-object-row {
+  border-bottom-color: rgba(33, 38, 45, 0.6);
+}
+
+body.sfarc-dark-theme .bpw-object-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+body.sfarc-dark-theme .bpw-object-row.selected {
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.1);
+}
+
+body.sfarc-dark-theme .bpw-object-row.selected .bpw-object-name {
+  color: #bae6fd;
+}
+
+body.sfarc-dark-theme .bpw-object-name {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-object-desc,
+body.sfarc-dark-theme .bpw-empty {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .tool-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: #30363d;
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .tool-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+body.sfarc-dark-theme .tool-btn.primary {
+  background: var(--sfarc-accent, #2196f3);
+  color: #ffffff;
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+body.sfarc-dark-theme .tool-btn.primary:hover {
+  background: #1f6feb;
+  border-color: #1f6feb;
+}
+
+body.sfarc-dark-theme .bpw-back {
+  background: transparent;
+  border-color: #30363d;
+}
+
+body.sfarc-dark-theme .bpw-rt-title {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-rt-object {
+  color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .bpw-rt-row {
+  background: #161b22;
+  border-color: #30363d;
+  color: #c9d1d9;
+}
+
+body.sfarc-dark-theme .bpw-rt-row:hover {
+  border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.4);
+}
+
+body.sfarc-dark-theme .bpw-field-row,
+body.sfarc-dark-theme .bpw-verify-row,
+body.sfarc-dark-theme .bpw-verify-object,
+body.sfarc-dark-theme .bpw-verify-result,
+body.sfarc-dark-theme .bpw-verify-fail {
+  border-bottom-color: rgba(33, 38, 45, 0.6);
+}
+
+body.sfarc-dark-theme .bpw-field-name,
+body.sfarc-dark-theme .bpw-verify-objhead,
+body.sfarc-dark-theme .bpw-verify-row strong {
+  color: #f0f6fc;
+}
+
+body.sfarc-dark-theme .bpw-field-api,
+body.sfarc-dark-theme .bpw-field-type,
+body.sfarc-dark-theme .bpw-field-toggle,
+body.sfarc-dark-theme .bpw-verify-row,
+body.sfarc-dark-theme .bpw-verify-objhead span,
+body.sfarc-dark-theme .bpw-verify-sub,
+body.sfarc-dark-theme .bpw-verify-result span {
+  color: #8b949e;
+}
+
+body.sfarc-dark-theme .bpw-field-toggle:has(input:checked) {
+  color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .bpw-verify-result.ok {
+  color: #34d399;
+}
+
+body.sfarc-dark-theme .bpw-verify-result.err {
+  color: #f85149;
+}
+
+body.sfarc-dark-theme .bpw-verify-fail {
+  color: #f87171;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 860px) {
+  .bpw-root {
+    padding: 10px 12px 12px;
+  }
+
+  .bpw-control-group .bpw-permset {
+    width: 100%;
+  }
+
+  .bpw-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .bpw-control-group.bpw-target-search,
+  .bpw-control-group.bpw-object-search {
+    min-width: 0;
+  }
+
+  .bpw-step-label {
+    display: none;
+  }
+}
+
+body { margin: 0; padding: 24px; background: #eef1f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+body.sfarc-dark-theme { background: #12141a; color: #e2e8f0; }
+.bpw-controls { display: flex; gap: 16px; align-items: flex-end; }
+#report { position: fixed; bottom: 8px; left: 8px; color: #e2e8f0; font: 11px monospace; white-space: pre-wrap; background: rgba(0,0,0,.75); padding: 6px 10px; border-radius: 6px; z-index: 2147483000; }
+</style>
+</head>
+<body class="sfarc-dark-theme">
+<div class="bpw-controls">
+  <div class="bpw-control-group">
+    <label class="tool-label" for="bpw-permset">Permission Set</label>
+    <div class="bpw-select-wrap" id="wrap">
+      <svg class="bpw-select-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      <select id="bpw-permset" class="tool-select bpw-permset" data-searchable="true" data-search-placeholder="Search permission sets...">
+        <option value="0PS0000000000000">Account read only (Account_read_only)</option><option value="0PS0000000000001">ActorCASCPermSet (ActorCASCPermSet)</option><option value="0PS0000000000002">Agentic Near Core CRM (AncCrmIntegrationUser)</option><option value="0PS0000000000003">Agentic Near Core Marketing (AncMarketingIntegrationUser)</option><option value="0PS0000000000004">Authenticated Payer (AuthenticatedPayer)</option><option value="0PS0000000000005">Buyer (B2BBuyer)</option><option value="0PS0000000000006">Buyer Manager (B2BBuyerManager)</option><option value="0PS0000000000007">Bypass Lead Validation Rules (Bypass_Lead_Validation_Rules)</option><option value="0PS0000000000008">C2CAnalyticsStoragePermSet (C2CAnalyticsStoragePermSet)</option><option value="0PS0000000000009">CRM User (CRMUserPsl)</option><option value="0PS0000000000010">Channel Manager (PRMChannelManagerPermissionSet)</option><option value="0PS0000000000011">Command Center (CommandCenter)</option><option value="0PS0000000000012">Commerce Admin (CommerceAdmin)</option><option value="0PS0000000000013">Data Cloud Home Org Integration User (D360HomeOrgPermSet)</option><option value="0PS0000000000014">DeliveryEstimationServicePermSet (DeliveryEstimationServicePermSet)</option><option value="0PS0000000000015">Generated Permission Set 16 (GenPS16)</option><option value="0PS0000000000016">Generated Permission Set 17 (GenPS17)</option><option value="0PS0000000000017">Generated Permission Set 18 (GenPS18)</option><option value="0PS0000000000018">Generated Permission Set 19 (GenPS19)</option><option value="0PS0000000000019">Generated Permission Set 20 (GenPS20)</option><option value="0PS0000000000020">Generated Permission Set 21 (GenPS21)</option><option value="0PS0000000000021">Generated Permission Set 22 (GenPS22)</option><option value="0PS0000000000022">Generated Permission Set 23 (GenPS23)</option><option value="0PS0000000000023">Generated Permission Set 24 (GenPS24)</option><option value="0PS0000000000024">Generated Permission Set 25 (GenPS25)</option><option value="0PS0000000000025">Generated Permission Set 26 (GenPS26)</option><option value="0PS0000000000026">Generated Permission Set 27 (GenPS27)</option><option value="0PS0000000000027">Generated Permission Set 28 (GenPS28)</option><option value="0PS0000000000028">Generated Permission Set 29 (GenPS29)</option><option value="0PS0000000000029">Generated Permission Set 30 (GenPS30)</option><option value="0PS0000000000030">Generated Permission Set 31 (GenPS31)</option><option value="0PS0000000000031">Generated Permission Set 32 (GenPS32)</option><option value="0PS0000000000032">Generated Permission Set 33 (GenPS33)</option><option value="0PS0000000000033">Generated Permission Set 34 (GenPS34)</option><option value="0PS0000000000034">Generated Permission Set 35 (GenPS35)</option><option value="0PS0000000000035">Generated Permission Set 36 (GenPS36)</option><option value="0PS0000000000036">Generated Permission Set 37 (GenPS37)</option><option value="0PS0000000000037">Generated Permission Set 38 (GenPS38)</option><option value="0PS0000000000038">Generated Permission Set 39 (GenPS39)</option><option value="0PS0000000000039">Generated Permission Set 40 (GenPS40)</option><option value="0PS0000000000040">Generated Permission Set 41 (GenPS41)</option><option value="0PS0000000000041">Generated Permission Set 42 (GenPS42)</option><option value="0PS0000000000042">Generated Permission Set 43 (GenPS43)</option><option value="0PS0000000000043">Generated Permission Set 44 (GenPS44)</option><option value="0PS0000000000044">Generated Permission Set 45 (GenPS45)</option><option value="0PS0000000000045">Generated Permission Set 46 (GenPS46)</option><option value="0PS0000000000046">Generated Permission Set 47 (GenPS47)</option><option value="0PS0000000000047">Generated Permission Set 48 (GenPS48)</option><option value="0PS0000000000048">Generated Permission Set 49 (GenPS49)</option><option value="0PS0000000000049">Generated Permission Set 50 (GenPS50)</option><option value="0PS0000000000050">Generated Permission Set 51 (GenPS51)</option><option value="0PS0000000000051">Generated Permission Set 52 (GenPS52)</option><option value="0PS0000000000052">Generated Permission Set 53 (GenPS53)</option><option value="0PS0000000000053">Generated Permission Set 54 (GenPS54)</option><option value="0PS0000000000054">Generated Permission Set 55 (GenPS55)</option><option value="0PS0000000000055">Generated Permission Set 56 (GenPS56)</option><option value="0PS0000000000056">Generated Permission Set 57 (GenPS57)</option><option value="0PS0000000000057">Generated Permission Set 58 (GenPS58)</option><option value="0PS0000000000058">Generated Permission Set 59 (GenPS59)</option><option value="0PS0000000000059">Generated Permission Set 60 (GenPS60)</option><option value="0PS0000000000060">Generated Permission Set 61 (GenPS61)</option><option value="0PS0000000000061">Generated Permission Set 62 (GenPS62)</option><option value="0PS0000000000062">Generated Permission Set 63 (GenPS63)</option><option value="0PS0000000000063">Generated Permission Set 64 (GenPS64)</option><option value="0PS0000000000064">Generated Permission Set 65 (GenPS65)</option><option value="0PS0000000000065">Generated Permission Set 66 (GenPS66)</option><option value="0PS0000000000066">Generated Permission Set 67 (GenPS67)</option><option value="0PS0000000000067">Generated Permission Set 68 (GenPS68)</option><option value="0PS0000000000068">Generated Permission Set 69 (GenPS69)</option><option value="0PS0000000000069">Generated Permission Set 70 (GenPS70)</option><option value="0PS0000000000070">Generated Permission Set 71 (GenPS71)</option><option value="0PS0000000000071">Generated Permission Set 72 (GenPS72)</option><option value="0PS0000000000072">Generated Permission Set 73 (GenPS73)</option><option value="0PS0000000000073">Generated Permission Set 74 (GenPS74)</option><option value="0PS0000000000074">Generated Permission Set 75 (GenPS75)</option><option value="0PS0000000000075">Generated Permission Set 76 (GenPS76)</option><option value="0PS0000000000076">Generated Permission Set 77 (GenPS77)</option><option value="0PS0000000000077">Generated Permission Set 78 (GenPS78)</option><option value="0PS0000000000078">Generated Permission Set 79 (GenPS79)</option><option value="0PS0000000000079">Generated Permission Set 80 (GenPS80)</option><option value="0PS0000000000080">Generated Permission Set 81 (GenPS81)</option><option value="0PS0000000000081">Generated Permission Set 82 (GenPS82)</option><option value="0PS0000000000082">Generated Permission Set 83 (GenPS83)</option><option value="0PS0000000000083">Generated Permission Set 84 (GenPS84)</option><option value="0PS0000000000084">Generated Permission Set 85 (GenPS85)</option><option value="0PS0000000000085">Generated Permission Set 86 (GenPS86)</option><option value="0PS0000000000086">Generated Permission Set 87 (GenPS87)</option><option value="0PS0000000000087">Generated Permission Set 88 (GenPS88)</option><option value="0PS0000000000088">Generated Permission Set 89 (GenPS89)</option><option value="0PS0000000000089">Generated Permission Set 90 (GenPS90)</option><option value="0PS0000000000090">Generated Permission Set 91 (GenPS91)</option><option value="0PS0000000000091">Generated Permission Set 92 (GenPS92)</option><option value="0PS0000000000092">Generated Permission Set 93 (GenPS93)</option><option value="0PS0000000000093">Generated Permission Set 94 (GenPS94)</option><option value="0PS0000000000094">Generated Permission Set 95 (GenPS95)</option><option value="0PS0000000000095">Generated Permission Set 96 (GenPS96)</option><option value="0PS0000000000096">Generated Permission Set 97 (GenPS97)</option><option value="0PS0000000000097">Generated Permission Set 98 (GenPS98)</option><option value="0PS0000000000098">Generated Permission Set 99 (GenPS99)</option><option value="0PS0000000000099">Generated Permission Set 100 (GenPS100)</option><option value="0PS0000000000100">Generated Permission Set 101 (GenPS101)</option><option value="0PS0000000000101">Generated Permission Set 102 (GenPS102)</option><option value="0PS0000000000102">Generated Permission Set 103 (GenPS103)</option><option value="0PS0000000000103">Generated Permission Set 104 (GenPS104)</option><option value="0PS0000000000104">Generated Permission Set 105 (GenPS105)</option><option value="0PS0000000000105">Generated Permission Set 106 (GenPS106)</option><option value="0PS0000000000106">Generated Permission Set 107 (GenPS107)</option><option value="0PS0000000000107">Generated Permission Set 108 (GenPS108)</option><option value="0PS0000000000108">Generated Permission Set 109 (GenPS109)</option><option value="0PS0000000000109">Generated Permission Set 110 (GenPS110)</option><option value="0PS0000000000110">Generated Permission Set 111 (GenPS111)</option><option value="0PS0000000000111">Generated Permission Set 112 (GenPS112)</option><option value="0PS0000000000112">Generated Permission Set 113 (GenPS113)</option><option value="0PS0000000000113">Generated Permission Set 114 (GenPS114)</option><option value="0PS0000000000114">Generated Permission Set 115 (GenPS115)</option><option value="0PS0000000000115">Generated Permission Set 116 (GenPS116)</option><option value="0PS0000000000116">Generated Permission Set 117 (GenPS117)</option><option value="0PS0000000000117">Generated Permission Set 118 (GenPS118)</option><option value="0PS0000000000118">Generated Permission Set 119 (GenPS119)</option><option value="0PS0000000000119">Generated Permission Set 120 (GenPS120)</option><option value="0PS0000000000120">Generated Permission Set 121 (GenPS121)</option><option value="0PS0000000000121">Generated Permission Set 122 (GenPS122)</option><option value="0PS0000000000122">Generated Permission Set 123 (GenPS123)</option><option value="0PS0000000000123">Generated Permission Set 124 (GenPS124)</option><option value="0PS0000000000124">Generated Permission Set 125 (GenPS125)</option><option value="0PS0000000000125">Generated Permission Set 126 (GenPS126)</option><option value="0PS0000000000126">Generated Permission Set 127 (GenPS127)</option><option value="0PS0000000000127">Generated Permission Set 128 (GenPS128)</option><option value="0PS0000000000128">Generated Permission Set 129 (GenPS129)</option><option value="0PS0000000000129">Generated Permission Set 130 (GenPS130)</option><option value="0PS0000000000130">Generated Permission Set 131 (GenPS131)</option><option value="0PS0000000000131">Generated Permission Set 132 (GenPS132)</option><option value="0PS0000000000132">Generated Permission Set 133 (GenPS133)</option><option value="0PS0000000000133">Generated Permission Set 134 (GenPS134)</option><option value="0PS0000000000134">Generated Permission Set 135 (GenPS135)</option><option value="0PS0000000000135">Generated Permission Set 136 (GenPS136)</option><option value="0PS0000000000136">Generated Permission Set 137 (GenPS137)</option><option value="0PS0000000000137">Generated Permission Set 138 (GenPS138)</option><option value="0PS0000000000138">Generated Permission Set 139 (GenPS139)</option><option value="0PS0000000000139">Generated Permission Set 140 (GenPS140)</option><option value="0PS0000000000140">Generated Permission Set 141 (GenPS141)</option><option value="0PS0000000000141">Generated Permission Set 142 (GenPS142)</option><option value="0PS0000000000142">Generated Permission Set 143 (GenPS143)</option><option value="0PS0000000000143">Generated Permission Set 144 (GenPS144)</option><option value="0PS0000000000144">Generated Permission Set 145 (GenPS145)</option><option value="0PS0000000000145">Generated Permission Set 146 (GenPS146)</option><option value="0PS0000000000146">Generated Permission Set 147 (GenPS147)</option><option value="0PS0000000000147">Generated Permission Set 148 (GenPS148)</option><option value="0PS0000000000148">Generated Permission Set 149 (GenPS149)</option><option value="0PS0000000000149">Generated Permission Set 150 (GenPS150)</option><option value="0PS0000000000150">Generated Permission Set 151 (GenPS151)</option><option value="0PS0000000000151">Generated Permission Set 152 (GenPS152)</option><option value="0PS0000000000152">Generated Permission Set 153 (GenPS153)</option><option value="0PS0000000000153">Generated Permission Set 154 (GenPS154)</option><option value="0PS0000000000154">Generated Permission Set 155 (GenPS155)</option><option value="0PS0000000000155">Generated Permission Set 156 (GenPS156)</option><option value="0PS0000000000156">Generated Permission Set 157 (GenPS157)</option><option value="0PS0000000000157">Generated Permission Set 158 (GenPS158)</option><option value="0PS0000000000158">Generated Permission Set 159 (GenPS159)</option><option value="0PS0000000000159">Generated Permission Set 160 (GenPS160)</option><option value="0PS0000000000160">Generated Permission Set 161 (GenPS161)</option><option value="0PS0000000000161">Generated Permission Set 162 (GenPS162)</option><option value="0PS0000000000162">Generated Permission Set 163 (GenPS163)</option><option value="0PS0000000000163">Generated Permission Set 164 (GenPS164)</option><option value="0PS0000000000164">Generated Permission Set 165 (GenPS165)</option><option value="0PS0000000000165">Generated Permission Set 166 (GenPS166)</option><option value="0PS0000000000166">Generated Permission Set 167 (GenPS167)</option><option value="0PS0000000000167">Generated Permission Set 168 (GenPS168)</option><option value="0PS0000000000168">Generated Permission Set 169 (GenPS169)</option><option value="0PS0000000000169">Generated Permission Set 170 (GenPS170)</option><option value="0PS0000000000170">Generated Permission Set 171 (GenPS171)</option><option value="0PS0000000000171">Generated Permission Set 172 (GenPS172)</option><option value="0PS0000000000172">Generated Permission Set 173 (GenPS173)</option><option value="0PS0000000000173">Generated Permission Set 174 (GenPS174)</option><option value="0PS0000000000174">Generated Permission Set 175 (GenPS175)</option><option value="0PS0000000000175">Generated Permission Set 176 (GenPS176)</option><option value="0PS0000000000176">Generated Permission Set 177 (GenPS177)</option><option value="0PS0000000000177">Generated Permission Set 178 (GenPS178)</option><option value="0PS0000000000178">Generated Permission Set 179 (GenPS179)</option><option value="0PS0000000000179">Generated Permission Set 180 (GenPS180)</option><option value="0PS0000000000180">Generated Permission Set 181 (GenPS181)</option><option value="0PS0000000000181">Generated Permission Set 182 (GenPS182)</option><option value="0PS0000000000182">Generated Permission Set 183 (GenPS183)</option><option value="0PS0000000000183">Generated Permission Set 184 (GenPS184)</option><option value="0PS0000000000184">Generated Permission Set 185 (GenPS185)</option><option value="0PS0000000000185">Generated Permission Set 186 (GenPS186)</option><option value="0PS0000000000186">Generated Permission Set 187 (GenPS187)</option><option value="0PS0000000000187">Generated Permission Set 188 (GenPS188)</option><option value="0PS0000000000188">Generated Permission Set 189 (GenPS189)</option><option value="0PS0000000000189">Generated Permission Set 190 (GenPS190)</option><option value="0PS0000000000190">Generated Permission Set 191 (GenPS191)</option><option value="0PS0000000000191">Generated Permission Set 192 (GenPS192)</option><option value="0PS0000000000192">Generated Permission Set 193 (GenPS193)</option><option value="0PS0000000000193">Generated Permission Set 194 (GenPS194)</option><option value="0PS0000000000194">Generated Permission Set 195 (GenPS195)</option><option value="0PS0000000000195">Generated Permission Set 196 (GenPS196)</option><option value="0PS0000000000196">Generated Permission Set 197 (GenPS197)</option><option value="0PS0000000000197">Generated Permission Set 198 (GenPS198)</option><option value="0PS0000000000198">Generated Permission Set 199 (GenPS199)</option><option value="0PS0000000000199">Generated Permission Set 200 (GenPS200)</option><option value="0PS0000000000200">Generated Permission Set 201 (GenPS201)</option><option value="0PS0000000000201">Generated Permission Set 202 (GenPS202)</option><option value="0PS0000000000202">Generated Permission Set 203 (GenPS203)</option><option value="0PS0000000000203">Generated Permission Set 204 (GenPS204)</option><option value="0PS0000000000204">Generated Permission Set 205 (GenPS205)</option><option value="0PS0000000000205">Generated Permission Set 206 (GenPS206)</option><option value="0PS0000000000206">Generated Permission Set 207 (GenPS207)</option><option value="0PS0000000000207">Generated Permission Set 208 (GenPS208)</option><option value="0PS0000000000208">Generated Permission Set 209 (GenPS209)</option><option value="0PS0000000000209">Generated Permission Set 210 (GenPS210)</option><option value="0PS0000000000210">Generated Permission Set 211 (GenPS211)</option><option value="0PS0000000000211">Generated Permission Set 212 (GenPS212)</option><option value="0PS0000000000212">Generated Permission Set 213 (GenPS213)</option><option value="0PS0000000000213">Generated Permission Set 214 (GenPS214)</option><option value="0PS0000000000214">Generated Permission Set 215 (GenPS215)</option><option value="0PS0000000000215">Generated Permission Set 216 (GenPS216)</option><option value="0PS0000000000216">Generated Permission Set 217 (GenPS217)</option><option value="0PS0000000000217">Generated Permission Set 218 (GenPS218)</option><option value="0PS0000000000218">Generated Permission Set 219 (GenPS219)</option><option value="0PS0000000000219">Generated Permission Set 220 (GenPS220)</option><option value="0PS0000000000220">Generated Permission Set 221 (GenPS221)</option><option value="0PS0000000000221">Generated Permission Set 222 (GenPS222)</option><option value="0PS0000000000222">Generated Permission Set 223 (GenPS223)</option><option value="0PS0000000000223">Generated Permission Set 224 (GenPS224)</option><option value="0PS0000000000224">Generated Permission Set 225 (GenPS225)</option><option value="0PS0000000000225">Generated Permission Set 226 (GenPS226)</option><option value="0PS0000000000226">Generated Permission Set 227 (GenPS227)</option><option value="0PS0000000000227">Generated Permission Set 228 (GenPS228)</option><option value="0PS0000000000228">Generated Permission Set 229 (GenPS229)</option><option value="0PS0000000000229">Generated Permission Set 230 (GenPS230)</option><option value="0PS0000000000230">Generated Permission Set 231 (GenPS231)</option><option value="0PS0000000000231">Generated Permission Set 232 (GenPS232)</option><option value="0PS0000000000232">Generated Permission Set 233 (GenPS233)</option><option value="0PS0000000000233">Generated Permission Set 234 (GenPS234)</option><option value="0PS0000000000234">Generated Permission Set 235 (GenPS235)</option><option value="0PS0000000000235">Generated Permission Set 236 (GenPS236)</option><option value="0PS0000000000236">Generated Permission Set 237 (GenPS237)</option><option value="0PS0000000000237">Generated Permission Set 238 (GenPS238)</option><option value="0PS0000000000238">Generated Permission Set 239 (GenPS239)</option><option value="0PS0000000000239">Generated Permission Set 240 (GenPS240)</option><option value="0PS0000000000240">Generated Permission Set 241 (GenPS241)</option><option value="0PS0000000000241">Generated Permission Set 242 (GenPS242)</option><option value="0PS0000000000242">Generated Permission Set 243 (GenPS243)</option><option value="0PS0000000000243">Generated Permission Set 244 (GenPS244)</option><option value="0PS0000000000244">Generated Permission Set 245 (GenPS245)</option><option value="0PS0000000000245">Generated Permission Set 246 (GenPS246)</option><option value="0PS0000000000246">Generated Permission Set 247 (GenPS247)</option><option value="0PS0000000000247">Generated Permission Set 248 (GenPS248)</option><option value="0PS0000000000248">Generated Permission Set 249 (GenPS249)</option><option value="0PS0000000000249">Generated Permission Set 250 (GenPS250)</option><option value="0PS0000000000250">Generated Permission Set 251 (GenPS251)</option><option value="0PS0000000000251">Generated Permission Set 252 (GenPS252)</option><option value="0PS0000000000252">Generated Permission Set 253 (GenPS253)</option><option value="0PS0000000000253">Generated Permission Set 254 (GenPS254)</option><option value="0PS0000000000254">Generated Permission Set 255 (GenPS255)</option><option value="0PS0000000000255">Generated Permission Set 256 (GenPS256)</option><option value="0PS0000000000256">Generated Permission Set 257 (GenPS257)</option><option value="0PS0000000000257">Generated Permission Set 258 (GenPS258)</option><option value="0PS0000000000258">Generated Permission Set 259 (GenPS259)</option><option value="0PS0000000000259">Generated Permission Set 260 (GenPS260)</option><option value="0PS0000000000260">Generated Permission Set 261 (GenPS261)</option><option value="0PS0000000000261">Generated Permission Set 262 (GenPS262)</option><option value="0PS0000000000262">Generated Permission Set 263 (GenPS263)</option><option value="0PS0000000000263">Generated Permission Set 264 (GenPS264)</option><option value="0PS0000000000264">Generated Permission Set 265 (GenPS265)</option><option value="0PS0000000000265">Generated Permission Set 266 (GenPS266)</option><option value="0PS0000000000266">Generated Permission Set 267 (GenPS267)</option><option value="0PS0000000000267">Generated Permission Set 268 (GenPS268)</option><option value="0PS0000000000268">Generated Permission Set 269 (GenPS269)</option><option value="0PS0000000000269">Generated Permission Set 270 (GenPS270)</option><option value="0PS0000000000270">Generated Permission Set 271 (GenPS271)</option><option value="0PS0000000000271">Generated Permission Set 272 (GenPS272)</option><option value="0PS0000000000272">Generated Permission Set 273 (GenPS273)</option><option value="0PS0000000000273">Generated Permission Set 274 (GenPS274)</option><option value="0PS0000000000274">Generated Permission Set 275 (GenPS275)</option><option value="0PS0000000000275">Generated Permission Set 276 (GenPS276)</option><option value="0PS0000000000276">Generated Permission Set 277 (GenPS277)</option><option value="0PS0000000000277">Generated Permission Set 278 (GenPS278)</option><option value="0PS0000000000278">Generated Permission Set 279 (GenPS279)</option><option value="0PS0000000000279">Generated Permission Set 280 (GenPS280)</option><option value="0PS0000000000280">Generated Permission Set 281 (GenPS281)</option><option value="0PS0000000000281">Generated Permission Set 282 (GenPS282)</option><option value="0PS0000000000282">Generated Permission Set 283 (GenPS283)</option><option value="0PS0000000000283">Generated Permission Set 284 (GenPS284)</option><option value="0PS0000000000284">Generated Permission Set 285 (GenPS285)</option><option value="0PS0000000000285">Generated Permission Set 286 (GenPS286)</option><option value="0PS0000000000286">Generated Permission Set 287 (GenPS287)</option><option value="0PS0000000000287">Generated Permission Set 288 (GenPS288)</option><option value="0PS0000000000288">Generated Permission Set 289 (GenPS289)</option><option value="0PS0000000000289">Generated Permission Set 290 (GenPS290)</option><option value="0PS0000000000290">Generated Permission Set 291 (GenPS291)</option><option value="0PS0000000000291">Generated Permission Set 292 (GenPS292)</option><option value="0PS0000000000292">Generated Permission Set 293 (GenPS293)</option><option value="0PS0000000000293">Generated Permission Set 294 (GenPS294)</option><option value="0PS0000000000294">Generated Permission Set 295 (GenPS295)</option><option value="0PS0000000000295">Generated Permission Set 296 (GenPS296)</option><option value="0PS0000000000296">Generated Permission Set 297 (GenPS297)</option><option value="0PS0000000000297">Generated Permission Set 298 (GenPS298)</option><option value="0PS0000000000298">Generated Permission Set 299 (GenPS299)</option><option value="0PS0000000000299">Generated Permission Set 300 (GenPS300)</option><option value="0PS0000000000300">Generated Permission Set 301 (GenPS301)</option><option value="0PS0000000000301">Generated Permission Set 302 (GenPS302)</option><option value="0PS0000000000302">Generated Permission Set 303 (GenPS303)</option><option value="0PS0000000000303">Generated Permission Set 304 (GenPS304)</option><option value="0PS0000000000304">Generated Permission Set 305 (GenPS305)</option><option value="0PS0000000000305">Generated Permission Set 306 (GenPS306)</option><option value="0PS0000000000306">Generated Permission Set 307 (GenPS307)</option><option value="0PS0000000000307">Generated Permission Set 308 (GenPS308)</option><option value="0PS0000000000308">Generated Permission Set 309 (GenPS309)</option><option value="0PS0000000000309">Generated Permission Set 310 (GenPS310)</option><option value="0PS0000000000310">Generated Permission Set 311 (GenPS311)</option><option value="0PS0000000000311">Generated Permission Set 312 (GenPS312)</option><option value="0PS0000000000312">Generated Permission Set 313 (GenPS313)</option><option value="0PS0000000000313">Generated Permission Set 314 (GenPS314)</option><option value="0PS0000000000314">Generated Permission Set 315 (GenPS315)</option><option value="0PS0000000000315">Generated Permission Set 316 (GenPS316)</option><option value="0PS0000000000316">Generated Permission Set 317 (GenPS317)</option><option value="0PS0000000000317">Generated Permission Set 318 (GenPS318)</option><option value="0PS0000000000318">Generated Permission Set 319 (GenPS319)</option><option value="0PS0000000000319">Generated Permission Set 320 (GenPS320)</option><option value="0PS0000000000320">Generated Permission Set 321 (GenPS321)</option><option value="0PS0000000000321">Generated Permission Set 322 (GenPS322)</option><option value="0PS0000000000322">Generated Permission Set 323 (GenPS323)</option><option value="0PS0000000000323">Generated Permission Set 324 (GenPS324)</option><option value="0PS0000000000324">Generated Permission Set 325 (GenPS325)</option><option value="0PS0000000000325">Generated Permission Set 326 (GenPS326)</option><option value="0PS0000000000326">Generated Permission Set 327 (GenPS327)</option><option value="0PS0000000000327">Generated Permission Set 328 (GenPS328)</option><option value="0PS0000000000328">Generated Permission Set 329 (GenPS329)</option><option value="0PS0000000000329">Generated Permission Set 330 (GenPS330)</option><option value="0PS0000000000330">Generated Permission Set 331 (GenPS331)</option><option value="0PS0000000000331">Generated Permission Set 332 (GenPS332)</option><option value="0PS0000000000332">Generated Permission Set 333 (GenPS333)</option><option value="0PS0000000000333">Generated Permission Set 334 (GenPS334)</option><option value="0PS0000000000334">Generated Permission Set 335 (GenPS335)</option><option value="0PS0000000000335">Generated Permission Set 336 (GenPS336)</option><option value="0PS0000000000336">Generated Permission Set 337 (GenPS337)</option><option value="0PS0000000000337">Generated Permission Set 338 (GenPS338)</option><option value="0PS0000000000338">Generated Permission Set 339 (GenPS339)</option><option value="0PS0000000000339">Generated Permission Set 340 (GenPS340)</option><option value="0PS0000000000340">Generated Permission Set 341 (GenPS341)</option><option value="0PS0000000000341">Generated Permission Set 342 (GenPS342)</option><option value="0PS0000000000342">Generated Permission Set 343 (GenPS343)</option><option value="0PS0000000000343">Generated Permission Set 344 (GenPS344)</option><option value="0PS0000000000344">Generated Permission Set 345 (GenPS345)</option><option value="0PS0000000000345">Generated Permission Set 346 (GenPS346)</option><option value="0PS0000000000346">Generated Permission Set 347 (GenPS347)</option><option value="0PS0000000000347">Generated Permission Set 348 (GenPS348)</option><option value="0PS0000000000348">Generated Permission Set 349 (GenPS349)</option><option value="0PS0000000000349">Generated Permission Set 350 (GenPS350)</option><option value="0PS0000000000350">Generated Permission Set 351 (GenPS351)</option><option value="0PS0000000000351">Generated Permission Set 352 (GenPS352)</option><option value="0PS0000000000352">Generated Permission Set 353 (GenPS353)</option><option value="0PS0000000000353">Generated Permission Set 354 (GenPS354)</option><option value="0PS0000000000354">Generated Permission Set 355 (GenPS355)</option><option value="0PS0000000000355">Generated Permission Set 356 (GenPS356)</option><option value="0PS0000000000356">Generated Permission Set 357 (GenPS357)</option><option value="0PS0000000000357">Generated Permission Set 358 (GenPS358)</option><option value="0PS0000000000358">Generated Permission Set 359 (GenPS359)</option><option value="0PS0000000000359">Generated Permission Set 360 (GenPS360)</option><option value="0PS0000000000360">Generated Permission Set 361 (GenPS361)</option><option value="0PS0000000000361">Generated Permission Set 362 (GenPS362)</option><option value="0PS0000000000362">Generated Permission Set 363 (GenPS363)</option><option value="0PS0000000000363">Generated Permission Set 364 (GenPS364)</option><option value="0PS0000000000364">Generated Permission Set 365 (GenPS365)</option><option value="0PS0000000000365">Generated Permission Set 366 (GenPS366)</option><option value="0PS0000000000366">Generated Permission Set 367 (GenPS367)</option><option value="0PS0000000000367">Generated Permission Set 368 (GenPS368)</option><option value="0PS0000000000368">Generated Permission Set 369 (GenPS369)</option><option value="0PS0000000000369">Generated Permission Set 370 (GenPS370)</option><option value="0PS0000000000370">Generated Permission Set 371 (GenPS371)</option><option value="0PS0000000000371">Generated Permission Set 372 (GenPS372)</option><option value="0PS0000000000372">Generated Permission Set 373 (GenPS373)</option><option value="0PS0000000000373">Generated Permission Set 374 (GenPS374)</option><option value="0PS0000000000374">Generated Permission Set 375 (GenPS375)</option><option value="0PS0000000000375">Generated Permission Set 376 (GenPS376)</option><option value="0PS0000000000376">Generated Permission Set 377 (GenPS377)</option><option value="0PS0000000000377">Generated Permission Set 378 (GenPS378)</option><option value="0PS0000000000378">Generated Permission Set 379 (GenPS379)</option><option value="0PS0000000000379">Generated Permission Set 380 (GenPS380)</option><option value="0PS0000000000380">Generated Permission Set 381 (GenPS381)</option><option value="0PS0000000000381">Generated Permission Set 382 (GenPS382)</option><option value="0PS0000000000382">Generated Permission Set 383 (GenPS383)</option><option value="0PS0000000000383">Generated Permission Set 384 (GenPS384)</option><option value="0PS0000000000384">Generated Permission Set 385 (GenPS385)</option><option value="0PS0000000000385">Generated Permission Set 386 (GenPS386)</option><option value="0PS0000000000386">Generated Permission Set 387 (GenPS387)</option><option value="0PS0000000000387">Generated Permission Set 388 (GenPS388)</option><option value="0PS0000000000388">Generated Permission Set 389 (GenPS389)</option><option value="0PS0000000000389">Generated Permission Set 390 (GenPS390)</option><option value="0PS0000000000390">Generated Permission Set 391 (GenPS391)</option><option value="0PS0000000000391">Generated Permission Set 392 (GenPS392)</option><option value="0PS0000000000392">Generated Permission Set 393 (GenPS393)</option><option value="0PS0000000000393">Generated Permission Set 394 (GenPS394)</option><option value="0PS0000000000394">Generated Permission Set 395 (GenPS395)</option><option value="0PS0000000000395">Generated Permission Set 396 (GenPS396)</option><option value="0PS0000000000396">Generated Permission Set 397 (GenPS397)</option><option value="0PS0000000000397">Generated Permission Set 398 (GenPS398)</option><option value="0PS0000000000398">Generated Permission Set 399 (GenPS399)</option><option value="0PS0000000000399">Generated Permission Set 400 (GenPS400)</option><option value="0PS0000000000400">Generated Permission Set 401 (GenPS401)</option><option value="0PS0000000000401">Generated Permission Set 402 (GenPS402)</option><option value="0PS0000000000402">Generated Permission Set 403 (GenPS403)</option><option value="0PS0000000000403">Generated Permission Set 404 (GenPS404)</option><option value="0PS0000000000404">Generated Permission Set 405 (GenPS405)</option><option value="0PS0000000000405">Generated Permission Set 406 (GenPS406)</option><option value="0PS0000000000406">Generated Permission Set 407 (GenPS407)</option><option value="0PS0000000000407">Generated Permission Set 408 (GenPS408)</option><option value="0PS0000000000408">Generated Permission Set 409 (GenPS409)</option><option value="0PS0000000000409">Generated Permission Set 410 (GenPS410)</option><option value="0PS0000000000410">Generated Permission Set 411 (GenPS411)</option><option value="0PS0000000000411">Generated Permission Set 412 (GenPS412)</option><option value="0PS0000000000412">Generated Permission Set 413 (GenPS413)</option><option value="0PS0000000000413">Generated Permission Set 414 (GenPS414)</option><option value="0PS0000000000414">Generated Permission Set 415 (GenPS415)</option><option value="0PS0000000000415">Generated Permission Set 416 (GenPS416)</option><option value="0PS0000000000416">Generated Permission Set 417 (GenPS417)</option><option value="0PS0000000000417">Generated Permission Set 418 (GenPS418)</option><option value="0PS0000000000418">Generated Permission Set 419 (GenPS419)</option><option value="0PS0000000000419">Generated Permission Set 420 (GenPS420)</option><option value="0PS0000000000420">Generated Permission Set 421 (GenPS421)</option><option value="0PS0000000000421">Generated Permission Set 422 (GenPS422)</option><option value="0PS0000000000422">Generated Permission Set 423 (GenPS423)</option><option value="0PS0000000000423">Generated Permission Set 424 (GenPS424)</option><option value="0PS0000000000424">Generated Permission Set 425 (GenPS425)</option><option value="0PS0000000000425">Generated Permission Set 426 (GenPS426)</option><option value="0PS0000000000426">Generated Permission Set 427 (GenPS427)</option><option value="0PS0000000000427">Generated Permission Set 428 (GenPS428)</option><option value="0PS0000000000428">Generated Permission Set 429 (GenPS429)</option><option value="0PS0000000000429">Generated Permission Set 430 (GenPS430)</option><option value="0PS0000000000430">Generated Permission Set 431 (GenPS431)</option><option value="0PS0000000000431">Generated Permission Set 432 (GenPS432)</option><option value="0PS0000000000432">Generated Permission Set 433 (GenPS433)</option><option value="0PS0000000000433">Generated Permission Set 434 (GenPS434)</option><option value="0PS0000000000434">Generated Permission Set 435 (GenPS435)</option><option value="0PS0000000000435">Generated Permission Set 436 (GenPS436)</option><option value="0PS0000000000436">Generated Permission Set 437 (GenPS437)</option><option value="0PS0000000000437">Generated Permission Set 438 (GenPS438)</option><option value="0PS0000000000438">Generated Permission Set 439 (GenPS439)</option><option value="0PS0000000000439">Generated Permission Set 440 (GenPS440)</option><option value="0PS0000000000440">Generated Permission Set 441 (GenPS441)</option><option value="0PS0000000000441">Generated Permission Set 442 (GenPS442)</option><option value="0PS0000000000442">Generated Permission Set 443 (GenPS443)</option><option value="0PS0000000000443">Generated Permission Set 444 (GenPS444)</option><option value="0PS0000000000444">Generated Permission Set 445 (GenPS445)</option><option value="0PS0000000000445">Generated Permission Set 446 (GenPS446)</option><option value="0PS0000000000446">Generated Permission Set 447 (GenPS447)</option><option value="0PS0000000000447">Generated Permission Set 448 (GenPS448)</option><option value="0PS0000000000448">Generated Permission Set 449 (GenPS449)</option><option value="0PS0000000000449">Generated Permission Set 450 (GenPS450)</option><option value="0PS0000000000450">Generated Permission Set 451 (GenPS451)</option><option value="0PS0000000000451">Generated Permission Set 452 (GenPS452)</option><option value="0PS0000000000452">Generated Permission Set 453 (GenPS453)</option><option value="0PS0000000000453">Generated Permission Set 454 (GenPS454)</option><option value="0PS0000000000454">Generated Permission Set 455 (GenPS455)</option><option value="0PS0000000000455">Generated Permission Set 456 (GenPS456)</option><option value="0PS0000000000456">Generated Permission Set 457 (GenPS457)</option><option value="0PS0000000000457">Generated Permission Set 458 (GenPS458)</option><option value="0PS0000000000458">Generated Permission Set 459 (GenPS459)</option><option value="0PS0000000000459">Generated Permission Set 460 (GenPS460)</option><option value="0PS0000000000460">Generated Permission Set 461 (GenPS461)</option><option value="0PS0000000000461">Generated Permission Set 462 (GenPS462)</option><option value="0PS0000000000462">Generated Permission Set 463 (GenPS463)</option><option value="0PS0000000000463">Generated Permission Set 464 (GenPS464)</option><option value="0PS0000000000464">Generated Permission Set 465 (GenPS465)</option><option value="0PS0000000000465">Generated Permission Set 466 (GenPS466)</option><option value="0PS0000000000466">Generated Permission Set 467 (GenPS467)</option><option value="0PS0000000000467">Generated Permission Set 468 (GenPS468)</option><option value="0PS0000000000468">Generated Permission Set 469 (GenPS469)</option><option value="0PS0000000000469">Generated Permission Set 470 (GenPS470)</option><option value="0PS0000000000470">Generated Permission Set 471 (GenPS471)</option><option value="0PS0000000000471">Generated Permission Set 472 (GenPS472)</option><option value="0PS0000000000472">Generated Permission Set 473 (GenPS473)</option><option value="0PS0000000000473">Generated Permission Set 474 (GenPS474)</option><option value="0PS0000000000474">Generated Permission Set 475 (GenPS475)</option><option value="0PS0000000000475">Generated Permission Set 476 (GenPS476)</option><option value="0PS0000000000476">Generated Permission Set 477 (GenPS477)</option><option value="0PS0000000000477">Generated Permission Set 478 (GenPS478)</option><option value="0PS0000000000478">Generated Permission Set 479 (GenPS479)</option><option value="0PS0000000000479">Generated Permission Set 480 (GenPS480)</option><option value="0PS0000000000480">Generated Permission Set 481 (GenPS481)</option><option value="0PS0000000000481">Generated Permission Set 482 (GenPS482)</option><option value="0PS0000000000482">Generated Permission Set 483 (GenPS483)</option><option value="0PS0000000000483">Generated Permission Set 484 (GenPS484)</option><option value="0PS0000000000484">Generated Permission Set 485 (GenPS485)</option><option value="0PS0000000000485">Generated Permission Set 486 (GenPS486)</option><option value="0PS0000000000486">Generated Permission Set 487 (GenPS487)</option><option value="0PS0000000000487">Generated Permission Set 488 (GenPS488)</option><option value="0PS0000000000488">Generated Permission Set 489 (GenPS489)</option><option value="0PS0000000000489">Generated Permission Set 490 (GenPS490)</option><option value="0PS0000000000490">Generated Permission Set 491 (GenPS491)</option><option value="0PS0000000000491">Generated Permission Set 492 (GenPS492)</option><option value="0PS0000000000492">Generated Permission Set 493 (GenPS493)</option><option value="0PS0000000000493">Generated Permission Set 494 (GenPS494)</option><option value="0PS0000000000494">Generated Permission Set 495 (GenPS495)</option><option value="0PS0000000000495">Generated Permission Set 496 (GenPS496)</option><option value="0PS0000000000496">Generated Permission Set 497 (GenPS497)</option><option value="0PS0000000000497">Generated Permission Set 498 (GenPS498)</option><option value="0PS0000000000498">Generated Permission Set 499 (GenPS499)</option><option value="0PS0000000000499">Generated Permission Set 500 (GenPS500)</option>
+      </select>
+    </div>
+  </div>
+</div>
+<pre id="report"></pre>
+<script>
+// custom-dropdown.js
+
+(function() {
+    // Prevent multiple injections
+    if (window.sfarcCustomDropdownsInitialized) return;
+    window.sfarcCustomDropdownsInitialized = true;
+
+    const CHECKMARK_SVG = `<svg class="sfarc-custom-dropdown-checkmark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const CHEVRON_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+    const SEARCH_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+
+    function closeAllDropdowns() {
+        document.querySelectorAll('.sfarc-custom-dropdown-container.sfarc-open').forEach(el => {
+            el.classList.remove('sfarc-open');
+        });
+        document.querySelectorAll('.sfarc-custom-dropdown-menu.sfarc-menu-open').forEach(m => {
+            m.classList.remove('sfarc-menu-open');
+            m.style.opacity = '0';
+            // Let the liquid shrink-back transition play before hiding the node.
+            setTimeout(() => {
+                if (!m.classList.contains('sfarc-menu-open')) {
+                    m.style.display = 'none';
+                    m.style.visibility = 'hidden';
+                    m.style.pointerEvents = 'none';
+                }
+            }, 200);
+        });
+    }
+
+    // Close all open dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.sfarc-custom-dropdown-container') && !e.target.closest('.sfarc-custom-dropdown-menu')) {
+            closeAllDropdowns();
+        }
+    });
+
+    // Dropdown menus are teleported to document.body to escape overflow
+    // clipping, which detaches them from the host page's theme scope (e.g.
+    // #sfarc-panel.sfarc-dark-theme). Copy the dark-theme class onto the menu
+    // itself so the .sfarc-dark-theme overrides in custom-dropdown.css keep
+    // menus dark in dark mode regardless of where the menu lives in the DOM.
+    function syncMenuTheme(menu, hostEl) {
+        const themedAncestor = hostEl.closest ? hostEl.closest('.sfarc-dark-theme') : null;
+        menu.classList.toggle('sfarc-dark-theme', !!themedAncestor);
+    }
+
+    function enhanceSelect(selectEl) {
+        if (selectEl.hasAttribute('multiple')) return; // Skip multi-select for now
+        // Opt-out: hosts that already style the native select mark it with data-custom-dropdown="off"
+        if (selectEl.dataset.customDropdown === 'off') return;
+
+        // If already processed and custom dropdown container is present right next to it, skip
+        if (selectEl.classList.contains('sfarc-custom-processed') &&
+            selectEl.nextElementSibling &&
+            selectEl.nextElementSibling.classList.contains('sfarc-custom-dropdown-container')) {
+            return;
+        }
+
+        // Remove any orphaned or existing custom dropdown containers in the same field wrapper
+        if (selectEl.parentNode) {
+            Array.from(selectEl.parentNode.children).forEach(child => {
+                if (child.classList.contains('sfarc-custom-dropdown-container')) {
+                    child.remove();
+                }
+            });
+        }
+
+        selectEl.classList.add('sfarc-custom-processed');
+        selectEl.classList.add('sfarc-custom-dropdown-hidden-select');
+
+        // Create Container
+        const container = document.createElement('div');
+        container.className = 'sfarc-custom-dropdown-container';
+        
+        // Inherit inline styles that affect layout
+        if (selectEl.style.width) container.style.width = selectEl.style.width;
+        if (selectEl.style.flex) container.style.flex = selectEl.style.flex;
+        if (selectEl.style.flexShrink) container.style.flexShrink = selectEl.style.flexShrink;
+        if (selectEl.style.flexGrow) container.style.flexGrow = selectEl.style.flexGrow;
+        if (selectEl.style.minWidth) container.style.minWidth = selectEl.style.minWidth;
+        if (selectEl.style.maxWidth) container.style.maxWidth = selectEl.style.maxWidth;
+
+        // Copy classes from the select (except the hidden one) to the container to inherit positioning/margin
+        Array.from(selectEl.classList).forEach(cls => {
+            if (cls !== 'sfarc-custom-processed' && cls !== 'sfarc-custom-dropdown-hidden-select') {
+                container.classList.add(cls);
+            }
+        });
+
+        // Trigger Button
+        const trigger = document.createElement('div');
+        trigger.className = 'sfarc-custom-dropdown-trigger';
+        if (selectEl.disabled) trigger.setAttribute('data-disabled', 'true');
+        
+        // Inherit height/padding if explicitly set
+        if (selectEl.style.height) trigger.style.height = selectEl.style.height;
+        if (selectEl.style.padding) trigger.style.padding = selectEl.style.padding;
+        if (selectEl.style.fontSize) trigger.style.fontSize = selectEl.style.fontSize;
+
+        const valueSpan = document.createElement('span');
+        valueSpan.className = 'sfarc-custom-dropdown-value';
+        
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'sfarc-custom-dropdown-icon';
+        iconSpan.innerHTML = CHEVRON_SVG;
+
+        trigger.appendChild(valueSpan);
+        trigger.appendChild(iconSpan);
+
+        // Menu
+        const menu = document.createElement('div');
+        menu.className = 'sfarc-custom-dropdown-menu';
+        // Keep the menu's theme in sync with the host select's themed scope.
+        syncMenuTheme(menu, selectEl);
+        // Wide menus (e.g. data-export Templates) get a marker class so the
+        // teleported menu keeps its widened size after it moves to <body>.
+        if (selectEl.classList.contains('sfir-header-select')) {
+            menu.classList.add('sfarc-custom-dropdown-menu-wide');
+        }
+
+        container.appendChild(trigger);
+
+        // Insert container right after the select in the DOM
+        selectEl.parentNode.insertBefore(container, selectEl.nextSibling);
+
+        let searchInput = null;
+
+        function updateMenuPosition() {
+            if (!container.classList.contains('sfarc-open')) return;
+
+            const rect = trigger.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+            // Teleport menu to document.body to guarantee no parent overflow:hidden clips it
+            if (menu.parentNode !== document.body) {
+                document.body.appendChild(menu);
+            }
+
+            // Re-sync the theme class every open — the menu lives at <body>
+            // level, so it must carry the page's dark-theme scope itself.
+            syncMenuTheme(menu, selectEl);
+
+            menu.style.position = 'fixed';
+            menu.style.zIndex = '2147483647';
+            const isWide = menu.classList.contains('sfarc-custom-dropdown-menu-wide');
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            let menuWidth = Math.max(rect.width, isWide ? 480 : 220);
+            if (isWide) {
+                // Size the menu to fit the widest option so long queries (e.g.
+                // the data-export Templates list) don't need a horizontal
+                // scrollbar. Text is measured with the option's real font so the
+                // result is accurate even if the menu hasn't laid out yet.
+                // Clamp to the viewport so it never overflows the screen.
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                let widest = 0;
+                menu.querySelectorAll('.sfarc-custom-dropdown-option').forEach(opt => {
+                    const cs = getComputedStyle(opt);
+                    ctx.font = cs.font || `${cs.fontSize} ${cs.fontFamily}`;
+                    const textEl = opt.querySelector('span');
+                    const text = (textEl ? textEl.textContent : opt.textContent) || '';
+                    // 13px checkmark + 28px left padding + 10px right padding + 6px breathing room
+                    const w = ctx.measureText(text).width + 13 + 28 + 10 + 6;
+                    if (w > widest) widest = w;
+                });
+                if (widest > 0) {
+                    menuWidth = Math.max(menuWidth, widest + 16); // + menu padding (8px each side)
+                }
+                menuWidth = Math.min(menuWidth, viewportWidth - 16);
+            }
+            menu.style.left = `${Math.max(8, Math.min(rect.left, viewportWidth - menuWidth - 8))}px`;
+            menu.style.width = `${menuWidth}px`;
+
+            // Render the menu (kept invisible) so its REAL height can be
+            // measured. scrollHeight is 0 while the menu is display:none, and
+            // the old `|| 340` fallback over-estimated short menus — a 6-option
+            // menu (~205px) was treated as 340px, so the pop-above check fired
+            // too eagerly and the menu floated far up the viewport instead of
+            // hugging the trigger. The hidden state is never painted (the open
+            // class is applied after a forced reflow by the caller), so the
+            // liquid-open transition still starts from the closed state.
+            menu.style.display = 'flex';
+            menu.style.flexDirection = 'column';
+            menu.style.visibility = 'hidden';
+            menu.style.opacity = '0';
+            menu.style.pointerEvents = 'none';
+            const menuHeight = Math.min(420, menu.scrollHeight || 340);
+
+            // Check if popping down exceeds bottom of viewport
+            if (rect.bottom + menuHeight + 8 > viewportHeight && rect.top > menuHeight + 8) {
+                // Pop UP above the trigger — the liquid grows down from the trigger edge
+                menu.style.top = `${Math.max(8, rect.top - menuHeight - 4)}px`;
+                menu.style.transformOrigin = 'bottom center';
+            } else {
+                // Pop DOWN below the trigger — the liquid grows up from the trigger edge
+                menu.style.top = `${rect.bottom + 4}px`;
+                menu.style.transformOrigin = 'top center';
+            }
+
+            // Reveal the menu (same frame — the open transition is driven by
+            // the .sfarc-menu-open class added right after this call).
+            menu.style.opacity = '1';
+            menu.style.visibility = 'visible';
+            menu.style.pointerEvents = 'all';
+        }
+
+        function closeThisMenu() {
+            container.classList.remove('sfarc-open');
+            menu.classList.remove('sfarc-menu-open');
+            menu.style.opacity = '0';
+            // Let the liquid shrink-back transition play before hiding the node.
+            setTimeout(() => {
+                if (!container.classList.contains('sfarc-open')) {
+                    menu.style.display = 'none';
+                    menu.style.visibility = 'hidden';
+                    menu.style.pointerEvents = 'none';
+                }
+            }, 200);
+        }
+
+        // Function to rebuild options
+        const rebuildMenu = () => {
+            menu.innerHTML = '';
+            
+            const isSearchable = selectEl.dataset.searchable === 'true' || selectEl.options.length > 8;
+            
+            if (isSearchable) {
+                const searchWrap = document.createElement('div');
+                searchWrap.className = 'sfarc-custom-dropdown-search';
+                
+                const searchIcon = document.createElement('span');
+                searchIcon.className = 'sfarc-custom-dropdown-search-icon';
+                searchIcon.innerHTML = SEARCH_SVG;
+                
+                searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.className = 'sfarc-custom-dropdown-search-input';
+                searchInput.placeholder = selectEl.dataset.searchPlaceholder || 'Search...';
+                
+                searchWrap.appendChild(searchIcon);
+                searchWrap.appendChild(searchInput);
+                menu.appendChild(searchWrap);
+
+                searchInput.addEventListener('input', (e) => {
+                    renderOptions(e.target.value.toLowerCase());
+                    updateMenuPosition();
+                });
+                
+                searchInput.addEventListener('click', (e) => e.stopPropagation());
+            } else {
+                searchInput = null;
+            }
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'sfarc-custom-dropdown-options';
+            menu.appendChild(optionsContainer);
+
+            const renderOptions = (filterText = '') => {
+                optionsContainer.innerHTML = '';
+                let selectedText = '';
+                let shown = 0;
+
+                Array.from(selectEl.options).forEach((opt) => {
+                    const text = opt.text;
+                    const val = opt.value;
+                    const isSelected = opt.selected;
+
+                    if (isSelected) {
+                        selectedText = text;
+                    }
+
+                    if (filterText && !text.toLowerCase().includes(filterText) && !val.toLowerCase().includes(filterText)) {
+                        return;
+                    }
+
+                    shown++;
+                    const optDiv = document.createElement('div');
+                    optDiv.className = 'sfarc-custom-dropdown-option';
+                    if (isSelected) optDiv.classList.add('sfarc-selected');
+
+                    optDiv.innerHTML = `${CHECKMARK_SVG}<span>${text}</span>`;
+
+                    optDiv.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selectEl.value = val;
+                        
+                        // Dispatch native events
+                        selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                        selectEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+                        closeThisMenu();
+
+                        // Update UI
+                        rebuildMenu();
+                    });
+                    
+                    optionsContainer.appendChild(optDiv);
+                });
+
+                if (shown === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'sfarc-custom-dropdown-empty';
+                    empty.textContent = 'No matches found';
+                    optionsContainer.appendChild(empty);
+                }
+
+                // Update trigger text
+                valueSpan.textContent = selectedText || (selectEl.options[0] ? selectEl.options[0].text : '');
+            };
+
+            renderOptions('');
+            
+            // Sync disabled state
+            if (selectEl.disabled) {
+                trigger.setAttribute('data-disabled', 'true');
+            } else {
+                trigger.removeAttribute('data-disabled');
+            }
+        };
+
+        rebuildMenu();
+
+        // Trigger Click Event
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (selectEl.disabled) return;
+            
+            const wasOpen = container.classList.contains('sfarc-open');
+            closeAllDropdowns();
+
+            if (!wasOpen) {
+                container.classList.add('sfarc-open');
+                updateMenuPosition();
+                // Show the menu (display:flex) and force a reflow so the closed
+                // liquid state is committed BEFORE the open class flips on —
+                // otherwise the transition can start while the menu is still
+                // display:none and the liquid motion is skipped.
+                void menu.offsetHeight;
+                menu.classList.add('sfarc-menu-open');
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 0);
+                }
+            }
+        });
+
+        // Reposition on scroll/resize
+        window.addEventListener('scroll', () => {
+            if (container.classList.contains('sfarc-open')) {
+                updateMenuPosition();
+            }
+        }, true);
+
+        window.addEventListener('resize', () => {
+            if (container.classList.contains('sfarc-open')) {
+                updateMenuPosition();
+            }
+        });
+
+        // Watch for changes to the original select (e.g., options injected dynamically or value changed via JS)
+        const observer = new MutationObserver((mutations) => {
+            let needsRebuild = false;
+            mutations.forEach(m => {
+                if (m.type === 'childList' || (m.type === 'attributes' && (m.attributeName === 'disabled' || m.attributeName === 'value'))) {
+                    needsRebuild = true;
+                }
+            });
+            if (needsRebuild) rebuildMenu();
+        });
+
+        observer.observe(selectEl, { childList: true, attributes: true, subtree: true });
+        
+        // Also listen to 'change' event on original select in case it's changed by code without attributes mutating
+        selectEl.addEventListener('change', () => {
+            rebuildMenu();
+        });
+    }
+
+    // Initialize all existing selects
+    function initAll() {
+        document.querySelectorAll('select').forEach(enhanceSelect);
+    }
+
+    // Watch for new selects added to the DOM dynamically
+    const domObserver = new MutationObserver((mutations) => {
+        let hasNewNodes = false;
+        mutations.forEach(m => {
+            if (m.addedNodes.length > 0) hasNewNodes = true;
+        });
+        
+        if (hasNewNodes) {
+            document.querySelectorAll('select:not(.sfarc-custom-processed)').forEach(enhanceSelect);
+        }
+    });
+
+    // Start observing DOM when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initAll();
+            domObserver.observe(document.body, { childList: true, subtree: true });
+        });
+    } else {
+        initAll();
+        domObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // Public API for hosts that inject selects after startup (e.g. the panel
+    // injected by main.js). Idempotent — already-processed selects are skipped.
+    window.sfarcEnhanceAllSelects = initAll;
+    window.sfarcEnhanceSelect = enhanceSelect;
+
+})();
+
+</script>
+<script>
+function probe() {
+  const select = document.getElementById('bpw-permset');
+  const container = document.querySelector('.sfarc-custom-dropdown-container');
+  const trigger = document.querySelector('.sfarc-custom-dropdown-trigger');
+  const search = document.querySelector('.sfarc-custom-dropdown-search-input');
+  const chevron = document.querySelector('.bpw-select-chevron');
+  return {
+    selectHidden: getComputedStyle(select).display === 'none',
+    containerExists: !!container,
+    triggerText: trigger ? trigger.querySelector('.sfarc-custom-dropdown-value').textContent.slice(0, 40) : null,
+    searchExists: !!search,
+    searchPlaceholder: search ? search.placeholder : null,
+    nativeChevronHidden: chevron ? getComputedStyle(chevron).display === 'none' : null,
+    optionCount: document.querySelectorAll('.sfarc-custom-dropdown-option').length
+  };
+}
+window.__bpwProbe = () => JSON.stringify(probe(), null, 1);
+// Verify filtering + selection programmatically (the search input listener
+// calls renderOptions + updateMenuPosition; drive it directly).
+window.__bpwFilter = (text) => {
+  const search = document.querySelector('.sfarc-custom-dropdown-search-input');
+  const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value').set;
+  setter.call(search, text);
+  search.dispatchEvent(new Event('input', { bubbles: true }));
+  return document.querySelectorAll('.sfarc-custom-dropdown-option').length;
+};
+window.__bpwClickFirst = () => {
+  const first = document.querySelector('.sfarc-custom-dropdown-option');
+  first.click();
+  const select = document.getElementById('bpw-permset');
+  return { value: select.value, label: select.options[select.selectedIndex].text };
+};
+document.getElementById('report').textContent = window.__bpwProbe();
+</script>
+</body>
+</html>

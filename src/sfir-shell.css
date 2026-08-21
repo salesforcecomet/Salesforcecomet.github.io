@@ -1,0 +1,297 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   sfir-shell — persistent top bar + tab-host for Export / Import / Limits /
+   Metadata. The header is rendered ONCE here; the four tab pages live in
+   iframes below it, so switching tabs never reloads the chrome.
+   ────────────────────────────────────────────────────────────────────────── */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* The shell is always a full-bleed document; it inherits theming from
+   theme-manager (dark/light body classes + accent variables). */
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background: #f6f8fb;
+    color: #0f172a;
+    display: flex;
+    flex-direction: column;
+}
+
+body.sfarc-dark-theme {
+    background: #0c0f14;
+    color: #e2e8f0;
+}
+
+/* Persistent header — same SLDS structure the standalone pages use, so the
+   existing .sfir-* header styles apply unchanged. */
+#sfir-shell-header {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+}
+
+/* Tab host — fills everything under the header. */
+#sfir-tab-host {
+    flex: 1;
+    min-height: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.sfir-tab-frame {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: none;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    background: transparent;
+    will-change: transform, opacity;
+}
+
+.sfir-tab-frame.active,
+.sfir-tab-frame.outgoing {
+    display: block;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.sfir-tab-frame.active {
+    display: block;
+    z-index: 2;
+    animation: sfirTabIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.sfir-tab-frame.outgoing {
+    display: block;
+    z-index: 1;
+    pointer-events: none;
+    animation: sfirTabOut 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Direction-aware slide: forward tabs enter from the right, backward from
+   the left. Set per-switch by the shell (--sfir-tab-dir: 1 | -1). */
+@keyframes sfirTabIn {
+    0% {
+        opacity: 0;
+        transform: translateX(calc(40px * var(--sfir-tab-dir, 1))) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes sfirTabOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(calc(-20px * var(--sfir-tab-dir, 1))) scale(0.98);
+    }
+}
+
+/* First paint: the initial tab appears without the entrance slide. */
+.sfir-tab-frame.active.sfir-tab-initial {
+    animation: none;
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ── Page-specific utilities slot ─────────────────────────────────────────
+   Rendered by sfir-shell.js into the persistent bar: the active tab's own
+   controls (Tooling/QueryAll toggles, Help, Refresh, host
+   pill). Reuses the existing .sfir-header-* styles from sfir.css so the
+   controls look exactly like the standalone pages' header utilities. */
+.sfir-shell-utils {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 10px;
+    max-width: 52vw;
+    overflow: hidden;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.sfir-shell-utils:empty {
+    display: none;
+}
+
+.sfir-shell-utils-item {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Host pill (Limits / Metadata) — truncated like the standalone pages. */
+.sfir-shell-host-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 220px;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--sfarc-accent, #2196f3);
+    background: #f1f3f5;
+    border: 1px solid #e0e3e8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.sfarc-dark-theme .sfir-shell-host-pill {
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--sfarc-accent-light, #5eb4ff);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* Refresh button — matches the standalone Limits header's pill. */
+.sfir-shell-refresh-btn {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 10px !important;
+    border-radius: 6px !important;
+    font-size: 11px !important;
+    color: var(--sfarc-accent-contrast, #ffffff) !important;
+    background-color: var(--sfarc-accent, #2196f3) !important;
+    border: none !important;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.sfir-shell-refresh-btn:hover {
+    filter: brightness(1.08);
+}
+
+.sfir-shell-refresh-btn .sfir-shell-refresh-spin {
+    display: inline-block;
+    animation: sfirShellSpin 0.8s linear infinite;
+}
+
+@keyframes sfirShellSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Nav pill: reuse the sfir-nav-slider styles (positioned by theme-manager). */
+#sfir-shell-nav .sfir-nav-slider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-radius: 8px;
+    background: var(--sfarc-accent, #2196f3);
+    box-shadow: 0 2px 10px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.28);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: 0;
+    pointer-events: none;
+}
+
+#sfir-shell-nav .sfir-nav-slider-init {
+    transition: none;
+}
+
+/* ── Combined Org + User Badge ──────────────────────────────────────────
+   Single pill: org icon + name | divider | user initials.
+   Matches the reference screenshot style. */
+.sfir-combined-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid #e0e3e8;
+    background: #f1f3f5;
+    overflow: hidden;
+    cursor: default;
+    position: relative;
+    transition: border-color 0.15s ease;
+}
+
+.sfir-combined-badge:hover {
+    border-color: #c8ccd4;
+}
+
+.sfir-combined-badge-org {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0 8px;
+    height: 100%;
+    color: var(--sfarc-accent, #2196f3);
+    text-decoration: none;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+.sfir-combined-badge-org:hover {
+    color: var(--sfarc-accent-dark, #1976d2);
+}
+
+.sfir-combined-badge-org svg {
+    flex-shrink: 0;
+}
+
+.sfir-combined-badge-org-text {
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sfir-combined-badge-divider {
+    width: 1px;
+    height: 16px;
+    background: #d0d3d8;
+    flex-shrink: 0;
+}
+
+.sfir-combined-badge-user {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-width: 32px;
+    padding: 0 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #475569;
+    background: transparent;
+    letter-spacing: 0.02em;
+}
+
+/* Dark theme */
+body.sfarc-dark-theme .sfir-combined-badge {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+body.sfarc-dark-theme .sfir-combined-badge:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.sfarc-dark-theme .sfir-combined-badge-org {
+    color: var(--sfarc-accent-light, #5eb4ff);
+}
+
+body.sfarc-dark-theme .sfir-combined-badge-divider {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+body.sfarc-dark-theme .sfir-combined-badge-user {
+    color: #cbd5e1;
+}

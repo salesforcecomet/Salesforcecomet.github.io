@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>History drawer position — harness</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #eef2f7; margin: 0; color: #1a2233; }
+  .page-header { height: 52px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; padding: 0 16px; font-size: 13px; font-weight: 600; color: #475569; }
+  .editor-card { background: #fff; border-bottom: 1px solid #d8e0ea; padding: 0 12px 12px; }
+  .query-tabs { display: flex; align-items: flex-end; gap: 3px; padding: 4px 6px 0; border-bottom: 1px solid #e2e8f0; }
+  .query-tab { padding: 4px 12px; border: 1px solid #cbd5e1; border-bottom: none; border-radius: 8px 8px 0 0; background: #f1f5f9; color: #475569; font-size: 12px; display: inline-flex; align-items: center; gap: 7px; height: 26px; }
+  .query-tab.active { background: #0176d3; color: #fff; border-color: #0176d3; }
+  .history-btn { width: 28px; height: 26px; border: 1px solid #cbd5e1; border-bottom: none; border-radius: 8px 8px 0 0; background: #f1f5f9; display: inline-flex; align-items: center; justify-content: center; color: #475569; }
+  .query-editor-row { display: flex; gap: 10px; padding: 10px 6px 8px; }
+  .query-editor { flex: 1; height: 120px; border: 1px solid #d6dde6; border-radius: 8px; background: #f8fafc; padding: 8px 10px; font: 12px/1.5 ui-monospace, monospace; color: #0f172a; }
+  .buttons-row { display: flex; gap: 8px; padding: 0 6px; }
+  .btn { border: 1px solid #d8dde6; background: #fff; border-radius: 6px; padding: 5px 12px; font-size: 11px; }
+  .btn.primary { background: #0176d3; border-color: #0176d3; color: #fff; }
+  .results { height: 400px; background: #fff; margin: 14px; border: 1px solid #d8e0ea; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #94a3b8; font-size: 12px; }
+  /* Drawer (glass, mirrors sfir.css) */
+  .sfir-history-drawer {
+    position: fixed;
+    width: 560px;
+    max-width: calc(100vw - 24px);
+    max-height: min(60vh, 520px);
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22), 0 6px 20px rgba(15, 23, 42, 0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 50;
+  }
+  .drawer-header { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-bottom: 1px solid rgba(15, 23, 42, 0.08); }
+  .seg { display: flex; gap: 2px; padding: 2px; background: rgba(15, 23, 42, 0.06); border-radius: 999px; }
+  .seg span { padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; color: #64748b; }
+  .seg span.active { background: #0176d3; color: #fff; }
+  .search { flex: 1; height: 26px; border: 1px solid rgba(15, 23, 42, 0.12); border-radius: 8px; padding: 0 10px; font-size: 11px; background: #fff; }
+  .drawer-row { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-bottom: 1px solid rgba(15, 23, 42, 0.06); font-size: 11px; }
+  .badge { background: #0176d3; color: #fff; border-radius: 5px; padding: 2px 7px; font-size: 10px; font-weight: 700; }
+  .row-query { flex: 1; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: ui-monospace, monospace; }
+  .load { border: 1px solid #0176d3; color: #0176d3; background: rgba(1, 118, 211, 0.08); border-radius: 6px; padding: 2px 10px; font-size: 10px; font-weight: 600; }
+  .status { font: 11px monospace; color: #64748b; padding: 10px 16px; }
+</style>
+</head>
+<body>
+<div class="page-header">Data Export — Salesforce Comet</div>
+
+<div class="editor-card" id="editorCard">
+  <div class="query-tabs">
+    <div class="history-btn" id="historyBtn">⌛</div>
+    <div class="query-tab active">Query 3</div>
+  </div>
+  <div class="query-editor-row">
+    <div class="query-editor" id="editor">SELECT Id, Name, CreatedDate, LastModifiedDate FROM Account...</div>
+  </div>
+  <div class="buttons-row">
+    <button class="btn primary">Run Query</button>
+    <button class="btn">Format</button>
+    <button class="btn">Save</button>
+  </div>
+</div>
+
+<div class="results">Query results area (the drawer now opens over this region, not over the editor)</div>
+
+<div id="drawer" class="sfir-history-drawer" hidden>
+  <div class="drawer-header">
+    <div class="seg"><span class="active">History (5)</span><span>Saved (0)</span></div>
+    <input class="search" placeholder="Search history queries...">
+  </div>
+  <div class="drawer-row"><span class="badge">SOQL</span><span class="row-query">SELECT Id, Name, CreatedDate, LastModifiedDate FROM Accou...</span><button class="load">Load</button></div>
+  <div class="drawer-row"><span class="badge">SOQL</span><span class="row-query">SELECT Id, AccountNumber, AccountSource, Active__c, Annua...</span><button class="load">Load</button></div>
+  <div class="drawer-row"><span class="badge">SOQL</span><span class="row-query">SELECT Id, AccountNumber, AccountSource, Active__c, Annua...</span><button class="load">Load</button></div>
+  <div class="drawer-row"><span class="badge">SOQL</span><span class="row-query">SELECT Id FROM Account LIMIT 200</span><button class="load">Load</button></div>
+  <div class="drawer-row"><span class="badge">SOQL</span><span class="row-query">SELECT Id, AccountNumber, Accountowmanager__c, Accounto...</span><button class="load">Load</button></div>
+</div>
+
+<div class="status" id="status">closed — click the history button to open the drawer</div>
+
+<script>
+// Mirrors the new toggleHistoryDrawer() positioning logic from data-export.js:
+// the drawer drops over the LOWER portion of the query input (mockup) — its
+// top edge sits just past the middle of the input box, left-aligned with it.
+function computeDrawerPos() {
+  const btn = document.getElementById('historyBtn');
+  const r = btn.getBoundingClientRect();
+  const q = document.getElementById('editor').getBoundingClientRect();
+  let top;
+  if (q && q.height > 0) {
+    top = Math.round(q.top + q.height * 0.5);
+    const maxDrawerH = Math.min(0.6 * window.innerHeight, 520);
+    top = Math.min(top, Math.max(Math.round(q.top), window.innerHeight - maxDrawerH - 8));
+  } else {
+    top = Math.round(r.bottom + 8);
+  }
+  return { top, left: Math.round(q.left) };
+}
+
+let open = false;
+document.getElementById('historyBtn').addEventListener('click', () => {
+  open = !open;
+  const drawer = document.getElementById('drawer');
+  if (open) {
+    const pos = computeDrawerPos();
+    drawer.style.top = pos.top + 'px';
+    drawer.style.left = pos.left + 'px';
+    drawer.hidden = false;
+    const editorRect = document.getElementById('editor').getBoundingClientRect();
+    const drawerRect = drawer.getBoundingClientRect();
+    const overlap = editorRect.bottom - drawerRect.top;
+    document.getElementById('status').textContent =
+      'drawer top=' + pos.top + 'px · input top=' + Math.round(editorRect.top) +
+      'px · input bottom=' + Math.round(editorRect.bottom) + 'px · overlap with input=' +
+      Math.round(overlap) + 'px · drawer bottom=' + Math.round(drawerRect.bottom) + 'px';
+  } else {
+    drawer.hidden = true;
+    document.getElementById('status').textContent = 'closed';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dropdown Position Audit</title>
+<style>
+  :root {
+    --text-muted: #9ca3af;
+    --border-color: #3f3f46;
+    --primary: #3b82f6;
+  }
+  body {
+    margin: 0; padding: 0; background: #161616; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  .modal-overlay {
+    position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgba(0, 0, 0, 0.55); z-index: 9000; overflow: auto; padding: 20px;
+  }
+  .modal-card {
+    width: 560px; max-height: 86vh; overflow: auto; box-sizing: border-box;
+    background: #1e1e1e; border: 1px solid #3f3f46; border-radius: 12px; padding: 18px;
+    animation: ce-modal-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes ce-modal-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.94); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .form-group { margin-bottom: 10px; }
+  .create-api-version { max-width: 170px; }
+  .create-field-label {
+    font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-muted); margin-bottom: 4px; display: block;
+  }
+  div.sfarc-custom-dropdown-container.form-control {
+    padding: 0 !important; border: none !important; background: transparent !important;
+  }
+  .sfarc-custom-dropdown-container.form-control .sfarc-custom-dropdown-trigger {
+    background: #27272a !important; border: 1px solid #3f3f46 !important; color: #f4f4f5 !important;
+    padding: 5px 8px !important; border-radius: 5px !important; font-size: 12px !important; height: 30px !important;
+  }
+  .spacer { height: 70vh; }
+  .bottom-note { color: #71717a; font-size: 11px; margin-top: 6px; }
+  #probe {
+    position: fixed; top: 8px; left: 8px; z-index: 2147483647; font: 11px/1.5 monospace;
+    background: #0f0f0f; border: 1px solid #444; color: #e4e4e7; padding: 8px 10px; border-radius: 8px;
+    white-space: pre; max-width: 90vw;
+  }
+</style>
+<style>/* custom-dropdown.css */
+
+/* NUKE native styles from wrapper container, beating inspector.css specificity */
+html body .sfarc-custom-dropdown-container,
+body.sfarc-dark-theme .sfarc-custom-dropdown-container.sfarc-custom-dropdown-container,
+html body #sfarc-panel .sfarc-custom-dropdown-container,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container,
+html body #sfarc-panel .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel .sfarc-custom-dropdown-container:focus,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container:focus,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container:focus {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    font-family: inherit;
+    /* Reset all native select styles that leaked in via copied classes.
+       The container must stay an invisible layout box even when the copied
+       select classes (e.g. .sfir-header-select) bring themed backgrounds
+       and borders — otherwise a sharp square outline renders behind the
+       rounded trigger. body.sfarc-dark-theme html body … raises the
+       specificity above every theme rule that matches those copied classes. */
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-color: transparent !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+}
+
+/* Hide the original native select but keep it in DOM for events/forms */
+select.sfarc-custom-dropdown-hidden-select,
+body select.sfarc-custom-dropdown-hidden-select,
+html body select.sfarc-custom-dropdown-hidden-select {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.sfarc-custom-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.72) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 10px;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    /* Uniform boundary on all four sides: no inset top highlight. */
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.sfarc-custom-dropdown-trigger:hover {
+    background: rgba(255, 255, 255, 0.88) !important;
+    border-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+.sfarc-custom-dropdown-trigger[data-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: rgba(244, 244, 245, 0.5) !important;
+}
+
+.sfarc-custom-dropdown-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+}
+
+.sfarc-custom-dropdown-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: transform 0.2s ease;
+}
+
+.sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.sfarc-custom-dropdown-container.sfarc-open {
+    z-index: 10000000 !important;
+}
+
+/* Glassmorphism Floating Menu Card */
+.sfarc-custom-dropdown-menu.sfarc-custom-dropdown-menu-wide {
+    min-width: 480px;
+}
+
+.sfarc-custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 220px;
+    width: max-content;
+    max-width: 320px;
+    max-height: 420px;
+    overflow-y: auto;
+    background: rgba(255, 255, 255, 0.82) !important;
+    backdrop-filter: blur(20px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+    /* Border matches the trigger so the open menu reads as one surface. */
+    border: 1px solid rgba(0, 0, 0, 0.12) !important;
+    border-radius: 14px !important;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.16), 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+    z-index: 10000000;
+    opacity: 0;
+    visibility: hidden;
+    /* Liquid open: starts small + tucked under the trigger, then springs out
+       with a soft overshoot and settles into the resting shape. The transform
+       uses a springy curve while opacity/visibility stay quick, so the motion
+       reads as a smooth fluid release rather than a fade-in. */
+    transform: translateY(-8px) scaleY(0.92) scaleX(0.98);
+    transform-origin: top center;
+    transition: opacity 0.16s cubic-bezier(0.16, 1, 0.3, 1), transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), border-radius 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.16s;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.sfarc-custom-dropdown-menu.sfarc-menu-open,
+.sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: all !important;
+    transform: translateY(0) scale(1) !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    z-index: 2147483647 !important;
+}
+
+.sfarc-custom-dropdown-option {
+    display: flex !important;
+    align-items: center !important;
+    padding: 5px 10px 5px 28px !important;
+    min-height: 26px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    color: #1e293b !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    margin-bottom: 1px !important;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease !important;
+    position: relative !important;
+    user-select: none !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+}
+
+.sfarc-custom-dropdown-option:hover {
+    background: var(--sfarc-accent, #0176d3) !important;
+    color: #ffffff !important;
+}
+
+.sfarc-custom-dropdown-option.sfarc-selected {
+    background: rgba(224, 242, 254, 0.9) !important;
+    color: #0284c7 !important;
+    font-weight: 600 !important;
+}
+
+/* The checkmark for selected options */
+.sfarc-custom-dropdown-checkmark {
+    position: absolute !important;
+    left: 8px !important;
+    display: none;
+    color: #0284c7 !important;
+    width: 13px !important;
+    height: 13px !important;
+}
+
+.sfarc-custom-dropdown-option.sfarc-selected .sfarc-custom-dropdown-checkmark {
+    display: flex !important;
+}
+
+/* ── Search box at the top of the menu ─────────────────────────────────── */
+.sfarc-custom-dropdown-search {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+}
+
+.sfarc-custom-dropdown-search-icon {
+    position: absolute !important;
+    left: 10px !important;
+    top: 38% !important;
+    transform: translateY(-50%) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #94a3b8 !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+}
+
+.sfarc-custom-dropdown-search-input,
+input.sfarc-custom-dropdown-search-input,
+html body .sfarc-custom-dropdown-search-input {
+    width: 100% !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 0 10px 0 32px !important;
+    padding-left: 32px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    color: #1e293b !important;
+    font-size: 12.5px !important;
+    font-weight: 400 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.sfarc-custom-dropdown-search-input:focus {
+    border-color: #0284c7 !important;
+    box-shadow: 0 0 0 2.5px rgba(2, 132, 199, 0.16) !important;
+}
+
+.sfarc-custom-dropdown-search-input::placeholder {
+    color: #94a3b8 !important;
+}
+
+.sfarc-custom-dropdown-options {
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.sfarc-custom-dropdown-empty {
+    padding: 10px 12px;
+    color: #71717a;
+    font-size: 12px;
+    text-align: center;
+}
+
+/* Dark Mode Glassmorphism Overrides — each selector also matches the
+   teleported menu carrying the .sfarc-dark-theme class on itself, because
+   menus are appended to <body> (outside the themed panel scope). */
+.sfarc-dark-theme .sfarc-custom-dropdown-search,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-icon,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-icon {
+    color: #9ca3af !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-input,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-input {
+    background: rgba(255, 255, 255, 0.08) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+    color: #e5e7eb !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-input:focus,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-input:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-search-input::placeholder,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-search-input::placeholder {
+    color: #8b949e !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-empty,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-empty {
+    color: #8b949e !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger {
+    background: rgba(30, 41, 59, 0.75) !important;
+    backdrop-filter: blur(12px) saturate(180%) !important;
+    -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    color: #f1f5f9 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger:hover,
+.sfarc-dark-theme .sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-trigger {
+    background: rgba(47, 63, 86, 0.85) !important;
+    border-color: #38bdf8 !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger[data-disabled="true"] {
+    background: rgba(24, 24, 27, 0.5) !important;
+    color: #71717a !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-menu,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme {
+    background: rgba(15, 23, 42, 0.84) !important;
+    backdrop-filter: blur(20px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(190%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option {
+    color: #cbd5e1 !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option:hover,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option:hover {
+    background: var(--sfarc-accent, #0176d3) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(1, 118, 211, 0.35) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected {
+    background: rgba(14, 165, 233, 0.25) !important;
+    color: #38bdf8 !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected:hover,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected:hover {
+    background: var(--sfarc-accent, #0176d3) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(1, 118, 211, 0.35) !important;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-checkmark,
+.sfarc-custom-dropdown-menu.sfarc-dark-theme .sfarc-custom-dropdown-checkmark {
+    color: #38bdf8 !important;
+}
+</style>
+</head>
+<body>
+<div id="probe">waiting…</div>
+<div id="harness-toolbar" style="position:fixed;top:8px;right:10px;z-index:2147483647;display:flex;gap:6px">
+  <button id="b-open">Open API Version</button>
+  <button id="b-close">Close</button>
+</div>
+
+<div class="modal-overlay" id="overlay">
+  <div class="modal-card" id="card">
+    <div style="font-weight:600;color:#e4e4e7;margin-bottom:14px;font-size:14px">Create New Salesforce Asset</div>
+
+    <!-- tall filler to push API Version near the bottom of the card -->
+    <div class="spacer"></div>
+
+    <div class="form-group create-api-version">
+      <label class="create-field-label" for="lwc-api-version">API Version</label>
+      <select id="lwc-api-version" class="form-control">
+        <option value="62.0">62.0</option>
+        <option value="61.0">61.0</option>
+        <option value="60.0" selected>60.0</option>
+        <option value="59.0">59.0</option>
+        <option value="58.0">58.0</option>
+        <option value="__custom__">Custom…</option>
+      </select>
+      <div class="bottom-note">Pick <b>Custom…</b> to enter a version not listed.</div>
+    </div>
+  </div>
+</div>
+
+<script>// custom-dropdown.js
+
+(function() {
+    // Prevent multiple injections
+    if (window.sfarcCustomDropdownsInitialized) return;
+    window.sfarcCustomDropdownsInitialized = true;
+
+    const CHECKMARK_SVG = `<svg class="sfarc-custom-dropdown-checkmark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const CHEVRON_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+    const SEARCH_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+
+    function closeAllDropdowns() {
+        document.querySelectorAll('.sfarc-custom-dropdown-container.sfarc-open').forEach(el => {
+            el.classList.remove('sfarc-open');
+        });
+        document.querySelectorAll('.sfarc-custom-dropdown-menu.sfarc-menu-open').forEach(m => {
+            m.classList.remove('sfarc-menu-open');
+            m.style.opacity = '0';
+            // Let the liquid shrink-back transition play before hiding the node.
+            setTimeout(() => {
+                if (!m.classList.contains('sfarc-menu-open')) {
+                    m.style.display = 'none';
+                    m.style.visibility = 'hidden';
+                    m.style.pointerEvents = 'none';
+                }
+            }, 200);
+        });
+    }
+
+    // Close all open dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.sfarc-custom-dropdown-container') && !e.target.closest('.sfarc-custom-dropdown-menu')) {
+            closeAllDropdowns();
+        }
+    });
+
+    // Dropdown menus are teleported to document.body to escape overflow
+    // clipping, which detaches them from the host page's theme scope (e.g.
+    // #sfarc-panel.sfarc-dark-theme). Copy the dark-theme class onto the menu
+    // itself so the .sfarc-dark-theme overrides in custom-dropdown.css keep
+    // menus dark in dark mode regardless of where the menu lives in the DOM.
+    function syncMenuTheme(menu, hostEl) {
+        const themedAncestor = hostEl.closest ? hostEl.closest('.sfarc-dark-theme') : null;
+        menu.classList.toggle('sfarc-dark-theme', !!themedAncestor);
+    }
+
+    function enhanceSelect(selectEl) {
+        if (selectEl.hasAttribute('multiple')) return; // Skip multi-select for now
+        // Opt-out: hosts that already style the native select mark it with data-custom-dropdown="off"
+        if (selectEl.dataset.customDropdown === 'off') return;
+
+        // If already processed and custom dropdown container is present right next to it, skip
+        if (selectEl.classList.contains('sfarc-custom-processed') &&
+            selectEl.nextElementSibling &&
+            selectEl.nextElementSibling.classList.contains('sfarc-custom-dropdown-container')) {
+            return;
+        }
+
+        // Remove any orphaned or existing custom dropdown containers in the same field wrapper
+        if (selectEl.parentNode) {
+            Array.from(selectEl.parentNode.children).forEach(child => {
+                if (child.classList.contains('sfarc-custom-dropdown-container')) {
+                    child.remove();
+                }
+            });
+        }
+
+        selectEl.classList.add('sfarc-custom-processed');
+        selectEl.classList.add('sfarc-custom-dropdown-hidden-select');
+
+        // Create Container
+        const container = document.createElement('div');
+        container.className = 'sfarc-custom-dropdown-container';
+        
+        // Inherit inline styles that affect layout
+        if (selectEl.style.width) container.style.width = selectEl.style.width;
+        if (selectEl.style.flex) container.style.flex = selectEl.style.flex;
+        if (selectEl.style.flexShrink) container.style.flexShrink = selectEl.style.flexShrink;
+        if (selectEl.style.flexGrow) container.style.flexGrow = selectEl.style.flexGrow;
+        if (selectEl.style.minWidth) container.style.minWidth = selectEl.style.minWidth;
+        if (selectEl.style.maxWidth) container.style.maxWidth = selectEl.style.maxWidth;
+
+        // Copy classes from the select (except the hidden one) to the container to inherit positioning/margin
+        Array.from(selectEl.classList).forEach(cls => {
+            if (cls !== 'sfarc-custom-processed' && cls !== 'sfarc-custom-dropdown-hidden-select') {
+                container.classList.add(cls);
+            }
+        });
+
+        // Trigger Button
+        const trigger = document.createElement('div');
+        trigger.className = 'sfarc-custom-dropdown-trigger';
+        if (selectEl.disabled) trigger.setAttribute('data-disabled', 'true');
+        
+        // Inherit height/padding if explicitly set
+        if (selectEl.style.height) trigger.style.height = selectEl.style.height;
+        if (selectEl.style.padding) trigger.style.padding = selectEl.style.padding;
+        if (selectEl.style.fontSize) trigger.style.fontSize = selectEl.style.fontSize;
+
+        const valueSpan = document.createElement('span');
+        valueSpan.className = 'sfarc-custom-dropdown-value';
+        
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'sfarc-custom-dropdown-icon';
+        iconSpan.innerHTML = CHEVRON_SVG;
+
+        trigger.appendChild(valueSpan);
+        trigger.appendChild(iconSpan);
+
+        // Menu
+        const menu = document.createElement('div');
+        menu.className = 'sfarc-custom-dropdown-menu';
+        // Keep the menu's theme in sync with the host select's themed scope.
+        syncMenuTheme(menu, selectEl);
+        // Wide menus (e.g. data-export Templates) get a marker class so the
+        // teleported menu keeps its widened size after it moves to <body>.
+        if (selectEl.classList.contains('sfir-header-select')) {
+            menu.classList.add('sfarc-custom-dropdown-menu-wide');
+        }
+
+        container.appendChild(trigger);
+
+        // Insert container right after the select in the DOM
+        selectEl.parentNode.insertBefore(container, selectEl.nextSibling);
+
+        let searchInput = null;
+
+        function updateMenuPosition() {
+            if (!container.classList.contains('sfarc-open')) return;
+
+            const rect = trigger.getBoundingClientRect();
+            const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+            const menuHeight = Math.min(420, menu.scrollHeight || 340);
+
+            // Teleport menu to document.body to guarantee no parent overflow:hidden clips it
+            if (menu.parentNode !== document.body) {
+                document.body.appendChild(menu);
+            }
+
+            // Re-sync the theme class every open — the menu lives at <body>
+            // level, so it must carry the page's dark-theme scope itself.
+            syncMenuTheme(menu, selectEl);
+
+            menu.style.position = 'fixed';
+            menu.style.zIndex = '2147483647';
+            const isWide = menu.classList.contains('sfarc-custom-dropdown-menu-wide');
+            const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+            let menuWidth = Math.max(rect.width, isWide ? 480 : 220);
+            if (isWide) {
+                // Size the menu to fit the widest option so long queries (e.g.
+                // the data-export Templates list) don't need a horizontal
+                // scrollbar. Text is measured with the option's real font so the
+                // result is accurate even if the menu hasn't laid out yet.
+                // Clamp to the viewport so it never overflows the screen.
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                let widest = 0;
+                menu.querySelectorAll('.sfarc-custom-dropdown-option').forEach(opt => {
+                    const cs = getComputedStyle(opt);
+                    ctx.font = cs.font || `${cs.fontSize} ${cs.fontFamily}`;
+                    const textEl = opt.querySelector('span');
+                    const text = (textEl ? textEl.textContent : opt.textContent) || '';
+                    // 13px checkmark + 28px left padding + 10px right padding + 6px breathing room
+                    const w = ctx.measureText(text).width + 13 + 28 + 10 + 6;
+                    if (w > widest) widest = w;
+                });
+                if (widest > 0) {
+                    menuWidth = Math.max(menuWidth, widest + 16); // + menu padding (8px each side)
+                }
+                menuWidth = Math.min(menuWidth, viewportWidth - 16);
+            }
+            menu.style.left = `${Math.max(8, Math.min(rect.left, viewportWidth - menuWidth - 8))}px`;
+            menu.style.width = `${menuWidth}px`;
+            menu.style.display = 'flex';
+            menu.style.flexDirection = 'column';
+            menu.style.opacity = '1';
+            menu.style.visibility = 'visible';
+            menu.style.pointerEvents = 'all';
+
+            // Check if popping down exceeds bottom of viewport
+            if (rect.bottom + menuHeight + 8 > viewportHeight && rect.top > menuHeight + 8) {
+                // Pop UP above the trigger — the liquid grows down from the trigger edge
+                menu.style.top = `${Math.max(8, rect.top - menuHeight - 4)}px`;
+                menu.style.transformOrigin = 'bottom center';
+            } else {
+                // Pop DOWN below the trigger — the liquid grows up from the trigger edge
+                menu.style.top = `${rect.bottom + 4}px`;
+                menu.style.transformOrigin = 'top center';
+            }
+        }
+
+        function closeThisMenu() {
+            container.classList.remove('sfarc-open');
+            menu.classList.remove('sfarc-menu-open');
+            menu.style.opacity = '0';
+            // Let the liquid shrink-back transition play before hiding the node.
+            setTimeout(() => {
+                if (!container.classList.contains('sfarc-open')) {
+                    menu.style.display = 'none';
+                    menu.style.visibility = 'hidden';
+                    menu.style.pointerEvents = 'none';
+                }
+            }, 200);
+        }
+
+        // Function to rebuild options
+        const rebuildMenu = () => {
+            menu.innerHTML = '';
+            
+            const isSearchable = selectEl.dataset.searchable === 'true' || selectEl.options.length > 8;
+            
+            if (isSearchable) {
+                const searchWrap = document.createElement('div');
+                searchWrap.className = 'sfarc-custom-dropdown-search';
+                
+                const searchIcon = document.createElement('span');
+                searchIcon.className = 'sfarc-custom-dropdown-search-icon';
+                searchIcon.innerHTML = SEARCH_SVG;
+                
+                searchInput = document.createElement('input');
+                searchInput.type = 'text';
+                searchInput.className = 'sfarc-custom-dropdown-search-input';
+                searchInput.placeholder = selectEl.dataset.searchPlaceholder || 'Search...';
+                
+                searchWrap.appendChild(searchIcon);
+                searchWrap.appendChild(searchInput);
+                menu.appendChild(searchWrap);
+
+                searchInput.addEventListener('input', (e) => {
+                    renderOptions(e.target.value.toLowerCase());
+                    updateMenuPosition();
+                });
+                
+                searchInput.addEventListener('click', (e) => e.stopPropagation());
+            } else {
+                searchInput = null;
+            }
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'sfarc-custom-dropdown-options';
+            menu.appendChild(optionsContainer);
+
+            const renderOptions = (filterText = '') => {
+                optionsContainer.innerHTML = '';
+                let selectedText = '';
+                let shown = 0;
+
+                Array.from(selectEl.options).forEach((opt) => {
+                    const text = opt.text;
+                    const val = opt.value;
+                    const isSelected = opt.selected;
+
+                    if (isSelected) {
+                        selectedText = text;
+                    }
+
+                    if (filterText && !text.toLowerCase().includes(filterText) && !val.toLowerCase().includes(filterText)) {
+                        return;
+                    }
+
+                    shown++;
+                    const optDiv = document.createElement('div');
+                    optDiv.className = 'sfarc-custom-dropdown-option';
+                    if (isSelected) optDiv.classList.add('sfarc-selected');
+
+                    optDiv.innerHTML = `${CHECKMARK_SVG}<span>${text}</span>`;
+
+                    optDiv.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        selectEl.value = val;
+                        
+                        // Dispatch native events
+                        selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                        selectEl.dispatchEvent(new Event('input', { bubbles: true }));
+
+                        closeThisMenu();
+
+                        // Update UI
+                        rebuildMenu();
+                    });
+                    
+                    optionsContainer.appendChild(optDiv);
+                });
+
+                if (shown === 0) {
+                    const empty = document.createElement('div');
+                    empty.className = 'sfarc-custom-dropdown-empty';
+                    empty.textContent = 'No matches found';
+                    optionsContainer.appendChild(empty);
+                }
+
+                // Update trigger text
+                valueSpan.textContent = selectedText || (selectEl.options[0] ? selectEl.options[0].text : '');
+            };
+
+            renderOptions('');
+            
+            // Sync disabled state
+            if (selectEl.disabled) {
+                trigger.setAttribute('data-disabled', 'true');
+            } else {
+                trigger.removeAttribute('data-disabled');
+            }
+        };
+
+        rebuildMenu();
+
+        // Trigger Click Event
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (selectEl.disabled) return;
+            
+            const wasOpen = container.classList.contains('sfarc-open');
+            closeAllDropdowns();
+
+            if (!wasOpen) {
+                container.classList.add('sfarc-open');
+                updateMenuPosition();
+                // Show the menu (display:flex) and force a reflow so the closed
+                // liquid state is committed BEFORE the open class flips on —
+                // otherwise the transition can start while the menu is still
+                // display:none and the liquid motion is skipped.
+                void menu.offsetHeight;
+                menu.classList.add('sfarc-menu-open');
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 0);
+                }
+            }
+        });
+
+        // Reposition on scroll/resize
+        window.addEventListener('scroll', () => {
+            if (container.classList.contains('sfarc-open')) {
+                updateMenuPosition();
+            }
+        }, true);
+
+        window.addEventListener('resize', () => {
+            if (container.classList.contains('sfarc-open')) {
+                updateMenuPosition();
+            }
+        });
+
+        // Watch for changes to the original select (e.g., options injected dynamically or value changed via JS)
+        const observer = new MutationObserver((mutations) => {
+            let needsRebuild = false;
+            mutations.forEach(m => {
+                if (m.type === 'childList' || (m.type === 'attributes' && (m.attributeName === 'disabled' || m.attributeName === 'value'))) {
+                    needsRebuild = true;
+                }
+            });
+            if (needsRebuild) rebuildMenu();
+        });
+
+        observer.observe(selectEl, { childList: true, attributes: true, subtree: true });
+        
+        // Also listen to 'change' event on original select in case it's changed by code without attributes mutating
+        selectEl.addEventListener('change', () => {
+            rebuildMenu();
+        });
+    }
+
+    // Initialize all existing selects
+    function initAll() {
+        document.querySelectorAll('select').forEach(enhanceSelect);
+    }
+
+    // Watch for new selects added to the DOM dynamically
+    const domObserver = new MutationObserver((mutations) => {
+        let hasNewNodes = false;
+        mutations.forEach(m => {
+            if (m.addedNodes.length > 0) hasNewNodes = true;
+        });
+        
+        if (hasNewNodes) {
+            document.querySelectorAll('select:not(.sfarc-custom-processed)').forEach(enhanceSelect);
+        }
+    });
+
+    // Start observing DOM when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initAll();
+            domObserver.observe(document.body, { childList: true, subtree: true });
+        });
+    } else {
+        initAll();
+        domObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+    // Public API for hosts that inject selects after startup (e.g. the panel
+    // injected by main.js). Idempotent — already-processed selects are skipped.
+    window.sfarcEnhanceAllSelects = initAll;
+    window.sfarcEnhanceSelect = enhanceSelect;
+
+})();
+</script>
+<script>
+  const probe = document.getElementById('probe');
+  function measure(label) {
+    const trigger = document.querySelector('.sfarc-custom-dropdown-container .sfarc-custom-dropdown-trigger');
+    const menu = document.querySelector('.sfarc-custom-dropdown-menu');
+    if (!trigger) { probe.textContent = label + ': trigger not found'; return; }
+    const tr = trigger.getBoundingClientRect();
+    const card = document.getElementById('card').getBoundingClientRect();
+    let menuRect = menu ? menu.getBoundingClientRect() : null;
+    const menuStyle = menu ? {top: menu.style.top, left: menu.style.left, width: menu.style.width, display: menu.style.display} : null;
+    probe.textContent = label + '\n' +
+      'card: top=' + card.top.toFixed(0) + ' bottom=' + card.bottom.toFixed(0) + ' h=' + card.height.toFixed(0) + '\n' +
+      'trigger: top=' + tr.top.toFixed(0) + ' bottom=' + tr.bottom.toFixed(0) + ' left=' + tr.left.toFixed(0) + ' w=' + tr.width.toFixed(0) + '\n' +
+      'menu: ' + (menuRect ? ('top=' + menuRect.top.toFixed(0) + ' bottom=' + menuRect.bottom.toFixed(0) + ' left=' + menuRect.left.toFixed(0) + ' w=' + menuRect.width.toFixed(0)) : 'N/A') + '\n' +
+      'menuStyle: ' + JSON.stringify(menuStyle);
+  }
+  document.getElementById('b-open').addEventListener('click', () => {
+    const trigger = document.querySelector('.sfarc-custom-dropdown-container .sfarc-custom-dropdown-trigger');
+    if (trigger) trigger.click();
+    setTimeout(() => measure('AFTER OPEN'), 350); // let animation settle
+  });
+  document.getElementById('b-close').addEventListener('click', () => {
+    document.querySelectorAll('.sfarc-custom-dropdown-container.sfarc-open').forEach(el => el.classList.remove('sfarc-open'));
+    probe.textContent = 'closed';
+  });
+</script>
+</body>
+</html>

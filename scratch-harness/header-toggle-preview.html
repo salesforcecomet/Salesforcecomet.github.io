@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Header Toggle Overlap Preview</title>
+<style>
+html, body { margin: 0; background: #f1f5f9; font-family: Inter, -apple-system, sans-serif; }
+.slds-builder-header__nav-item { display: inline-flex; align-items: center; }
+.sfir-header-select { background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;height:24px;padding:0 8px;font-size:11.5px;color:#334155 }
+.sfir-org-badge { display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:9999px;border:1px solid #cbd5e1;background:#f8fafc;color:#0176d3;font-size:11px;font-weight:600 }
+.sfir-user-pill { display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 10px;border-radius:9999px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:11px;font-weight:600 }
+.controls { padding: 8px 14px; display: flex; gap: 10px; align-items: center; background: #fff; border-bottom: 1px solid #e2e8f0; font: 12px Inter; }
+.controls button { border:1px solid #cbd5e1;border-radius:6px;background:#fff;padding:3px 10px;cursor:pointer }
+#wrap { overflow: hidden; }
+.slds-builder-header__nav-item,
+.slds-builder-header__nav-list li {
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* SLDS adds light dividers (border-inline-start) between adjacent header
+   nav/utility items; in dark mode they render as white vertical lines
+   (surface-inverse-2 resolves light). The nav already separates items with a gap. */
+/* Top-level header items (nav → spacer → utilities) get a divider too. */
+.slds-builder-header__item + .slds-builder-header__item {
+    border-inline-start: none !important;
+    border-left: none !important;
+}
+
+.slds-builder-header__nav-item + .slds-builder-header__nav-item,
+.slds-builder-header__nav-item + .slds-builder-header__utilities-item,
+.slds-builder-header__utilities-item + .slds-builder-header__nav-item,
+.slds-builder-header__utilities-item + .slds-builder-header__utilities-item {
+    border-inline-start: none !important;
+    border-left: none !important;
+}
+
+.slds-builder-header__utilities {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    height: 100% !important;
+    margin-left: auto !important;
+    flex-shrink: 1 !important;
+    /* Keep all header utilities on a single row — wrapping them spills a
+       second row below the header and overlaps the page content. Narrow
+       widths instead collapse toggle labels (see media queries below). */
+    flex-wrap: nowrap !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+}
+
+.slds-builder-header__utilities-item {
+    flex-shrink: 0 !important;
+}
+
+.slds-builder-header__utilities-item {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Header navigation links - Styled as sleek pill tabs matching screenshot */
+.slds-builder-header__item-action,
+.slds-builder-header__nav-item a,
+.slds-builder-header__nav-item button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 24px !important;
+    padding: 0 14px !important;
+    border-radius: 8px !important;
+    font-size: 11.5px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+    background-color: transparent !important;
+    border: none !important;
+    text-decoration: none !important;
+    transition: all 0.18s ease !important;
+    line-height: 24px !important;
+    cursor: pointer !important;
+}
+
+.slds-builder-header__item-action:hover,
+.slds-builder-header__nav-item a:hover,
+.slds-builder-header__nav-item button:hover {
+    color: #1e293b !important;
+    background-color: rgba(255, 255, 255, 0.4) !important;
+    text-decoration: none !important;
+}
+
+/* The active pill's fill lives in the sliding layer behind it — hovering must
+   not tint over the blue. */
+.slds-builder-header__item-action.sfir-nav-active:hover,
+.slds-builder-header__item-action.active:hover,
+.slds-builder-header__item-action[aria-current="page"]:hover {
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+
+.slds-builder-header__item-action.active,
+.slds-builder-header__item-action[aria-current="page"],
+.slds-builder-header__nav-item.slds-is-active a,
+.slds-builder-header__nav-item.active a,
+.slds-builder-header__nav-item.active button,
+.slds-builder-header__item-action.sfir-nav-active {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+}
+
+/* Style header controls (Matching Navigation Pill Height & Proportions) */
+.sfir-header-select {
+    background-color: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #334155 !important;
+    border-radius: 6px !important;
+    height: 22px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    padding: 0 24px 0 10px !important;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23475569'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E") !important;
+    background-size: 12px !important;
+    background-position: right 8px center !important;
+    box-shadow: none !important;
+}
+
+.sfir-header-select option {
+    background-color: #ffffff !important;
+    color: #334155 !important;
+}
+
+.sfir-header-btn {
+    background: linear-gradient(135deg, #0176d3 0%, #005ba1 100%) !important;
+    border: none !important;
+    color: #ffffff !important;
+    border-radius: 9999px !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    height: 26px !important;
+    padding: 0 14px !important;
+    line-height: 26px !important;
+    margin-left: 6px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 2px 6px rgba(1, 118, 211, 0.25) !important;
+    transition: all 0.15s ease !important;
+    cursor: pointer !important;
+}
+
+.sfir-header-btn:hover {
+    filter: brightness(1.08) !important;
+    transform: translateY(-1px) !important;
+    color: #ffffff !important;
+}
+
+.sfir-header-btn.secondary,
+.sfir-header-btn-secondary {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #1e293b !important;
+    box-shadow: none !important;
+}
+
+.sfir-header-btn.secondary:hover,
+.sfir-header-btn-secondary:hover {
+    background: #f1f5f9 !important;
+    border-color: #94a3b8 !important;
+    color: #0f172a !important;
+}
+
+/* Custom Header Toggle Switch (Matching Popup Toggle Proportions) */
+.sfir-header-toggle-container {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: #334155 !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    user-select: none !important;
+}
+
+.sfir-header-toggle-container input[type="checkbox"] {
+    position: absolute !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.sfir-header-toggle-switch {
+    position: relative !important;
+    display: inline-block !important;
+    width: 36px !important;
+    height: 20px !important;
+    background-color: #cbd5e1 !important;
+    border-radius: 9999px !important;
+    transition: background-color 0.25s ease !important;
+    vertical-align: middle !important;
+}
+
+.sfir-header-toggle-switch::after {
+    content: "" !important;
+    position: absolute !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 50% !important;
+    background-color: #ffffff !important;
+    top: 2px !important;
+    left: 2px !important;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+}
+
+.sfir-header-toggle-container input[type="checkbox"]:checked+.sfir-header-toggle-switch {
+    background-color: #0176d3 !important;
+    box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.18) !important;
+}
+
+.sfir-header-toggle-container input[type="checkbox"]:checked+.sfir-header-toggle-switch::after {
+    transform: translateX(16px) !important;
+}
+
+.sfir-header-toggle-container input[type="checkbox"]:disabled+.sfir-header-toggle-switch {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* Global Search Input Pill Styling (Matching Popup Search Bar) */
+.sfir-search-input-pill,
+input[type="text"].sfir-search-pill,
+input[type="search"].sfir-search-pill {
+    border-radius: 9999px !important;
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 6px 14px 6px 32px !important;
+    transition: all 0.15s ease !important;
+}
+
+.sfir-search-input-pill:focus,
+input[type="text"].sfir-search-pill:focus,
+input[type="search"].sfir-search-pill:focus {
+    background-color: #ffffff !important;
+    border-color: #0176d3 !important;
+    box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.15) !important;
+    outline: none !important;
+}
+
+/* Header Responsive Breakpoints for 100% Responsiveness */
+@media (max-width: 1350px) {
+    .sfir-header-center-title-container {
+        display: none !important;
+    }
+}
+
+/* Nav icon — hidden by default (wide layout keeps text-only pills),
+   shown when the header collapses to icons on narrow widths. */
+.sfir-nav-icon {
+    display: none !important;
+    flex-shrink: 0 !important;
+}
+
+@media (max-width: 1100px) {
+    .slds-builder-header .slds-badge {
+        max-width: 180px !important;
+    }
+
+    .slds-builder-header__utilities {
+        gap: 4px !important;
+    }
+}
+
+@media (max-width: 880px) {
+    .slds-builder-header .slds-badge {
+        max-width: 130px !important;
+    }
+
+    .slds-builder-header__item-action,
+    .slds-builder-header__nav-item a {
+        padding: 0 8px !important;
+        font-size: 10.5px !important;
+    }
+
+    .sfir-header-toggle-container {
+        font-size: 10px !important;
+        gap: 4px !important;
+    }
+}
+
+@media (max-width: 700px) {
+    .slds-builder-header .slds-badge {
+        max-width: 90px !important;
+    }
+
+    .slds-builder-header .slds-badge span:not(.slds-badge__icon) {
+        display: none !important;
+    }
+
+    .sfir-header-select {
+        max-width: 150px !important;
+    }
+
+    /* Collapse nav pills to icons on narrow widths */
+    .slds-builder-header__item-action .sfir-nav-label,
+    .slds-builder-header__nav-item a .sfir-nav-label {
+        display: none !important;
+    }
+
+    .slds-builder-header__item-action .sfir-nav-icon,
+    .slds-builder-header__nav-item a .sfir-nav-icon {
+        display: inline-flex !important;
+    }
+
+    /* Collapse toggle labels to switches only — keeps utilities on one row
+       instead of wrapping a second row below the header. */
+    .sfir-header-toggle-container > span:first-child {
+        display: none !important;
+    }
+}
+</style></head>
+<body>
+<div class="controls">
+  <label>Width: <input type="range" id="w" min="500" max="1200" value="860" oninput="setW(this.value)"> <span id="wl">860</span>px</label>
+  <button onclick="setW(860)">860</button>
+  <button onclick="setW(700)">700</button>
+  <button onclick="setW(580)">580</button>
+</div>
+<div id="wrap">
+<div class="slds-builder-header sfir-header-override" style="display:flex;align-items:center;gap:10px;background:#fff;border-bottom:1px solid #d8dee6;padding:8px 14px;height:44px">
+  <nav><ul class="slds-builder-header__nav-list" style="display:flex;gap:4px;list-style:none;margin:0;padding:0">
+    <li class="slds-builder-header__nav-item"><a class="slds-builder-header__item-action sfir-nav-active">Export</a></li>
+    <li class="slds-builder-header__nav-item"><a class="slds-builder-header__item-action">Import</a></li>
+    <li class="slds-builder-header__nav-item"><a class="slds-builder-header__item-action">Limits</a></li>
+    <li class="slds-builder-header__nav-item"><a class="slds-builder-header__item-action">Metadata</a></li>
+  </ul></nav>
+  <div class="slds-builder-header__item slds-builder-header__utilities sfir-border-none">
+    <div class="slds-builder-header__utilities-item"><select class="sfir-header-select"><option>Templates</option></select></div>
+    <div class="slds-builder-header__utilities-item"><label class="sfir-header-toggle-container" title="Toggle Tooling API"><span>Tooling API</span><input type="checkbox"><span class="sfir-header-toggle-switch"></span></label></div>
+    <div class="slds-builder-header__utilities-item"><label class="sfir-header-toggle-container" title="QueryAll"><span>QueryAll</span><input type="checkbox"><span class="sfir-header-toggle-switch"></span></label></div>
+    <div class="slds-builder-header__utilities-item"><span class="sfir-org-badge">&#8962; VISHUGRADE-DEV-ED</span></div>
+    <div class="slds-builder-header__utilities-item"><span class="sfir-user-pill">? VG</span></div>
+  </div>
+</div>
+</div>
+<script>
+function setW(v) {
+  document.getElementById('wl').textContent = v;
+  document.getElementById('wrap').style.maxWidth = v + 'px';
+}
+</script>
+</body></html>

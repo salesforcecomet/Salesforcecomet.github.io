@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User card single-render check</title>
+<style>
+  body { background: #eef1f5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 30px; }
+  .row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .col { background: #fff; border: 1px solid #d7dde4; border-radius: 10px; padding: 16px; min-width: 340px; }
+  .sfarc-user-card-header { border: 1px solid #d7dde4; border-radius: 8px; padding: 8px; margin-bottom: 6px; background: #f8fafc; }
+  .wrapper { background: #fffbe6; border: 1px dashed #d97706; border-radius: 8px; padding: 8px; }
+  .wrapper .sfarc-user-card-header { background: #eef2ff; }
+  button { padding: 6px 12px; border-radius: 6px; border: 1px solid #cdd4dd; background: #fff; cursor: pointer; font-size: 12px; margin-right: 8px; }
+  pre { font: 11px ui-monospace, Menlo, monospace; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 14px; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<div class="row">
+  <div class="col">
+    <h3>Stale state before render</h3>
+    <div id="splitView">
+      <div id="sfarc-split-detail-container">
+        <div class="sfarc-user-card-header">OLD stray card (direct child of container)</div>
+        <div class="wrapper" style="padding:12px 16px 5px;height:100%;width:100%">
+          <div class="sfarc-user-card-header">OLD wrapped card</div>
+        </div>
+      </div>
+      <div class="sfarc-user-card-header">OLD stray card (sibling of container)</div>
+    </div>
+  </div>
+</div>
+<button id="render">Run renderSplitDetails (users)</button>
+<pre id="out">(not rendered yet)</pre>
+<script>
+  // Mirrors the CURRENT renderSplitDetails() logic from src/main.js
+  function renderSplitDetails(item, tabType) {
+    const container = document.getElementById('sfarc-split-detail-container');
+    container.innerHTML = ''; // Clear
+    // Defensive: drop any stray card left as a sibling of the container
+    if (container.parentElement) {
+      container.parentElement.querySelectorAll(':scope > .sfarc-user-card-header').forEach(el => el.remove());
+    }
+    const wrapper = document.createElement('div');
+    wrapper.style.padding = '12px 16px 5px 16px';
+    wrapper.style.height = '100%';
+    wrapper.style.width = '100%';
+    wrapper.innerHTML = '<div class="sfarc-user-card-header">CURRENT user card — ' + item.Name + '</div>';
+    container.appendChild(wrapper);
+  }
+
+  document.getElementById('render').addEventListener('click', () => {
+    renderSplitDetails({ Name: 'Automated Process' }, 'users');
+    const splitView = document.getElementById('splitView');
+    const container = document.getElementById('sfarc-split-detail-container');
+    const cards = splitView.querySelectorAll('.sfarc-user-card-header');
+    const inContainer = container.querySelectorAll('.sfarc-user-card-header').length;
+    const inWrapper = container.querySelector('.wrapper') ? container.querySelectorAll('.wrapper .sfarc-user-card-header').length : 0;
+    const siblings = splitView.querySelectorAll(':scope > .sfarc-user-card-header').length;
+    document.getElementById('out').textContent =
+      'total cards in split view: ' + cards.length +
+      '\ncards inside container: ' + inContainer +
+      '\ncards inside wrapper: ' + inWrapper +
+      '\nstray cards as siblings of container: ' + siblings +
+      '\nwrapper padding: ' + (container.querySelector('.wrapper') ? getComputedStyle(container.querySelector('.wrapper')).padding : 'n/a') +
+      '\n→ EXPECTED: 1 card total, inside the wrapper, 0 stray siblings';
+  });
+<\/script>
+</body>
+</html>

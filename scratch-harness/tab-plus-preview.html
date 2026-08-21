@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Tab Bar + Button Preview</title>
+<style>
+html, body { margin: 0; background: #fff; font-family: Inter, -apple-system, sans-serif; }
+.sfir-editor-card-content { background: #fff; }
+.sfir-editor-card-content .query-tabs { background: #f1f5f9; }
+.query-tabs { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-bottom: 1px solid #d8dee6; background: #f9fafb; }
+.query-tab { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; font-size: 12px; color: #16325c; background: #fff; border: 1px solid #d8dee6; border-bottom: none; border-radius: 8px 8px 0 0; }
+.query-tab-close { color: #94a3b8; cursor: pointer; }
+.sfir-editor-row { padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: #0f172a; }
+.sfir-editor-card-content .add-tab-button {
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    height: 22px !important;
+    min-height: 22px !important;
+    max-height: 22px !important;
+    padding: 0 0 16px 0 !important;
+    line-height: 1 !important;
+    margin: 0 2px -1px 4px !important;
+    border-radius: 4px !important;
+    border: 1px solid #d8dee6 !important;
+    background-color: #ffffff !important;
+    color: #475569 !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 1 !important;
+    align-self: flex-end !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+    cursor: pointer !important;
+}
+
+.sfir-editor-card-content .add-tab-button:hover {
+    background-color: #e8eef5 !important;
+    border-color: #c0cbd9 !important;
+    color: #1e3a8a !important;
+}
+
+body.sfarc-dark-theme .sfir-editor-card-content .add-tab-button {
+    background-color: #1e293b !important;
+    border-color: #475569 !important;
+    color: #cbd5e1 !important;
+}
+
+body.sfarc-dark-theme .sfir-editor-card-content .add-tab-button:hover {
+    background-color: #334155 !important;
+    border-color: #64748b !important;
+    color: #ffffff !important;
+}
+
+/* ── History drawer v3 — consistent compact heights, opaque shell ────────
+   The drawer opens over the query editor; a translucent shell let the
+   query textarea bleed through and read as a second search bar, so the
+   shell is now (near-)opaque. All header controls are unified to 26px. */
+.sfir-history-drawer {
+    background: rgba(255, 255, 255, 0.97) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+body.sfarc-dark-theme .sfir-history-drawer {
+    background: rgba(22, 25, 32, 0.97) !important;
+}
+
+.sfir-history-drawer-header {
+    padding: 6px 10px !important;
+    gap: 8px !important;
+}
+
+.sfir-history-drawer-segmented-control {
+    padding: 2px !important;
+    border-radius: 8px !important;
+}
+</style></head>
+<body>
+<div class="sfir-editor-card-content">
+  <div class="query-tabs">
+    <span class="query-tab">Opportunity<span class="query-tab-close">&times;</span></span>
+    <div class="add-tab-button" title="Add new query tab">+</div>
+  </div>
+  <div class="sfir-editor-row">lame, CreatedDate, LastMod</div>
+</div>
+</body></html>

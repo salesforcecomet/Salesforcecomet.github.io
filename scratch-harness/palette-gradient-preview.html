@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Comet Palette — Accent Gradient</title>
+<style>
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .wrap { width: 100%; max-width: 720px; padding: 40px 20px; }
+  .note { color: #94a3b8; font-size: 12px; margin-bottom: 14px; }
+  .palette { height: 380px; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; }
+  .p-header { display: flex; align-items: center; gap: 10px; padding-bottom: 12px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .p-title { font-size: 15px; font-weight: 700; color: #0f172a; }
+  .p-search { margin: 12px 0; height: 36px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.12); background: rgba(255,255,255,0.6); padding: 0 12px; font-size: 13px; color: #475569; display: flex; align-items: center; }
+  .p-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13px; color: #0f172a; }
+  .p-item .ic { width: 26px; height: 26px; border-radius: 7px; display: flex; align-items: center; justify-content: center; background: rgba(var(--primary-color-rgb), 0.12); color: var(--primary-color); font-weight: 700; font-size: 12px; }
+</style>
+<style>
+:root {
+  --primary: #10b981; --primary-color: #10b981; --primary-color-rgb: 16, 185, 129;
+  --sfarc-accent: #10b981; --sfarc-accent-rgb: 16, 185, 129;
+  --sfarc-accent-light: #7cd9ba; --sfarc-accent-dark: #0a7854;
+  --sfarc-accent-glow: #45c89d; --sfarc-accent-glow-rgb: 69, 200, 157;
+  --sfarc-accent-light-rgb: 124, 217, 186;
+  --sfarc-accent-soft: #e7f8f2;
+}
+</style>
+<style>.sfarc-popup-container {
+    position: relative !important;
+    width: clamp(700px, 58vw, 940px) !important;
+    max-width: 95vw !important;
+    height: clamp(540px, 64vh, 760px) !important;
+    max-height: 82vh !important;
+    container-type: inline-size !important;
+    container-name: sfarc-panel !important;
+    background: linear-gradient(135deg, #ffffff 0%, rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.06) 30%, rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.11) 70%, #ffffff 100%);
+    background-size: 300% 300%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+    z-index: 1000001;
+    will-change: transform, opacity, filter;
+    transform-origin: 50% 12%;
+    animation: sfiLiquidPopIn 560ms cubic-bezier(0.16, 1, 0.3, 1) both, sfarcBgAnimate 15s ease infinite;
+    border-radius: 16px !important;
+    margin: 0 !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.sfarc-popup-container.sfarc-code-search-expanded {
+    width: clamp(820px, 66vw, 1180px) !important;
+    max-width: 95vw !important;
+    height: clamp(620px, 72vh, 860px) !important;
+    max-height: 86vh !important;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), height 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+    .sfarc-popup-container {
+        animation-duration: 1ms !important;
+    }
+.sfarc-dark-theme .sfarc-popup-container {
+    background: linear-gradient(135deg, #1e1e1e 0%, rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.05) 40%, rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.09) 70%, #1e1e1e 100%);
+    background-size: 300% 300%;
+    border-right: 1px solid #3a3a3a;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.4);
+}
+#sfarc-panel.sfarc-closing .sfarc-popup-container {
+    animation: sfiPopOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.sfarc-popup-container {
+    display: flex;
+    flex-direction: column;
+}
+#sfarc-panel.sfarc-dark-theme.sfarc-panel-bottom .sfarc-popup-container {
+    background: #1a1a1a !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 12px 12px 0 0 !important;
+    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05), -4px 0 24px rgba(0,0,0,0.3) !important;
+}
+    #sfarc-panel.sfarc-panel-bottom .sfarc-popup-container {
+        width: 100% !important;
+        bottom: 0 !important;
+        border-radius: 18px;
+    }
+#sfarc-panel .sfarc-popup-container {
+    isolation: isolate;
+    background: transparent !important;
+    border-color: rgba(255, 255, 255, 0.62);
+    box-shadow: 0 18px 54px rgba(15, 23, 42, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+#sfarc-panel .sfarc-popup-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.6) 0%, rgba(231, 237, 244, 0.3) 48%, rgba(184, 197, 211, 0.22) 100%),
+        radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.72), transparent 34%);
+    backdrop-filter: blur(30px) saturate(145%);
+    -webkit-backdrop-filter: blur(30px) saturate(145%);
+}
+#sfarc-panel .sfarc-popup-container > * {
+    position: relative;
+    z-index: 1;
+}
+#sfarc-panel.sfarc-dark-theme .sfarc-popup-container::before {
+    background:
+        linear-gradient(135deg, rgba(71, 85, 105, 0.72), rgba(15, 23, 42, 0.58)),
+        radial-gradient(circle at 12% 0%, rgba(203, 213, 225, 0.18), transparent 34%);
+}
+#sfarc-panel .sfarc-popup-container,
+#sfarc-panel.sfarc-dark-theme .sfarc-popup-container {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(226, 237, 247, 0.08)) !important;
+    backdrop-filter: blur(36px) saturate(145%) !important;
+    -webkit-backdrop-filter: blur(36px) saturate(145%) !important;
+    border: 1px solid rgba(15, 23, 42, 0.14) !important;
+    box-shadow: 0 18px 54px rgba(15, 23, 42, 0.16) !important;
+}
+#sfarc-panel .sfarc-popup-container::before {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+#sfarc-panel.sfarc-dark-theme .sfarc-popup-container {
+    background: linear-gradient(135deg, rgba(51, 65, 85, 0.32), rgba(15, 23, 42, 0.16)) !important;
+    border: none !important;
+}
+#sfarc-panel .sfarc-popup-container {
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.07)) !important;
+    backdrop-filter: blur(24px) saturate(150%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+    border: 1px solid rgba(15, 23, 42, 0.14) !important;
+    box-shadow: 8px 12px 30px rgba(15, 23, 42, 0.14) !important;
+}
+#sfarc-panel.sfarc-dark-theme .sfarc-popup-container {
+    background: #1e1e20 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4) !important;
+}
+#sfarc-panel:not(.sfarc-dark-theme) .sfarc-popup-container {
+    background: linear-gradient(135deg, #eef6fc 0%, #ffffff 100%) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(15, 23, 42, 0.14) !important;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15) !important;
+}
+#sfarc-panel .sfarc-popup-container {
+    animation: none !important;
+}
+#sfarc-panel .sfarc-popup-container {
+    animation: none !important; /* Disable rainbow pulse glow */
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+#sfarc-panel:not(.sfarc-dark-theme) .sfarc-popup-container {
+    background: linear-gradient(-45deg, rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.05), rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.09), rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.07), rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1), rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.05)) !important;
+    background-size: 400% 400% !important;
+    animation: sfarcLightBlueCyanGradient 10s ease infinite !important;
+    border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.22) !important;
+    box-shadow: 0 30px 70px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+}
+#sfarc-panel.sfarc-dark-theme .sfarc-popup-container {
+    background: #101014 !important;
+    background-image: none !important;
+    animation: none !important;
+    border: 1px solid #26262b !important;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+@keyframes sfarcLightBlueCyanGradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+#sfarc-panel .sfarc-popup-container::before {
+    display: none !important;
+}
+#sfarc-panel .sfarc-popup-container,
+#sfarc-panel.sfarc-dark-theme .sfarc-popup-container,</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="note">Palette container uses the real <b>inspector.css</b> gradient rules. Accent set to <b style="color:#10b981">green #10b981</b> — the light background must show a <b>green</b> tint (not the old hardcoded blue #e0f2fe).</div>
+  <div class="palette sfarc-popup-container" id="sfarc-panel">
+    <div class="p-header">
+      <div class="p-title">Salesforce Comet</div>
+    </div>
+    <div class="p-search">🔍 Search for commands, objects, users, metadata...</div>
+    <div style="flex:1; overflow:hidden; padding-top:4px;">
+      <div class="p-item"><div class="ic">DEV</div> Developer Tools <span style="margin-left:auto; font-size:11px; color:#64748b;">REST, GraphQL, SOQL</span></div>
+      <div class="p-item"><div class="ic">EV</div> Event Monitor <span style="margin-left:auto; font-size:11px; color:#64748b;">Platform Events, CDC</span></div>
+      <div class="p-item"><div class="ic">AA</div> Execute Anonymous Apex <span style="margin-left:auto; font-size:11px; color:#64748b;">Run Apex, Scripts</span></div>
+      <div class="p-item"><div class="ic">OR</div> Org Details <span style="margin-left:auto; font-size:11px; color:#64748b;">Limits, Version</span></div>
+    </div>
+  </div>
+  <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+    <button id="theme-toggle" style="padding:6px 14px; border-radius:8px; border:1px solid #334155; background:#1e293b; color:#e2e8f0; font-size:12px; cursor:pointer;">Toggle Dark</button>
+    <span class="note" id="computed" style="margin:0;"></span>
+  </div>
+</div>
+<script>
+  const panel = document.querySelector('.sfarc-popup-container');
+  const computed = document.getElementById('computed');
+  const show = () => {
+    const cs = getComputedStyle(panel);
+    computed.textContent = 'background: ' + cs.backgroundImage.slice(0, 90) + '…';
+  };
+  document.getElementById('theme-toggle').addEventListener('click', () => {
+    panel.classList.toggle('sfarc-dark-theme');
+    document.body.classList.toggle('sfarc-dark-theme');
+    show();
+  });
+  show();
+</script>
+</body>
+</html>

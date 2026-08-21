@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="theme-manager.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Salesforce Comet</title>
+  <script src="lib/font-awesome.min.js" defer></script>
+  <link rel="stylesheet" href="local-fonts.css" />
+  <script src="custom-tooltip.js" defer></script>
+  <link rel="stylesheet" href="settings.css">
+  <link rel="stylesheet" href="inspector.css">
+  <link rel="stylesheet" href="glass-toast.css">
+  <script src="colored-favicon.js"></script>
+  <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+<body>
+  <div class="mac-settings-container">
+    <!-- Left Sidebar (macOS Style) -->
+    <aside class="mac-sidebar">
+      <!-- Search Input -->
+      <div class="mac-search-wrapper">
+        <i class="fa-solid fa-magnifying-glass mac-search-icon"></i>
+        <input type="text" id="sfarc-settings-search" placeholder="Search settings..." autocomplete="off">
+      </div>
+
+      <!-- Category Navigation Menu -->
+      <nav class="mac-nav-menu" id="sfarc-nav-menu">
+        <button class="mac-nav-item active" data-target="appearance">
+          <i class="fa-solid fa-palette mac-nav-icon"></i>
+          <span>Appearance</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="apex">
+          <i class="fa-solid fa-bolt mac-nav-icon"></i>
+          <span>Anonymous Apex</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="bulk-field">
+          <i class="fa-solid fa-table-columns mac-nav-icon"></i>
+          <span>Bulk Field Creator</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="bulk-data">
+          <i class="fa-solid fa-database mac-nav-icon"></i>
+          <span>Bulk Data Tools</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="flow-scanner">
+          <i class="fa-solid fa-diagram-project mac-nav-icon"></i>
+          <span>Flow Scanner Rules</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="debug-logs">
+          <i class="fa-solid fa-scroll mac-nav-icon"></i>
+          <span>Debug Logs & Trace</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="security">
+          <i class="fa-solid fa-shield-halved mac-nav-icon"></i>
+          <span>Access & Security</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="context-menu">
+          <i class="fa-solid fa-computer-mouse mac-nav-icon"></i>
+          <span>Right-Click Menu</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="shortcuts">
+          <i class="fa-solid fa-keyboard mac-nav-icon"></i>
+          <span>Shortcuts & Hotkeys</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="api-limits">
+          <i class="fa-solid fa-network-wired mac-nav-icon"></i>
+          <span>API & Org Limits</span>
+        </button>
+
+        <button class="mac-nav-item" data-target="about">
+          <i class="fa-solid fa-circle-info mac-nav-icon"></i>
+          <span>About</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Footer -->
+      <div class="mac-sidebar-footer">
+        <button id="sfarc-reset-defaults" class="mac-reset-btn">
+          <i class="fa-solid fa-rotate-left"></i> Reset to Defaults
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="mac-content-area">
+      <!-- Toast Notification -->
+      <div id="sfarc-toast" class="sfarc-toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="sfarc-toast-msg">Settings saved</span>
+      </div>
+
+      <!-- Search Empty State -->
+      <div id="sfarc-search-empty" class="mac-search-empty" style="display: none;">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <p>No settings match your search</p>
+      </div>
+
+      <!-- 1. APPEARANCE SETTINGS -->
+      <section id="appearance" class="mac-settings-section active">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-palette"></i></div>
+          <h2>Appearance</h2>
+          <p>Customize the visual styling, theme, typography, and card presentation.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Theme Mode</label>
+              <span class="desc">Select visual dark or light glassmorphism theme.</span>
+            </div>
+            <div class="mac-segmented-control">
+              <button class="mac-segment-btn active" data-theme="system">System</button>
+              <button class="mac-segment-btn" data-theme="dark">Dark</button>
+              <button class="mac-segment-btn" data-theme="light">Light</button>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Extension Accent / Asset Color</label>
+              <span class="desc">Select primary color theme applied across buttons, badges, tabs, and highlights.</span>
+            </div>
+            <div class="mac-accent-color-picker-wrapper" style="display: flex; align-items: center; gap: 10px;">
+              <div class="mac-color-swatches" style="display: flex; gap: 6px; align-items: center;">
+                <button type="button" class="mac-swatch-btn active" data-color="#2196f3" title="Salesforce Blue" style="background: #2196f3;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#10b981" title="Emerald Green" style="background: #10b981;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#8b5cf6" title="Royal Purple" style="background: #8b5cf6;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#f97316" title="Bright Orange" style="background: #f97316;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#f59e0b" title="Amber Orange" style="background: #f59e0b;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#6366f1" title="Electric Indigo" style="background: #6366f1;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#ef4444" title="Crimson Red" style="background: #ef4444;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="#06b6d4" title="Cyan Slate" style="background: #06b6d4;"></button>
+                <button type="button" class="mac-swatch-btn" data-color="org" title="Match Org Favicon Color — accent follows the current org's favicon hue" style="background: conic-gradient(#38bdf8, #a78bfa, #f472b6, #fbbf24, #34d399, #38bdf8); border: 1px solid rgba(255,255,255,0.4);"></button>
+              </div>
+              <input type="color" id="sfarc-accent-color-input" class="mac-color-input" value="#2196f3" title="Custom Accent Color">
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-editor-font">Code Editor Font Family</label>
+              <span class="desc">Font typeface used in Anonymous Apex & Code Search views.</span>
+            </div>
+            <select id="sfarc-editor-font" class="mac-select">
+              <option value="Fira Code">Fira Code (Ligatures)</option>
+              <option value="Cascadia Code">Cascadia Code</option>
+              <option value="Consolas">Consolas</option>
+              <option value="Monaco">Monaco</option>
+              <option value="Courier New">Courier New</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-editor-fontsize">Code Editor Base Font Size</label>
+              <span class="desc">Adjust font size scale across Monaco and Apex code editors.</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-editor-fontsize" min="10" max="32" value="14" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-editor-fontsize-val">14px</span>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-ui-fontsize">Extension UI Font Size</label>
+              <span class="desc">Adjust font size across the entire extension interface (panels, menus, tables).</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-ui-fontsize" min="10" max="20" value="13" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-ui-fontsize-val">13px</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-compact-mode">Compact Table View</label>
+              <span class="desc">Reduce row padding for dense data density in logs and tables.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-compact-mode">
+              <label for="sfarc-compact-mode"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-performance-mode">Performance Mode</label>
+              <span class="desc">Reduce animations, disable glassmorphism effects, and optimize for low-end PCs.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-performance-mode">
+              <label for="sfarc-performance-mode"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-auto-performance">Auto-Detect Performance Mode</label>
+              <span class="desc">Automatically enable performance mode on low-end PCs, corporate environments, or high system load.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-auto-performance" checked>
+              <label for="sfarc-auto-performance"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-lazy-load">Lazy Load Features</label>
+              <span class="desc">Load features on-demand to reduce initial memory usage (recommended for 4GB RAM).</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-lazy-load" checked>
+              <label for="sfarc-lazy-load"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Header Quick Action Badges</label>
+              <span class="desc">Select quick action icons visible on the top navbar.</span>
+            </div>
+            <div class="mac-checkbox-group">
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-session-copy"> Session Copy
+              </label>
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-field-api"> Field API
+              </label>
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-lwc-viewer"> LWC Inspector
+              </label>
+              <label class="mac-check-item">
+                <input type="checkbox" id="sfarc-header-flow-viewer"> Flow Monitor
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. ANONYMOUS APEX SETTINGS -->
+      <section id="apex" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-bolt"></i></div>
+          <h2>Anonymous Apex</h2>
+          <p>Configure script execution timeout, formatting rules, and history.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-timeout">Execution Timeout (Seconds)</label>
+              <span class="desc">Maximum allowed waiting time before canceling Apex request.</span>
+            </div>
+            <input type="number" id="sfarc-apex-timeout" value="30" min="5" max="120" class="mac-input">
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-format-run">Auto-Format Code Before Execution</label>
+              <span class="desc">Automatically align braces and indentation when clicking Execute.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-apex-format-run">
+              <label for="sfarc-apex-format-run"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-linenumbers">Show Editor Line Numbers</label>
+              <span class="desc">Display line gutter numbers in the Anonymous Apex editor.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-apex-linenumbers" checked>
+              <label for="sfarc-apex-linenumbers"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-history-limit">Script History Storage Limit</label>
+              <span class="desc">Max number of recently executed scripts remembered in history.</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-apex-history-limit" min="10" max="100" value="50" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-apex-history-val">50</span>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-apex-intellisense">Monaco Autocomplete & IntelliSense</label>
+              <span class="desc">Show SObject, SOQL, and Apex keyword autocompletion popups.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-apex-intellisense" checked>
+              <label for="sfarc-apex-intellisense"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. BULK FIELD CREATOR SETTINGS -->
+      <section id="bulk-field" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-table-columns"></i></div>
+          <h2>Bulk Field Creator</h2>
+          <p>Default field attributes, API name conventions, and permission set rules.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-naming-convention" style="display: flex; align-items: center; gap: 6px;">
+                Field Naming Convention
+                <i class="fa-solid fa-circle-info" title="Choose auto-formatting convention for API Names (e.g. PascalCase vs snake_case)" style="color: var(--mac-secondary-text); font-size: 12px;"></i>
+              </label>
+              <span class="desc">Automatic case formatting rule applied when generating API names from Field Labels.</span>
+            </div>
+            <select id="sfarc-field-naming-convention" class="mac-select">
+              <option value="PascalCase">PascalCase (CustomerNotes__c)</option>
+              <option value="snake_case">snake_case (Customer_Notes__c)</option>
+              <option value="camelCase">camelCase (customerNotes__c)</option>
+              <option value="UPPERCASE">UPPERCASE (CUSTOMER_NOTES__c)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-include-managed" style="display: flex; align-items: center; gap: 6px;">
+                Include managed packages objects
+                <i class="fa-solid fa-circle-info" title="Include custom objects from installed managed packages (with namespace prefixes) in target object selector" style="color: var(--mac-secondary-text); font-size: 12px;"></i>
+              </label>
+              <span class="desc">Include custom objects from installed managed packages in the Object selector.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-field-include-managed">
+              <label for="sfarc-field-include-managed"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-default-length">Default Text Field Length</label>
+              <span class="desc">Default char length applied when adding a new Text field row.</span>
+            </div>
+            <input type="text" id="sfarc-field-default-length" value="255" class="mac-input">
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-default-precision">Default Number Precision & Scale</label>
+              <span class="desc">Format for numeric fields (e.g., 18,2 for currency/decimal).</span>
+            </div>
+            <input type="text" id="sfarc-field-default-precision" value="18,0" class="mac-input">
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-field-auto-apiname">Auto-Generate API Name (__c)</label>
+              <span class="desc">Automatically format Field Label into valid Salesforce API Name.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-field-auto-apiname" checked>
+              <label for="sfarc-field-auto-apiname"></label>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- 5. BULK DATA TOOLS SETTINGS -->
+      <section id="bulk-data" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-database"></i></div>
+          <h2>Bulk Data Tools</h2>
+          <p>Export delimiters, SOQL query batch sizes, and data import options.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-csv-delimiter">CSV Export & Import Delimiter</label>
+              <span class="desc">Character used to separate columns in CSV files.</span>
+            </div>
+            <select id="sfarc-csv-delimiter" class="mac-select">
+              <option value=",">Comma (,)</option>
+              <option value=";">Semicolon (;)</option>
+              <option value="	">Tab (\t)</option>
+              <option value="|">Pipe (|)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-batch-size">REST Composite Batch Size</label>
+              <span class="desc">Number of records sent per request payload in Bulk Operations.</span>
+            </div>
+            <select id="sfarc-batch-size" class="mac-select">
+              <option value="25">25 Records (Safest)</option>
+              <option value="50">50 Records</option>
+              <option value="200">200 Records (Standard)</option>
+              <option value="2000">2,000 Records (Bulk API)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-max-records">Max Query Records Limit</label>
+              <span class="desc">Maximum records retrieved per SOQL Query execution.</span>
+            </div>
+            <input type="number" id="sfarc-max-records" value="10000" min="100" max="50000" class="mac-input">
+          </div>
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-export-api-mode">Default Export API Mode</label>
+              <span class="desc">Auto chooses REST for smaller results and Bulk API for larger exports.</span>
+            </div>
+            <select id="sfarc-export-api-mode" class="mac-select">
+              <option value="auto">Auto (Recommended)</option>
+              <option value="rest">REST API</option>
+              <option value="bulk">Bulk API 2.0</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-query-all-rows">Query ALL ROWS (Include Deleted & Archived)</label>
+              <span class="desc">Include recycled records when running SOQL queries.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-query-all-rows">
+              <label for="sfarc-query-all-rows"></label>
+            </div>
+          </div>
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-import-empty-null">Treat Empty Import Cells as Null</label>
+              <span class="desc">Clear mapped Salesforce fields when an imported cell is empty instead of skipping it.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-import-empty-null" checked>
+              <label for="sfarc-import-empty-null"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FLOW SCANNER RULES SETTINGS -->
+      <section id="flow-scanner" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-diagram-project"></i></div>
+          <h2>Flow Scanner Rules</h2>
+          <p>Configure static analysis rule severities, thresholds, and activation for Lightning Flows.</p>
+        </div>
+
+        <div class="mac-card-group" id="sfarc-flow-rules-list">
+          <!-- Dynamically populated via JavaScript -->
+        </div>
+      </section>
+
+      <!-- 6. DEBUG LOGS & TRACE SETTINGS -->
+      <section id="debug-logs" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-scroll"></i></div>
+          <h2>Debug Logs & Trace</h2>
+          <p>Trace log capture levels, auto-refresh intervals, and retention limits.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-log-type">Default Trace Log Category</label>
+              <span class="desc">Default log filter type applied on Debug Logs panel.</span>
+            </div>
+            <select id="sfarc-log-type" class="mac-select">
+              <option value="USER_DEBUG">USER_DEBUG (My Logs Only)</option>
+              <option value="ALL">ALL (System & Workflow Traces)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-log-refresh">Auto-Refresh Logs Interval</label>
+              <span class="desc">Automatically pull new Salesforce debug logs periodically.</span>
+            </div>
+            <select id="sfarc-log-refresh" class="mac-select">
+              <option value="0">Off (Manual Refresh)</option>
+              <option value="5">Every 5 Seconds</option>
+              <option value="10">Every 10 Seconds</option>
+              <option value="30">Every 30 Seconds</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-log-retention">Log Table Storage Limit</label>
+              <span class="desc">Maximum logs stored in memory before truncating old logs.</span>
+            </div>
+            <div class="mac-slider-wrapper">
+              <input type="range" id="sfarc-log-retention" min="20" max="500" value="100" class="mac-slider">
+              <span class="mac-slider-val" id="sfarc-log-retention-val">100</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. ACCESS & SECURITY ANALYZER SETTINGS -->
+      <section id="security" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <h2>Access & Security</h2>
+          <p>Control assignment coverage used by the Access &amp; Security Analyzer.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-sec-inactive">Audit Inactive Users in Security Scans</label>
+              <span class="desc">Include deactivated users when scanning permission sets and roles.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-sec-inactive">
+              <label for="sfarc-sec-inactive"></label>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-sec-show-unassigned">Show Unassigned Permission Definitions</label>
+              <span class="desc">Include permission sets that grant the component but currently have no assigned users.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-sec-show-unassigned" checked>
+              <label for="sfarc-sec-show-unassigned"></label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. SHORTCUTS SETTINGS -->
+      <section id="shortcuts" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-keyboard"></i></div>
+          <h2>Shortcuts & Hotkeys</h2>
+          <p>Keyboard shortcuts to navigate search, run Apex, and toggle extension windows.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Comet Launcher Method</label>
+              <span class="desc">Choose how to open the Salesforce Comet popup — the sidebar tab, the Shift + Space shortcut, or both.</span>
+            </div>
+            <div class="mac-segmented-control" id="launcher-method-seg">
+              <button class="mac-segment-btn active" data-launcher="both">Sidebar + Shortcut</button>
+              <button class="mac-segment-btn" data-launcher="sidebar">Sidebar Tab</button>
+              <button class="mac-segment-btn" data-launcher="shortcut">Shift + Space</button>
+            </div>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Global Command Search</label>
+              <span class="desc">Open global command launcher from anywhere in Salesforce.</span>
+            </div>
+            <span class="mac-hotkey-badge">Shift + Space</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Execute Anonymous Apex Script</label>
+              <span class="desc">Run currently open Apex script in editor.</span>
+            </div>
+            <span class="mac-hotkey-badge">Ctrl + Enter</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Open Data Export</label>
+              <span class="desc">Open the extension panel directly in Data Export.</span>
+            </div>
+            <span class="mac-hotkey-badge">Alt + E</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Focus Panel Search</label>
+              <span class="desc">Open the panel and focus its search box.</span>
+            </div>
+            <span class="mac-hotkey-badge">Alt + F</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT-CLICK CONTEXT MENU SETTINGS -->
+      <section id="context-menu" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-computer-mouse"></i></div>
+          <h2>Right-Click Menu</h2>
+          <p>Choose which tools appear in the right-click "Salesforce Comet" submenu, and add your own custom entries.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-cm-enabled">Enable Right-Click Menu</label>
+              <span class="desc">Show the Salesforce Comet submenu when right-clicking on Salesforce pages.</span>
+            </div>
+            <div class="mac-toggle-switch">
+              <input type="checkbox" id="sfarc-cm-enabled">
+              <label for="sfarc-cm-enabled"></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row mac-setting-head">
+            <div class="mac-setting-info">
+              <label>Menu Tools</label>
+              <span class="desc">Tick the tools you want in the right-click menu.</span>
+            </div>
+          </div>
+          <div id="sfarc-cm-tools" class="mac-check-list"></div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row mac-setting-head">
+            <div class="mac-setting-info">
+              <label>Custom Entries</label>
+              <span class="desc">Add your own menu items that open any URL or extension tool.</span>
+            </div>
+          </div>
+          <div id="sfarc-cm-custom-list"></div>
+          <div class="mac-cm-add-row">
+            <input type="text" id="sfarc-cm-custom-name" class="mac-input" placeholder="Menu label, e.g. My Tool">
+            <input type="text" id="sfarc-cm-custom-url" class="mac-input" placeholder="URL or tool page, e.g. https://example.com or org-limits">
+            <button type="button" id="sfarc-cm-custom-add" class="mac-btn mac-btn-primary"><i class="fa-solid fa-plus"></i> Add</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. API & LIMITS SETTINGS -->
+      <section id="api-limits" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-network-wired"></i></div>
+          <h2>API & Org Limits</h2>
+          <p>Salesforce REST API version, custom instance URLs, and local cache controls.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-api-version">Salesforce REST API Version</label>
+              <span class="desc">API version used across REST and Tooling endpoints.</span>
+            </div>
+            <select id="sfarc-api-version" class="mac-select">
+              <option value="60.0">v60.0 (Spring '24)</option>
+              <option value="61.0">v61.0 (Summer '24)</option>
+              <option value="62.0">v62.0 (Winter '25)</option>
+              <option value="63.0">v63.0 (Spring '25)</option>
+              <option value="67.0">v67.0 (Latest)</option>
+            </select>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label for="sfarc-request-timeout">HTTP Request Timeout (ms)</label>
+              <span class="desc">Maximum allowed response wait time for API queries.</span>
+            </div>
+            <input type="number" id="sfarc-request-timeout" value="30000" step="1000" class="mac-input">
+          </div>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Clear Local Extension Cache</label>
+              <span class="desc">Purge cached org schemas, permission sets, and SObject metadata.</span>
+            </div>
+            <button id="sfarc-clear-cache-btn" class="mac-action-btn">
+              <i class="fa-solid fa-trash-can"></i> Clear Cache
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. ABOUT SETTINGS -->
+      <section id="about" class="mac-settings-section">
+        <div class="mac-section-hero">
+          <div class="mac-hero-icon"><i class="fa-solid fa-circle-info"></i></div>
+          <h2>About</h2>
+          <p>Salesforce Comet Extension version, release build, and credits.</p>
+        </div>
+
+        <div class="mac-card-group">
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Extension Version</label>
+              <span class="desc">Salesforce Comet Developer Suite</span>
+            </div>
+            <span class="mac-value-badge" id="sfarc-extension-version">—</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Chrome Extension ID</label>
+              <span class="desc">Active browser extension instance identifier.</span>
+            </div>
+            <span class="mac-value-badge" id="sfarc-extension-id">sfarc-comet-ext</span>
+          </div>
+
+          <div class="mac-setting-row">
+            <div class="mac-setting-info">
+              <label>Software Updates</label>
+              <span class="desc">Check for the latest updates and feature patches.</span>
+              <span class="desc" id="sfarc-update-status" style="display:none; margin-top: 2px; font-weight: 500;"></span>
+            </div>
+            <button id="sfarc-check-updates-btn" class="mac-action-btn">
+              <i class="fa-solid fa-rotate"></i> Check for Updates
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="glass-toast.js"></script>
+  <script src="settings.js"></script>
+    <script src="custom-dropdown.js"></script>
+</body>
+</html>

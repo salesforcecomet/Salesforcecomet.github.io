@@ -1,0 +1,52 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   SFIR embed mode (sfir-shell.html host)
+   The Export / Import / Limits / Metadata tabs are hosted side-by-side in a
+   persistent shell. When a page loads with ?sfirEmbed=1 it becomes an iframe
+   inside the shell:
+     - the page's OWN header is hidden — the shell renders the ONE persistent
+       top bar (tabs, page-specific utilities, org badge, user chip) once, so
+       it never reloads,
+     - the tab's own controls (Tooling/QueryAll toggles,
+       Help, Refresh, host pill) are painted INTO that same bar by
+       sfir-shell.js and swap when the user changes tabs,
+     - the pages render body-only: no header, no strip, no second bar.
+   ────────────────────────────────────────────────────────────────────────── */
+
+html.sfir-embedded body .slds-builder-header_container,
+html.sfir-embedded body header.slds-builder-header,
+html.sfir-embedded body .sfir-header-override,
+html.sfir-embedded body .slds-builder-header,
+body.sfir-embedded .slds-builder-header_container,
+body.sfir-embedded header.slds-builder-header,
+body.sfir-embedded .sfir-header-override,
+body.sfir-embedded .slds-builder-header {
+    display: none !important;
+}
+
+/* Compress the big top margin the standalone pages use to clear their own
+   header — inside the shell the chrome already occupies that space. */
+html.sfir-embedded body .sfir-page-container,
+html.sfir-embedded body .slds-m-top_xx-large,
+html.sfir-embedded body .content-container,
+html.sfir-embedded body .app-container,
+body.sfir-embedded .sfir-page-container,
+body.sfir-embedded .slds-m-top_xx-large,
+body.sfir-embedded .content-container,
+body.sfir-embedded .app-container {
+    margin-top: 0 !important;
+}
+
+html.sfir-embedded body .sfir-page-container,
+body.sfir-embedded .sfir-page-container {
+    padding-top: 8px;
+    height: 100vh !important;
+    max-height: 100vh !important;
+}
+
+/* The Limits page's control bar (search + total + legend) clears the
+   standalone header with margin-top: calc(48px + 5px); inside the shell the
+   header is gone, so collapse that gap to a small breathing room. */
+html.sfir-embedded body .sfir-limits-toolbar,
+body.sfir-embedded .sfir-limits-toolbar {
+    margin-top: 8px !important;
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Unified Comet Loader</title>
+<style>
+/* ── Unified Comet Loader — conic ring in the org accent color ────────────
+   One loader everywhere: a solid accent circle masked into a rotating ring
+   with a 10% gap (conic + content-box mask, mask-composite: subtract).
+   Light pages get the DARK accent shade (legible on white); dark themes and
+   dark loading overlays get the LIGHT accent shade. */
+.comet-loader,
+.comet-loader-inline {
+    --sfarc-loader-ring: var(--sfarc-accent-dark, var(--sfarc-accent, #1976d2));
+    width: 26px;
+    aspect-ratio: 1;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 3px;
+    background: var(--sfarc-loader-ring);
+    -webkit-mask:
+        conic-gradient(#0000 10%, #000),
+        linear-gradient(#000 0 0) content-box;
+    mask:
+        conic-gradient(#0000 10%, #000),
+        linear-gradient(#000 0 0) content-box;
+    -webkit-mask-composite: source-out;
+    mask-composite: subtract;
+    animation: comet-loader-spin 1s infinite linear;
+}
+
+/* Inline (button/row) variant — small, keeps adjacent text baseline */
+.comet-loader-inline {
+    width: 12px;
+    padding: 2px;
+    vertical-align: -2px;
+    margin-right: 6px;
+}
+
+@keyframes comet-loader-spin {
+    100% { transform: rotate(1turn); }
+}
+
+/* Dark themes: light accent shade for visibility on dark surfaces */
+body.sfarc-dark-theme .comet-loader,
+body.sfarc-dark-theme .comet-loader-inline,
+.sfarc-dark-theme .comet-loader,
+.sfarc-dark-theme .comet-loader-inline {
+    --sfarc-loader-ring: var(--sfarc-accent-light, var(--sfarc-accent, #5eb4ff));
+}
+
+/* Dark loading overlays (always dark in both themes): light accent shade */
+.loading-overlay .comet-loader,
+.sfarc-loader-overlay .comet-loader,
+.sfir-loader-overlay .comet-loader {
+    --sfarc-loader-ring: var(--sfarc-accent-light, var(--sfarc-accent, #5eb4ff));
+}
+
+body { margin: 0; font-family: Inter, sans-serif; }
+.grid { display: flex; gap: 40px; padding: 40px; flex-wrap: wrap; }
+.cell { width: 200px; height: 200px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 1px solid rgba(0,0,0,0.12); }
+.light { background: #ffffff; }
+.dark { background: #17181c; }
+.label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
+.dark .label { color: #6b7686; }
+.row { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #334155; }
+.dark .row { color: #e6e9ef; }
+</style>
+</head>
+<body>
+<div class="grid">
+  <div class="cell light">
+    <div class="label">Light · standalone</div>
+    <div class="comet-loader"></div>
+  </div>
+  <div class="cell dark">
+    <div class="label">Dark · standalone</div>
+    <div class="comet-loader" style="--sfarc-loader-ring: var(--sfarc-accent-light, #5eb4ff);"></div>
+  </div>
+  <div class="cell light">
+    <div class="label">Light · inline</div>
+    <div class="row"><span class="comet-loader-inline"></span>Loading Permission Sets...</div>
+  </div>
+  <div class="cell dark">
+    <div class="label">Dark · inline</div>
+    <div class="row"><span class="comet-loader-inline" style="--sfarc-loader-ring: var(--sfarc-accent-light, #5eb4ff);"></span>Loading objects...</div>
+  </div>
+</div>
+<script>
+  // Report computed styles to verify the loader is animating
+  const el = document.querySelector('.comet-loader');
+  const cs = getComputedStyle(el);
+  window.__loader = {
+    display: cs.display,
+    width: cs.width,
+    aspectRatio: cs.aspectRatio,
+    animation: cs.animationName + ' ' + cs.animationDuration + ' ' + cs.animationIterationCount + ' ' + cs.animationTimingFunction,
+    bgImage: cs.backgroundImage.includes('linear-gradient') ? 'linear-gradient' : cs.backgroundImage
+  };
+</script>
+</body>
+</html>

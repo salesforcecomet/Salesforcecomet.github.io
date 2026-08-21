@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Launcher Tool Rows — FA Icons like Menu Tools</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
+<style>
+  body { margin: 0; padding: 24px; background: #14161a; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h3 { color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: .5px; margin: 18px 0 8px; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 6px; background: rgba(255,255,255,0.04); margin-bottom: 6px; }
+  .iconbox { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-size: 14px; }
+  .name { color: #f1f5f9; font-weight: 500; font-size: 14px; }
+  .feat { margin-left: auto; font-size: 11px; color: #8892a0; }
+  button { margin-bottom: 12px; padding: 6px 12px; border-radius: 8px; border: 1px solid #333; background: #1e2024; color: #e2e8f0; cursor: pointer; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h3>Launcher Tools list — same FA icons as Settings → Menu Tools</h3>
+  <button onclick="cycle()">Cycle org color (affects new-tab tool icons)</button>
+  <div id="list"></div>
+</div>
+<script>
+const tools = [{"id":"data-export","name":"Data Export","icon":"fa-file-export","features":"Run SOQL queries & export records"},{"id":"comet-launcher","name":"Comet Launcher","icon":"fa-rocket","features":"Open the Comet panel on this org"},{"id":"code-editor","name":"Code Editor","icon":"fa-code","features":"Open the Apex code editor"},{"id":"org-limits","name":"Org Limits","icon":"fa-gauge-high","features":"View API limits & usage"},{"id":"metadata","name":"Metadata Exporter","icon":"fa-cube","features":"Retrieve & export metadata"},{"id":"anon-apex","name":"Execute Anonymous Apex","icon":"fa-bolt","features":"Run Apex snippets"},{"id":"debug-logs","name":"Debug Logs","icon":"fa-bug","features":"Browse trace flags & logs"},{"id":"event-monitor","name":"Event Monitor","icon":"fa-satellite-dish","features":"Streaming events, CDC, replays"},{"id":"code-coverage","name":"Code Coverage","icon":"fa-vial","features":"Apex test coverage analysis"},{"id":"rest-explorer","name":"REST Explorer","icon":"fa-paper-plane","features":"Test REST endpoints"},{"id":"graphql-explorer","name":"GraphQL Explorer","icon":"fa-diagram-project","features":"Run GraphQL queries"},{"id":"bulk-updater","name":"Bulk Permission Wizard","icon":"fa-layer-group","features":"Assign, Revoke, Mute"}];
+const SFARC_NEW_TAB_TOOL_IDS = new Set([
+    'metadata', 'metadata-exporter',
+    'bulk-updater', 'bulk-permission-wizard',
+    'bulk-field', 'bulk-field-builder',
+    'record-clone',
+    'event-monitor',
+    'code-coverage',
+    'rest-explorer'
+]);
+function sfarcIsNewTabTool(cmd) {
+    if (!cmd) return false;
+    if (cmd.url && typeof cmd.url === 'string' && cmd.url.startsWith('sfi:')) return true;
+    return !!cmd.id && SFARC_NEW_TAB_TOOL_IDS.has(cmd.id);
+}
+function rowHtml(t) {
+  const iconColor = sfarcIsNewTabTool(t) ? 'var(--sfarc-org-color, var(--primary-color))' : 'var(--primary-color)';
+  return `
+    <div class="row">
+      <div class="iconbox" style="background: rgba(var(--primary-color-rgb, 33, 150, 243), 0.1); color: ${iconColor};">
+        <i class="fa-solid ${t.icon}"></i>
+      </div>
+      <div class="name">${t.name}</div>
+      <div class="feat">${t.features}</div>
+    </div>`;
+}
+document.getElementById('list').innerHTML = tools.map(rowHtml).join('');
+const colors = ['#38bdf8', '#f472b6', '#4ade80', '#facc15', '#a78bfa'];
+let ci = 0;
+function cycle() {
+  ci = (ci + 1) % colors.length;
+  document.documentElement.style.setProperty('--sfarc-org-color', colors[ci]);
+  document.documentElement.style.setProperty('--primary-color', '#2196f3');
+}
+document.documentElement.style.setProperty('--sfarc-org-color', colors[0]);
+document.documentElement.style.setProperty('--primary-color', '#2196f3');
+</script>
+</body>
+</html>

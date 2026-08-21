@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>API Names — harness</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #f3f5f7; margin: 0; padding: 24px; }
+  h1 { font-size: 15px; color: #032d60; }
+  .bar { display: flex; gap: 10px; margin: 12px 0; align-items: center; }
+  button { border: 1px solid #0176d3; background: #0176d3; color: #fff; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  button.secondary { background: #fff; color: #0176d3; }
+  #stats { font: 12px monospace; color: #444; }
+  #recordPage { background: #fff; border: 1px solid #d8dee6; border-radius: 10px; padding: 18px; max-width: 640px; }
+  .slds-form-element { display: flex; align-items: baseline; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f0f2f4; }
+  .slds-form-element__label { color: #444; min-width: 140px; font-size: 13px; }
+  .slds-form-element__control { color: #032d60; font-size: 13px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  td { border: 1px solid #d8dee6; padding: 6px 10px; font-size: 13px; }
+  .sfarc-api-badge { margin-left: 8px; background: #1589ee; color: #fff; padding: 2px 6px; font-size: 11px; font-family: monospace; border-radius: 3px; cursor: pointer; white-space: nowrap; vertical-align: middle; }
+  .note { font-size: 12px; color: #666; margin: 4px 0; }
+  .lazy { opacity: 0.75; }
+</style>
+</head>
+<body>
+<h1>Show API Names — DOM shape harness (mirrors src/main.js logic)</h1>
+<div class="bar">
+  <button id="toggle">Show API Names</button>
+  <button id="lazy" class="secondary">Simulate lazy-load (add fields)</button>
+  <span id="stats">idle</span>
+</div>
+<div id="recordPage">
+  <!-- Aura runtime: attribute on the custom element itself -->
+  <force-record-layout-item data-target-selection-name="sfdc:recordField.Account.Account.Phone">
+    <div class="slds-form-element">
+      <span class="slds-form-element__label">Phone</span>
+      <div class="slds-form-element__control">(555) 123-4567</div>
+    </div>
+  </force-record-layout-item>
+
+  <!-- LWC runtime: attribute on the direct child div (was previously MISSED) -->
+  <records-record-layout-item>
+    <div data-target-selection-name="sfdc:recordField.Account.Account.Name">
+      <div class="slds-form-element">
+        <span class="slds-form-element__label">Account Name</span>
+        <div class="slds-form-element__control">Acme Corp</div>
+      </div>
+    </div>
+  </records-record-layout-item>
+
+  <!-- Nested duplicate: attribute on BOTH wrapper and child div -> only ONE badge -->
+  <force-record-layout-item data-target-selection-name="sfdc:recordField.Account.Account.OwnerId">
+    <div data-target-selection-name="sfdc:recordField.Account.Account.OwnerId">
+      <div class="slds-form-element">
+        <span class="slds-form-element__label">Account Owner</span>
+        <div class="slds-form-element__control">Vishu Grade</div>
+      </div>
+    </div>
+  </force-record-layout-item>
+
+  <!-- Edit-mode item: different tag, attribute present -->
+  <force-record-edit-layout-item data-target-selection-name="sfdc:recordField.Account.Account.Website">
+    <div class="slds-form-element">
+      <span class="slds-form-element__label">Website</span>
+      <div class="slds-form-element__control">acme.com</div>
+    </div>
+  </force-record-edit-layout-item>
+
+  <!-- Classic-style label cell (no attribute): covered by the label-map fallback -->
+  <table>
+    <tr>
+      <td class="labelCol">Account Number</td>
+      <td>0012345</td>
+    </tr>
+  </table>
+</div>
+<p class="note">Expected after toggle: badges on Phone, Account Name, Account Owner (ONE, not two), Website + a Classic fallback badge on "Account Number". "Simulate lazy-load" then appends two more LWC fields which should get badges automatically via the MutationObserver without re-toggling.</p>
+
+<script>
+/* ====== Real code copied from src/main.js (createApiBadge / scanAttributePath / observer) ====== */
+let sfarcApiNamesObserver = null;
+let sfarcApiNamesScanTimer = null;
+
+function createApiBadge(apiNameStr) {
+    const badge = document.createElement('span');
+    badge.className = 'sfarc-api-badge sfarc-api-name-badge';
+    badge.innerHTML = apiNameStr;
+    badge.style.cssText = 'margin-left:8px;background:#1589ee;color:white;padding:2px 6px;font-size:11px;font-family:monospace;border-radius:3px;cursor:pointer;white-space:nowrap;';
+    badge.title = 'API Name: ' + apiNameStr;
+    badge.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const originalText = badge.textContent;
+        badge.textContent = 'Copied!';
+        badge.style.backgroundColor = '#4bca81';
+        setTimeout(() => { badge.textContent = originalText; badge.style.backgroundColor = ''; }, 1000);
+    });
+    return badge;
+}
+
+const scanAttributePath = () => {
+    let count = 0;
+    const fieldEls = document.querySelectorAll('[data-target-selection-name^="sfdc:recordField"]');
+    fieldEls.forEach(fieldEl => {
+        const selName = fieldEl.getAttribute('data-target-selection-name');
+        if (!selName) return;
+        const parts = selName.split('.');
+        const apiName = parts[parts.length - 1];
+        if (!apiName || apiName === 'null' || apiName === 'undefined') return;
+        if (fieldEl.querySelector('[data-target-selection-name^="sfdc:recordField"]')) return;
+        const labelEl = fieldEl.querySelector('.slds-form-element__label, .test-id__field-label, span');
+        if (!labelEl || labelEl.querySelector('.sfarc-api-badge')) return;
+        labelEl.appendChild(createApiBadge(apiName));
+        count++;
+    });
+    return count;
+};
+
+// Classic label-map fallback (simplified: label -> API name map for the harness)
+const classicMap = { 'account number': ['AccountNumber'] };
+const scanLabelPath = () => {
+    let count = 0;
+    document.querySelectorAll('td.labelCol, th.labelCol').forEach(el => {
+        if (el.querySelector('.sfarc-api-badge')) return;
+        const key = (el.textContent || '').trim().toLowerCase();
+        const names = classicMap[key];
+        if (names && names.length) { el.appendChild(createApiBadge(names.join(', '))); count++; }
+    });
+    return count;
+};
+
+function startApiNamesObserver() {
+    stopApiNamesObserver();
+    sfarcApiNamesObserver = new MutationObserver(mutations => {
+        if (!mutations.some(m => m.addedNodes && m.addedNodes.length)) return;
+        clearTimeout(sfarcApiNamesScanTimer);
+        sfarcApiNamesScanTimer = setTimeout(() => {
+            const added = scanAttributePath();
+            const labelCount = scanLabelPath();
+            document.getElementById('stats').textContent = 'observer pass: +' + (added + labelCount) + ' new badges; total ' + document.querySelectorAll('.sfarc-api-name-badge').length;
+        }, 300);
+    });
+    sfarcApiNamesObserver.observe(document.body, { childList: true, subtree: true });
+}
+function stopApiNamesObserver() {
+    if (sfarcApiNamesObserver) { sfarcApiNamesObserver.disconnect(); sfarcApiNamesObserver = null; }
+    clearTimeout(sfarcApiNamesScanTimer);
+}
+function hideApiNames() {
+    stopApiNamesObserver();
+    document.querySelectorAll('.sfarc-api-badge').forEach(el => el.remove());
+}
+
+let active = false;
+document.getElementById('toggle').addEventListener('click', () => {
+    active = !active;
+    if (active) {
+        const c = scanAttributePath() + scanLabelPath();
+        startApiNamesObserver();
+        document.getElementById('stats').textContent = 'enabled — badges added: ' + c + ', total ' + document.querySelectorAll('.sfarc-api-name-badge').length;
+    } else {
+        hideApiNames();
+        document.getElementById('stats').textContent = 'disabled';
+    }
+});
+
+let lazyAdded = false;
+document.getElementById('lazy').addEventListener('click', () => {
+    if (lazyAdded) return;
+    lazyAdded = true;
+    const host = document.getElementById('recordPage');
+    const mk = (apiName, label, value) => {
+        const outer = document.createElement('records-record-layout-item');
+        const div = document.createElement('div');
+        div.setAttribute('data-target-selection-name', 'sfdc:recordField.Account.Account.' + apiName);
+        div.innerHTML = '<div class="slds-form-element"><span class="slds-form-element__label">' + label + '</span><div class="slds-form-element__control">' + value + '</div></div>';
+        outer.appendChild(div);
+        return outer;
+    };
+    host.appendChild(mk('BillingCity', 'Billing City', 'San Francisco'));
+    host.appendChild(mk('Industry', 'Industry', 'Technology'));
+    document.getElementById('lazy').textContent = 'lazy fields added — watch observer';
+});
+</script>
+</body>
+</html>

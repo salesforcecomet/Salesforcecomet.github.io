@@ -1,0 +1,700 @@
+/* ============================================================================
+   Salesforce Comet — Universal Control System
+   ----------------------------------------------------------------------------
+   One design language for search inputs, selects/dropdowns, icon buttons and
+   toggles across every page of the extension, matching the reference UI
+   (the header's segmented nav pill proportions):
+     • Uniform control height  — 24px
+     • Search inputs & selects — 6px radius on light #e8edf2 / #e5e8ed
+     • Icon / "+" buttons      — 24x24 with 6px radius on light #e5e8ed
+     • Toggles                 — blue (#2563eb) when checked
+   Dark-theme variants are provided via tokens so pages using
+   body.sfarc-dark-theme / .sfarc-dark-theme stay coherent.
+
+   Load this file LAST in every page so it wins the cascade (the codebase
+   relies on !important; equal-specificity rules resolve by load order).
+
+   Top-bar chrome (.sfir-header-select, .sfir-header-icon-btn,
+   .sfir-badge-action-btn) is intentionally untouched — the compact header
+   keeps its approved size.
+   ========================================================================== */
+
+:root {
+    --sfarc-font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --sfarc-ctl-h: 24px;
+    --sfarc-ctl-radius-pill: 6px;
+    --sfarc-ctl-radius-box: 6px;
+    --sfarc-ctl-bg: #e5e8ed;         /* selects, icon buttons */
+    --sfarc-ctl-bg-search: #e8edf2;  /* search fields */
+    --sfarc-ctl-border: #d8dde6;
+    --sfarc-ctl-text: #1e293b;
+    --sfarc-ctl-muted: #64748b;
+    --sfarc-ctl-primary: var(--sfarc-accent, #2196f3);
+    --sfarc-ctl-primary-hover: var(--sfarc-accent-dark, #1976d2);
+    --sfarc-ctl-toggle-on: var(--sfarc-accent, #2196f3);
+    --sfarc-ctl-toggle-off: #b0b8c4;
+    --sfarc-ctl-hover: rgba(0, 0, 0, 0.06);
+    --sfarc-ctl-focus-ring: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.18);
+}
+
+/* Dark-theme tokens — includes the Flow Scanner panel, which toggles its own
+   #fs-panel.fs-dark-theme class (not .sfarc-dark-theme) for its dark mode. */
+body.sfarc-dark-theme,
+.sfarc-dark-theme,
+#fs-panel.fs-dark-theme {
+    --sfarc-ctl-bg: rgba(255, 255, 255, 0.09);
+    --sfarc-ctl-bg-search: rgba(255, 255, 255, 0.1);
+    --sfarc-ctl-border: rgba(255, 255, 255, 0.16);
+    --sfarc-ctl-text: #f1f5f9;
+    --sfarc-ctl-muted: #94a3b8;
+    --sfarc-ctl-toggle-off: #555555;
+    --sfarc-ctl-hover: rgba(255, 255, 255, 0.12);
+    --sfarc-ctl-focus-ring: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.28);
+}
+
+/* ── Search inputs ─────────────────────────────────────────────────────── */
+.sfarc-debug-search-input,
+.sfarc-search-input,
+.sfir-search-input-pill,
+input[type="text"].sfir-search-pill,
+input[type="search"].sfir-search-pill,
+.sfir-col-search-input,
+.sfarc-field-search-input,
+.sfarc-table-filter,
+.feed-search,
+.sidebar-search-box input,
+.viewer-search-wrapper input,
+.sfir-history-drawer-search-wrapper input,
+.search-box input[type="text"],
+.search-box input[type="search"],
+.search-bar input[type="text"],
+.search-bar input[type="search"],
+input[type="text"].input-small,
+input[type="search"].input-small,
+.sfarc-raycast-search {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-bg-search) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Search containers that draw the pill themselves */
+.sfarc-debug-search-wrapper,
+.sidebar-search-container,
+.sfir-history-drawer-search-wrapper,
+.fs-search-wrapper,
+.sfarc-search-container,
+.viewer-search-wrapper,
+.sfarc-local-search-container {
+    background: var(--sfarc-ctl-bg-search) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep inputs inside glassy local-search surfaces transparent */
+.sfarc-local-search-container .sfarc-debug-search-input,
+.fs-search-wrapper input {
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* History-drawer search must sit flush inside its 24px wrapper — older
+   sfir.css generations set 26-32px at higher specificity, which made the
+   field overflow the pill by a few px. */
+.sfir-history-drawer-header input.sfir-history-drawer-search,
+.sfir-history-drawer-search-wrapper input.sfir-history-drawer-search {
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
+}
+
+/* History-drawer search: the INPUT is the single pill — it carries the
+   icon gutter, the 1px border and the accent focus border. The wrapper must
+   NOT draw its own pill, or the two stacked 1px borders read as a double
+   boundary (the shared rule above paints border+bg on both). */
+.sfir-history-drawer-search-wrapper {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+/* Custom dropdown containers must never paint their own chevron — the trigger
+   already renders one, and some pages' native-select arrow-fix rules would
+   otherwise show a duplicate chevron through the translucent pill. */
+.sfarc-custom-dropdown-container,
+html body .sfarc-custom-dropdown-container,
+body.sfarc-dark-theme .sfarc-custom-dropdown-container,
+.sfarc-dark-theme .sfarc-custom-dropdown-container {
+    background-image: none !important;
+    padding-right: 0 !important;
+}
+
+/* Search focus — lift the pill to white + soft blue ring */
+.sfarc-debug-search-input:focus,
+.sfarc-search-input:focus,
+.sfir-search-input-pill:focus,
+input[type="text"].sfir-search-pill:focus,
+input[type="search"].sfir-search-pill:focus,
+.sfir-col-search-input:focus,
+.sfarc-field-search-input:focus,
+.sfarc-table-filter:focus,
+.feed-search:focus,
+.sidebar-search-box input:focus,
+.viewer-search-wrapper input:focus,
+.sfir-history-drawer-search-wrapper input:focus,
+.search-box input[type="text"]:focus,
+.search-box input[type="search"]:focus,
+.search-bar input[type="text"]:focus,
+.search-bar input[type="search"]:focus,
+.sfarc-raycast-search:focus {
+    background-color: var(--sfarc-ctl-bg-search) !important;
+    border-color: var(--sfarc-ctl-primary) !important;
+    box-shadow: 0 0 0 3px var(--sfarc-ctl-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ── Selects / dropdowns ───────────────────────────────────────────────── */
+.sfarc-debug-select,
+.sfarc-custom-dropdown-trigger {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: 6px !important;
+    background-color: #f1f3f5 !important;
+    border: 1px solid #e0e3e8 !important;
+    color: #334155 !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.sub-select,
+.object-select,
+.sfir-select,
+.sfarc-table-rows-select,
+.feed-select,
+.dropdown-small,
+.sfarc-builder-select,
+#sfarc-builder-object-select {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-bg) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.sfarc-custom-dropdown-trigger:hover {
+    background-color: #e8eaed !important;
+    border-color: #d0d3d8 !important;
+}
+
+.sfarc-debug-select:hover,
+.sub-select:hover,
+.object-select:hover,
+.sfir-select:hover {
+    background-color: var(--sfarc-ctl-hover) !important;
+}
+
+.sfarc-debug-select:focus,
+.sub-select:focus,
+.object-select:focus,
+.sfir-select:focus {
+    border-color: var(--sfarc-ctl-primary) !important;
+    box-shadow: 0 0 0 3px var(--sfarc-ctl-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ── Icon buttons (incl. "+" add buttons) ──────────────────────────────── */
+.sfarc-debug-icon-btn,
+.sfarc-dropdown-plus-btn,
+.sfarc-action-icon,
+.sfarc-icon-btn,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save),
+.viewer-btn.icon-btn,
+.search-action-btn {
+    width: var(--sfarc-ctl-h) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-width: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    max-width: var(--sfarc-ctl-h) !important;
+    max-height: var(--sfarc-ctl-h) !important;
+    flex: 0 0 var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-box) !important;
+    background-color: var(--sfarc-ctl-bg) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sfarc-debug-icon-btn:hover,
+.sfarc-dropdown-plus-btn:hover,
+.sfarc-action-icon:hover,
+.sfarc-icon-btn:hover,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save):hover,
+.viewer-btn.icon-btn:hover,
+.search-action-btn:hover {
+    background-color: var(--sfarc-ctl-hover) !important;
+}
+
+.sfarc-debug-icon-btn:active,
+.sfarc-dropdown-plus-btn:active,
+.sfarc-action-icon:active,
+.sfarc-icon-btn:active,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save):active,
+.viewer-btn.icon-btn:active,
+.search-action-btn:active {
+    transform: scale(0.92) !important;
+}
+
+/* Icon buttons share ONE surface — the delete button's solid fill with no
+   visible border. The delete icon sits inside a group pill (its fill IS the
+   pill color); standalone buttons get the same fill via --sfarc-ctl-bg and a
+   transparent border so every icon button in the extension renders as the
+   same solid rounded square, in both themes. */
+.sfarc-debug-icon-btn,
+.sfarc-dropdown-plus-btn,
+.sfarc-action-icon,
+.sfarc-icon-btn,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save),
+.viewer-btn.icon-btn,
+.search-action-btn {
+    border-color: transparent !important;
+}
+
+/* Icon buttons on the data pages (.sfarc-btn-icon) — same universal size
+   and radius, but keep each page's own surface/colors. Exclude buttons that
+   carry a text label too (.sfarc-btn-icon-label): those must keep width:auto
+   so their label never overflows/overlaps the next button. Without this
+   guard, the !important width below would crush e.g. the Data Import
+   Resume/Retry/Hide-config buttons to a 24px square while their labels stay
+   visible. */
+.sfarc-btn-icon:not(.sfarc-btn-icon-label) {
+    width: var(--sfarc-ctl-h) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-width: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    max-width: var(--sfarc-ctl-h) !important;
+    max-height: var(--sfarc-ctl-h) !important;
+    flex: 0 0 var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-box) !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+/* Run buttons that predate the universal system — geometry only, page
+   colors kept. */
+.run-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    box-sizing: border-box !important;
+}
+
+/* ── Primary / action buttons ──────────────────────────────────────────── */
+.sfarc-debug-btn.primary,
+.sfarc-btn-primary,
+.sfir-btn-primary,
+.sfarc-primary-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-primary) !important;
+    border: 1px solid var(--sfarc-ctl-primary) !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+.sfarc-debug-btn.primary:hover,
+.sfarc-btn-primary:hover,
+.sfir-btn-primary:hover,
+.sfarc-primary-btn:hover {
+    background-color: var(--sfarc-ctl-primary-hover) !important;
+    border-color: var(--sfarc-ctl-primary-hover) !important;
+}
+
+/* Secondary .sfarc-debug-btn — same pill height, light surface */
+.sfarc-debug-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    box-sizing: border-box !important;
+}
+
+/* Generic .sfarc-btn (data pages) — universal height, keep page colors.
+   Icon-only buttons keep their own padding (they size to the icon, so the
+   12px side padding here would crush the SVG inside a 30px square). */
+.sfarc-btn:not(.sfarc-btn-icon) {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+}
+
+/* ── Toggles — iOS green when checked ──────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   Unified Toggle System — smooth pill design across the entire extension
+   Track: 44x24 rounded pill, Knob: 18x18 with shadow
+   ══════════════════════════════════════════════════════════════════════ */
+
+.sfarc-slider,
+.sfir-header-toggle-switch {
+    background-color: #d1d5db !important;
+    border: none !important;
+    transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sfarc-slider:before,
+.sfir-header-toggle-switch::after {
+    background-color: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease !important;
+}
+
+.sfarc-switch input:checked + .sfarc-slider,
+.sfarc-toggle-switch input:checked + .sfarc-slider,
+input:checked + .sfir-header-toggle-switch,
+#sfarc-header-icons-toggle.active .sfarc-apple-switch {
+    background-color: var(--sfarc-accent, #2196f3) !important;
+}
+
+.sfarc-slider:before,
+.sfir-header-toggle-switch::after {
+    transform: scale(1) !important;
+}
+
+.sfarc-switch input:checked + .sfarc-slider:before,
+.sfarc-toggle-switch input:checked + .sfarc-slider:before,
+input:checked + .sfir-header-toggle-switch::after {
+    transform: translateX(20px) scale(1) !important;
+    box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.35), 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Dark theme: checked state */
+body.sfarc-dark-theme .sfarc-switch input:checked + .sfarc-slider,
+body.sfarc-dark-theme .sfarc-toggle-switch input:checked + .sfarc-slider,
+body.sfarc-dark-theme .sfir-header-toggle-container input[type="checkbox"]:checked + .sfir-header-toggle-switch {
+    background-color: var(--sfarc-accent, #2196f3) !important;
+}
+
+body.sfarc-dark-theme .sfarc-slider,
+body.sfarc-dark-theme .sfir-header-toggle-switch {
+    background-color: #4b5563 !important;
+}
+
+body.sfarc-dark-theme .sfarc-slider:before,
+body.sfarc-dark-theme .sfir-header-toggle-switch::after {
+    background-color: #f1f5f9 !important;
+}
+
+body.sfarc-dark-theme .sfarc-switch input:checked + .sfarc-slider:before,
+body.sfarc-dark-theme .sfarc-toggle-switch input:checked + .sfarc-slider:before,
+body.sfarc-dark-theme input:checked + .sfir-header-toggle-switch::after {
+    background-color: #ffffff !important;
+}
+
+/* Toggle geometry — unified pill: 44x24 track, 18x18 knob */
+.sfarc-switch,
+.sfarc-toggle-switch {
+    width: 44px !important;
+    height: 24px !important;
+    flex: 0 0 44px !important;
+}
+
+.sfarc-switch .sfarc-slider,
+.sfarc-toggle-switch .sfarc-slider {
+    border-radius: 9999px !important;
+}
+
+.sfarc-switch .sfarc-slider:before,
+.sfarc-toggle-switch .sfarc-slider:before {
+    top: 3px !important;
+    left: 3px !important;
+    bottom: auto !important;
+    right: auto !important;
+    width: 18px !important;
+    height: 18px !important;
+    border-radius: 9999px !important;
+}
+
+.sfarc-switch input:checked + .sfarc-slider:before,
+.sfarc-toggle-switch input:checked + .sfarc-slider:before {
+    transform: translateX(20px) !important;
+}
+
+/* ── Unified Comet Loader — conic ring in the org accent color ────────────
+   One loader everywhere: a solid accent circle masked into a rotating ring
+   with a 10% gap (conic + content-box mask, mask-composite: subtract).
+   Light pages get the DARK accent shade (legible on white); dark themes and
+   dark loading overlays get the LIGHT accent shade. */
+.comet-loader,
+.comet-loader-inline {
+    --sfarc-loader-ring: var(--sfarc-accent-dark, var(--sfarc-accent, #1976d2));
+    width: 26px;
+    aspect-ratio: 1;
+    display: inline-block;
+    border-radius: 50%;
+    padding: 3px;
+    background: var(--sfarc-loader-ring);
+    -webkit-mask:
+        conic-gradient(#0000 10%, #000),
+        linear-gradient(#000 0 0) content-box;
+    mask:
+        conic-gradient(#0000 10%, #000),
+        linear-gradient(#000 0 0) content-box;
+    -webkit-mask-composite: source-out;
+    mask-composite: subtract;
+    animation: comet-loader-spin 1s infinite linear;
+}
+
+/* Inline (button/row) variant — small, keeps adjacent text baseline */
+.comet-loader-inline {
+    width: 12px;
+    padding: 2px;
+    vertical-align: -2px;
+    margin-right: 6px;
+}
+
+@keyframes comet-loader-spin {
+    100% { transform: rotate(1turn); }
+}
+
+/* Dark themes: light accent shade for visibility on dark surfaces */
+body.sfarc-dark-theme .comet-loader,
+body.sfarc-dark-theme .comet-loader-inline,
+.sfarc-dark-theme .comet-loader,
+.sfarc-dark-theme .comet-loader-inline {
+    --sfarc-loader-ring: var(--sfarc-accent-light, var(--sfarc-accent, #5eb4ff));
+}
+
+/* Dark loading overlays (always dark in both themes): light accent shade */
+.loading-overlay .comet-loader,
+.sfarc-loader-overlay .comet-loader,
+.sfir-loader-overlay .comet-loader {
+    --sfarc-loader-ring: var(--sfarc-accent-light, var(--sfarc-accent, #5eb4ff));
+}
+
+/* ── Remove ALL button/element shadows extension-wide ────────────────── */
+button,
+.btn,
+.sfarc-btn,
+.sfarc-btn-primary,
+.sfarc-btn-secondary,
+.sfarc-debug-btn,
+.sfarc-header-btn,
+.sfarc-footer-btn,
+.sfarc-mode-option,
+.pill-icon-btn,
+.page-btn,
+.action-btn,
+.action-btn-tbl,
+.rest-btn,
+.sfarc-switch .sfarc-slider,
+.sfarc-toggle-switch .sfarc-slider,
+input[type="button"],
+input[type="submit"] {
+    box-shadow: none !important;
+}
+
+button:hover,
+button:focus,
+button:active,
+.btn:hover,
+.btn:focus,
+.pill-icon-btn:hover,
+.sfarc-btn-primary:hover,
+.sfarc-btn-primary:focus,
+.sfarc-btn-secondary:hover,
+.sfarc-btn-secondary:focus {
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   Global Font Family — Helvetica
+   ----------------------------------------------------------------------------
+   Sets Helvetica Neue as the primary font across the entire extension.
+   Falls back to Helvetica, Arial, then system sans-serif.
+   ========================================================================== */
+
+body, html, * {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+}
+
+/* Keep monospace elements on code fonts */
+pre, code, .sfarc-code, .sfarc-mono,
+.sfarc-code-viewer, .sfarc-log-line,
+.log-line, .trace-time, .limit-number,
+.font-mono, [class*="mono"], [class*="code"] {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace !important;
+}
+
+/* ==========================================================================
+   Global Font-Weight Normalization
+   ----------------------------------------------------------------------------
+   Tone down heavy 600/700 weights across every tab and panel so text feels
+   lighter and more refined.  Specificity is kept broad so it applies everywhere
+   without touching each file individually.
+   ========================================================================== */
+
+h1, h2, h3, h4, h5, h6 { font-weight: 500 !important; }
+
+h3 { font-weight: 500 !important; }
+
+/* Section headings inside panels */
+.sfarc-hotspots-panel h3,
+.sfarc-dash-panel h3,
+.sfarc-dash-panel .sfarc-panel-title,
+.sfarc-panel-header h3,
+.sfarc-panel-title {
+    font-weight: 500 !important;
+}
+
+/* Table headers */
+th { font-weight: 500 !important; }
+
+/* Buttons — keep them readable but not heavy */
+button, .btn, .sfarc-btn-primary, .sfarc-btn-secondary,
+.pill-icon-btn, .sfarc-header-btn, .sfarc-header-btn-label {
+    font-weight: 500 !important;
+}
+
+/* Labels */
+label, .sfarc-form-group label, .sfarc-label {
+    font-weight: 500 !important;
+}
+
+/* Badge / stat text */
+.kpi-label, .kpi-value, .kpi-subtext,
+.log-item-user, .trace-user,
+.sfarc-badge, .sfarc-stat-value {
+    font-weight: 500 !important;
+}
+
+/* Modal headers */
+.sfarc-modal-header h3,
+.sfarc-modal-header h4 {
+    font-weight: 500 !important;
+}
+
+/* Status badges */
+.status-badge, .percentage-badge {
+    font-weight: 500 !important;
+}
+
+/* Sidebar titles */
+.sidebar-title, .sfarc-sidebar-title,
+.sfarc-sidebar-label, .sfir-org-badge-text {
+    font-weight: 500 !important;
+}
+
+/* Tab labels */
+.viewer-tab, .sfir-tab, .sfarc-tab,
+.nav-tab, .mac-segment-btn {
+    font-weight: 500 !important;
+}
+
+/* Card titles */
+.sfarc-card-title, .card-title, .card-header,
+.sfarc-record-title, .record-title {
+    font-weight: 500 !important;
+}
+
+/* Search / filter labels */
+.sfarc-search-label, .sfarc-filter-label {
+    font-weight: 500 !important;
+}
+
+/* Code editor sidebar */
+.sidebar-header h3, .sidebar-header .title {
+    font-weight: 500 !important;
+}
+
+/* Log viewer */
+.log-entry-title, .log-entry-header,
+.sfarc-log-title {
+    font-weight: 500 !important;
+}
+
+/* Data builder */
+.sfarc-builder-title, .sfarc-builder-heading,
+.sfarc-builder-sidebar h3 {
+    font-weight: 500 !important;
+}
+
+/* Record viewer */
+.sfarc-record-header, .sfarc-field-label,
+.sfarc-record-title {
+    font-weight: 500 !important;
+}
+
+/* Data import */
+.sfarc-import-title, .sfarc-mapping-header {
+    font-weight: 500 !important;
+}
+
+/* Metadata exporter */
+.sfarc-meta-title, .sfarc-meta-heading,
+.sfarc-component-name {
+    font-weight: 500 !important;
+}
+
+/* Console / output */
+.sfarc-console-title, .sfarc-output-header {
+    font-weight: 500 !important;
+}
+
+/* Dark theme text stays readable */
+body.sfarc-dark-theme button,
+body.sfarc-dark-theme .btn,
+body.sfarc-dark-theme h1,
+body.sfarc-dark-theme h2,
+body.sfarc-dark-theme h3,
+body.sfarc-dark-theme h4,
+body.sfarc-dark-theme th,
+body.sfarc-dark-theme label {
+    font-weight: 500 !important;
+}
+
+/* Dark surfaces use a black thumb consistently across popup and panel toggles. */
+#sfarc-panel.sfarc-dark-theme .sfarc-slider:before {
+    background-color: #000 !important;
+}
+
+body.sfarc-dark-theme .sfarc-slider:before,
+body.sfarc-dark-theme .sfir-header-toggle-switch::after {
+    background-color: #000 !important;
+}

@@ -1,0 +1,2817 @@
+.sf-link {
+  background-color: rgb(6, 28, 63);
+  border-radius: 3px;
+  line-height: 1.8em;
+  text-decoration: none;
+  display: inline-block;
+  padding: 2px;
+  color: white;
+  padding-right: 1em;
+}
+
+.sf-link svg {
+  width: 1.8em;
+  height: 1.8em;
+  display: block;
+  margin-left: 1px;
+  margin-right: 1em;
+  float: left;
+  background-color: #ef7ead;
+  border-radius: 2px;
+  fill: white;
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  word-wrap: normal;
+  font-size: 0.9rem;
+  padding: 8px 10px;
+  border-bottom-right-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  border: 1px solid #dddbda;
+}
+
+textarea[hidden] {
+  display: none;
+}
+
+.help-text {
+  background: #fff;
+  border: 1px solid #dddbda;
+  padding: 0 15px;
+  border-radius: 0.25rem;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+#query {
+  height: 5em;
+  min-height: 4.2em;
+  max-height: 250px;
+  padding-left: 20px !important;
+}
+
+.sfir-dynamic-island-wrapper {
+  flex: 0 0 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.sfir-dynamic-island-wrapper.is-expanded {
+  flex: 0 0 auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.sfir-editor-card-content {
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 12px !important;
+  overflow: hidden !important;
+}
+
+.sfir-buttons-row {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 6px 12px !important;
+  box-sizing: border-box !important;
+  background: #f8fafc !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+body.sfarc-dark-theme .sfir-buttons-row {
+  background: #16181d !important;
+  border-top: 1px solid #2a2e37 !important;
+}
+
+#result-area {
+  flex: 1 1 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: none !important;
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+}
+
+.result-bar {
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+#result-area .slds-card__body,
+#result-area .slds-card__body_inner {
+  flex: 1 1 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+#result-area .sfir-table-scroller { flex: 1 1 0 !important; min-height: 0 !important; max-height: none !important; overflow: auto !important; margin: 4px 0 0 0 !important; }
+
+.sfir-empty-state {
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  height: 100% !important;
+  min-height: 220px !important;
+  margin: auto !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+}
+
+#result-area .result-bar-column {
+  padding-top: 0 !important;
+}
+
+.result-info {
+  font-style: italic;
+  margin-left: 9px;
+  color: #8c8c8c;
+}
+
+#result-text {
+  flex: 1 1 0;
+  resize: none;
+  white-space: pre;
+}
+
+#result-table {
+  overflow: auto;
+  flex: 1 1 0;
+  background-color: #fff;
+  border-top: 1px solid #dddbda;
+}
+
+.area {
+  background-color: #f8f8f8;
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid #dddbda;
+  margin: 5px 5px 0 5px;
+}
+
+.query-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.query-controls .button-group {
+  margin-bottom: 8px;
+}
+
+.query-options {
+  margin-bottom: 8px;
+}
+
+.query-options label {
+  margin-right: 10px;
+}
+
+.area input[type="radio"],
+.area input[type="checkbox"] {
+  margin: 0 2px 0 0;
+}
+
+.area label {
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.area * {
+  vertical-align: middle;
+}
+
+.query-history-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+select,
+input[type="search"],
+input[type="save"],
+input[type="default"] {
+  width: 8.5rem;
+  font-family: inherit;
+  padding: 5px 13px;
+  border: 1px solid #dddbda;
+  height: 32px;
+  position: relative;
+  border-radius: 0.25rem;
+}
+
+input[type="search"] {
+  background-image: url(images/search.svg);
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  background-position: 10px 7px;
+  padding-left: 35px;
+  margin-right: 10px;
+  border-radius: 0px 4px 4px 0px;
+}
+
+input[type="save"] {
+  background-image: url(images/save.svg);
+  background-repeat: no-repeat;
+  background-size: 1rem;
+  background-position: 10px 7px;
+  padding-left: 35px;
+}
+
+input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+}
+
+textarea:not([readonly]):focus,
+button:active,
+button:focus,
+input:active,
+input:focus,
+select:active,
+select:focus {
+  border: 1px solid rgb(var(--sfarc-accent-rgb, 33, 150, 243));
+  box-shadow: rgb(6, 28, 63) 0px 0px 3px 0px;
+  outline: none;
+  z-index: 1;
+}
+
+.button-group button:active:not(:first-child),
+.button-group button:focus:not(:first-child),
+.button-group input:active:not(:first-child),
+.button-group input:focus:not(:first-child),
+.button-group select:focus:not(:first-child),
+.button-group select:focus:not(:first-child) {
+  margin-left: -1px;
+  border: 1px solid rgb(var(--sfarc-accent-rgb, 33, 150, 243));
+}
+
+button:active,
+button:focus {
+  background-color: rgb(238, 241, 246);
+  color: var(--sfarc-accent-dark, #1976d2);
+}
+
+button:disabled,
+input:disabled {
+  color: #dddbda;
+  cursor: default;
+}
+
+button:disabled > svg.button-icon {
+  fill: #dddbda;
+}
+
+button > svg.disabled {
+  fill: #dddbda;
+}
+
+.highlighted {
+  background-color: rgb(var(--sfarc-accent-rgb, 33, 150, 243));
+  border-color: rgb(var(--sfarc-accent-rgb, 33, 150, 243));
+  color: #fff;
+}
+
+.highlighted:disabled {
+  background-color: #c9c7c5;
+  border-color: #c9c7c5;
+  color: #fff;
+}
+
+.highlighted:disabled:hover {
+  background-color: #c9c7c5;
+  color: #fff;
+}
+
+option[value="null"][disabled] {
+  display: none;
+}
+
+textarea[readonly] {
+  outline: none;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid #dddbda;
+}
+
+.flex-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+#result-area h1 {
+  margin-right: 1em;
+}
+
+.cancel-btn {
+  margin-left: 1em;
+  color: #c23934;
+}
+
+.cancel-btn:not(:disabled):hover,
+.cancel-btn:not(:disabled):active,
+.cancel-btn:not(:disabled):focus {
+  color: #a12b2b;
+}
+
+.delete-btn {
+  background-color: #c23934;
+  border-color: #c23934;
+  color: white;
+  /* Allows to still show the title even when disabled as it contains useful information */
+  pointer-events: auto;
+}
+
+.delete-btn:not(:disabled):hover,
+.delete-btn:not(:disabled):focus {
+  background-color: #a61a14;
+  border-color: #c23934;
+  color: white;
+}
+
+.delete-btn:not(:disabled):active {
+  background-color: #870500;
+  border-color: #870500;
+}
+
+.delete-btn:disabled,
+.delete-btn:disabled:hover {
+  background-color: #c9c7c5;
+  border-color: #c9c7c5;
+  color: white;
+}
+
+.char-btn {
+  color: white;
+  text-decoration: none;
+  background-color: gray;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  line-height: 14px;
+  text-align: center;
+  margin: 1px 0 0 3px;
+}
+
+.char-btn[hidden],
+button[hidden],
+.button[hidden] {
+  display: none;
+}
+
+.button-group {
+  white-space: nowrap;
+}
+
+.button-group button,
+.button-group .button,
+.button-group select,
+.button-group input {
+  border-left-width: 0;
+  border-radius: 0;
+  margin-right: 0;
+}
+
+.button-group > :first-child,
+.button-group > [hidden] + * {
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  border-left-width: 1px;
+}
+
+.button-group > :last-child {
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  margin-right: 10px;
+}
+
+button,
+.button {
+  border: 1px solid #dddbda;
+  height: 32px;
+  display: inline-block;
+  text-decoration: none;
+  background-color: white;
+  padding: 0 16px;
+  color: var(--sfarc-accent, #2196f3);
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  line-height: 32px;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+.button-margin {
+  margin-right: 10px;
+}
+
+button.toggle {
+  padding: 0 11px;
+}
+
+button.toggle .button-toggle-icon,
+button.toggle .button-icon {
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 1rem;
+  background-color: #706e6b;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.flex-right button:last-child {
+  margin-right: 0;
+}
+
+button.expand .button-toggle-icon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'><path d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'><path d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z'/></svg>");
+}
+
+button.contract .button-toggle-icon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'><path d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'><path d='M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z'/></svg>");
+}
+
+button.toggle .button-icon {
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'><path d='M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='black'><path d='M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z'/></svg>");
+}
+
+/* Color spans inside dropdown/context-menu links, but never the header-nav
+   labels — the nav pill's active tab must keep its inherited white text. */
+ul > li > a > span:not(.sfir-nav-label) {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+svg.button-icon {
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 1rem;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  fill: var(--sfarc-accent, #2196f3);
+  vertical-align: sub;
+}
+
+.autocomplete-header {
+  display: flex;
+  align-items: center;
+  padding-top: 4px;
+  padding-bottom: 8px;
+}
+
+.autocomplete-header .slds-button-group-item .slds-button,
+.autocomplete-header .slds-button-group-item a.slds-button {
+  height: 22px !important;
+  line-height: 20px !important;
+  padding: 0 8px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.autocomplete-header .slds-button-group-item .slds-button.slds-button_icon,
+.autocomplete-header .slds-button-group-item button.slds-button_icon {
+  width: 22px !important;
+  height: 22px !important;
+  min-width: 22px !important;
+  min-height: 22px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+}
+
+.autocomplete-header .slds-button-group-item .slds-button.slds-button_icon svg,
+.autocomplete-header .slds-button-group-item button.slds-button_icon svg {
+  width: 14px !important;
+  height: 14px !important;
+  margin: 0 !important;
+  display: block !important;
+  color: #334155 !important;
+  stroke: #334155 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-header .slds-button-group-item .slds-button.slds-button_icon svg,
+body.sfarc-dark-theme .autocomplete-header .slds-button-group-item button.slds-button_icon svg {
+  color: #cbd5e1 !important;
+  stroke: #cbd5e1 !important;
+}
+
+.autocomplete-header .slds-button-group-item .slds-button:not(.slds-button_icon) .slds-button__icon {
+  width: 12px !important;
+  height: 12px !important;
+  margin-right: 4px !important;
+}
+
+.autocomplete-header span {
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.autocomplete-results {
+  overflow: hidden;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 4px;
+  padding: 4px 2px;
+}
+
+.expanded .autocomplete-results {
+  flex-wrap: wrap;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* Cap the suggestions window. sfir.css forces `max-height: none !important`
+   on .sfir-suggestions-panel (and display:contents on the results), so the
+   old 150px cap above never applied and the pill strip grew with the full
+   suggestion list. This rule matches the panel class directly with equal
+   importance and higher specificity — past this height the strip scrolls
+   instead of growing forever. */
+.sfir-suggestions-panel.expanded {
+  max-height: 220px !important;
+  overflow-y: auto !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important;
+  align-items: stretch !important;
+}
+
+.sfir-suggestions-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 4px 3px 2px;
+}
+
+.sfir-suggestions-title { flex: 1 1 auto; min-width: 0; }
+
+/* Keep controls in the heading and always begin field chips on a fresh row. */
+.sfir-suggestions-panel.expanded > .autocomplete-results {
+  display: flex !important;
+  width: 100% !important;
+  flex: 0 0 auto !important;
+  box-sizing: border-box !important;
+  margin-top: 2px !important;
+}
+
+.sfir-field-category {
+  height: 28px;
+  box-sizing: border-box;
+  border: 1px solid var(--sfarc-border, #334155);
+  border-radius: 7px;
+  background: var(--sfarc-bg, #111827);
+  color: var(--sfarc-text, #e5e7eb);
+  font: inherit;
+  font-size: 11px;
+  outline: none;
+}
+
+.sfir-field-category { min-width: 116px; padding: 0 26px 0 8px; margin-left: auto; }
+.sfir-field-category:focus { border-color: var(--sfarc-accent, #10b981); }
+
+.sfir-api-decision {
+  max-width: 290px;
+  padding: 0 9px;
+  color: var(--sfarc-secondary-text, #94a3b8);
+  font-size: 10.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  align-items: center;
+  gap: 5px;
+}
+.sfir-api-decision-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sfarc-accent, #10b981); flex: 0 0 auto; }
+
+.sfir-inline-api-select {
+  height: 30px;
+  min-width: 104px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--sfarc-border, #334155);
+  border-radius: 7px;
+  background: var(--sfarc-surface, #1f2937);
+  color: var(--sfarc-text, #e5e7eb);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.sfir-inline-api-select:focus { outline: none; border-color: var(--sfarc-accent, #10b981); }
+.sfir-inline-api-select:disabled { cursor: wait; opacity: .55; }
+
+.sfir-result-insights {
+  flex: 0 0 auto;
+  max-height: 220px;
+  overflow: auto;
+  margin: 4px 0 6px;
+  padding: 9px;
+  border: 1px solid var(--sfarc-border, #334155);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--sfarc-bg, #111827) 94%, var(--sfarc-accent, #10b981));
+}
+.sfir-insight-controls { display: flex; align-items: end; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.sfir-insight-controls label { display: flex; flex-direction: column; gap: 3px; color: var(--sfarc-secondary-text, #94a3b8); font-size: 9.5px; font-weight: 600; }
+.sfir-insight-controls select,
+.sfir-insight-controls button { height: 27px; border: 1px solid var(--sfarc-border, #334155); border-radius: 6px; background: var(--sfarc-bg, #111827); color: var(--sfarc-text, #e5e7eb); padding: 0 8px; font: inherit; font-size: 10.5px; }
+.sfir-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 6px; }
+.sfir-stat-card { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding: 7px 8px; border: 1px solid color-mix(in srgb, var(--sfarc-border, #334155) 80%, transparent); border-radius: 7px; }
+.sfir-stat-card strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--sfarc-text, #e5e7eb); font-size: 10.5px; }
+.sfir-stat-card span { color: var(--sfarc-secondary-text, #94a3b8); font-size: 9.5px; }
+.sfir-group-summary { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 7px; }
+.sfir-group-summary span { padding: 3px 6px; border-radius: 999px; background: color-mix(in srgb, var(--sfarc-accent, #10b981) 13%, transparent); color: var(--sfarc-accent, #10b981); font-size: 9.5px; }
+
+.sfir-add-all-fields {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  height: 28px;
+  padding: 0 9px;
+  border: 1px solid color-mix(in srgb, var(--sfarc-accent, #10b981) 35%, transparent);
+  border-radius: 7px;
+  background: color-mix(in srgb, var(--sfarc-accent, #10b981) 12%, transparent);
+  color: var(--sfarc-accent, #10b981);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sfir-add-all-fields:hover,
+.sfir-add-all-fields:focus-visible {
+  background: color-mix(in srgb, var(--sfarc-accent, #10b981) 20%, transparent);
+  outline: none;
+}
+
+.sfir-add-all-fields kbd {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(128, 128, 128, .14);
+  color: var(--sfarc-secondary-text, #94a3b8);
+  font: inherit;
+  font-size: 9.5px;
+}
+
+.autocomplete-result,
+.autocomplete-results span {
+  white-space: nowrap;
+  font-size: 12px;
+  padding: 1px 0px;
+}
+
+.sfir-autocomplete-icon {
+  display: inline-block;
+  margin: 0px 2px -1px 1px;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 0.95rem;
+  background-color: #706e6b;
+  width: 16px;
+  height: 13px;
+  cursor: pointer;
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.sfir-autocomplete-icon:hover {
+  filter: brightness(1.3);
+  transform: scale(1.12);
+}
+
+.relationshipName {
+  font-style: italic;
+}
+
+.relationshipName .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/relate.svg);
+  background-color: var(--sfarc-accent, #2196f3);
+}
+
+.object .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/sobject.svg);
+  background-color: #04844b;
+}
+
+.variable .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/variable.svg);
+}
+
+.sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/quotation_marks.svg);
+}
+
+.null .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/steps.svg);
+}
+
+.fieldName .sfir-autocomplete-icon {
+  /* default icon */
+  -webkit-mask-image: url(images/question_mark.svg);
+}
+
+.fieldName.reference .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/record_lookup.svg);
+}
+
+.fieldName.string .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/string.svg);
+}
+
+.fieldName.id .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/anchor.svg);
+}
+
+.fieldName.picklist .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/picklist.svg);
+}
+
+.fieldName.multipicklist .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/multi-picklist.svg);
+}
+
+.fieldName.boolean .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/boolean.svg);
+}
+
+.fieldName.phone .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/call.svg);
+}
+
+.fieldName.textarea .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/textarea.svg);
+}
+
+.fieldName.url .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/link.svg);
+}
+
+.fieldName.int .sfir-autocomplete-icon,
+.fieldName.double .sfir-autocomplete-icon,
+.fieldName.long .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/number.svg);
+}
+
+.fieldName.address .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/home.svg);
+}
+
+.fieldName.datetime .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/date-time.svg);
+}
+
+.fieldName.date .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/date.svg);
+}
+
+.fieldName.currency .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/currency.svg);
+}
+
+.fieldName.email .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/email.svg);
+}
+
+.fieldName.location .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/checkin.svg);
+}
+
+.fieldName.percent .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/percent.svg);
+}
+
+.fieldName.encryptedstring .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/lock.svg);
+}
+
+.fieldName.time .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/clock.svg);
+}
+
+.fieldName.complexvalue .sfir-autocomplete-icon {
+  -webkit-mask-image: url(images/advanced_function.svg);
+}
+
+.header {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.expanded {
+  overflow: auto;
+  height: 200px;
+}
+.help-text a,
+.help-text a:visited {
+  color: var(--sfarc-accent, #2196f3);
+}
+
+.unified-search-input {
+  position: relative;
+  align-items: center;
+  width: 100%;
+}
+
+.filter-input {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid #dddbda;
+  border-radius: 4px;
+  height: 32px;
+  font-size: 0.8125rem;
+  color: #16325c;
+}
+
+.filter-input:focus {
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 0 3px var(--sfarc-accent, #2196f3);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow: auto;
+  background-color: white;
+  border: 1px solid #dddbda;
+  border-radius: 4px;
+  z-index: 999999 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 2px;
+  padding: 4px 0;
+}
+
+.slds-dropdown {
+  z-index: 999999 !important;
+}
+
+.dropdown-item {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  color: #16325c;
+  transition: background-color 0.1s linear;
+}
+
+.dropdown-item:hover {
+  background-color: #f4f6f9;
+}
+
+.dropdown-item input[type="checkbox"] {
+  margin-right: 8px;
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid #dddbda;
+  border-radius: 0.125rem;
+  flex-shrink: 0;
+}
+
+.dropdown-item.selected {
+  background-color: #f4f6f9;
+  font-weight: 500;
+}
+
+.unified-search-input input[type="search"] {
+  border-radius: 4px 0px 0px 4px !important;
+  margin-right: 0 !important;
+}
+.no-left-radius {
+  border-top-left-radius: 0em;
+  border-bottom-left-radius: 0rem;
+}
+.no-left-border {
+  border-left: 0em;
+}
+svg.icon {
+  fill: #919191;
+}
+svg.icon:hover {
+  fill: #818181;
+}
+.icon {
+  display: inline-block;
+  width: 1.4rem;
+  height: 1.4rem;
+  vertical-align: middle;
+  vertical-align: -webkit-baseline-middle;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 1.4rem;
+  -webkit-mask-position: center;
+}
+.marginTop {
+  margin-top: 10px;
+}
+
+.query-tabs {
+  display: flex;
+  align-items: flex-end;
+  padding: 4px 6px 0 6px;
+  position: relative;
+  gap: 3px;
+  background: var(--sfir-card-bg, #f8fafc);
+  border-bottom: 1px solid var(--sfir-border-color, #e2e8f0);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.query-tabs::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* ── Tab bar layout: the add-tab (+) button rides at the end of the tabs.
+   When the tabs fill the strip it sticks to the right edge of the visible
+   tab region (never below the bar, never scrolled out of view) ── */
+.sfir-editor-card-content .query-tabs {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.sfir-editor-card-content .add-tab-button {
+  flex: 0 0 auto !important;
+  align-self: center !important;
+  margin: 0 2px 0 4px !important;
+  z-index: 3 !important;
+  margin-bottom: 4px;
+}
+
+.sfir-query-tab-actions {
+  margin-left: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  align-self: center !important;
+  margin-bottom: 2px !important;
+  z-index: 4 !important;
+}
+
+/* ── Chrome / Arc Style Query Tab ─────────────────────────────────────── */
+.query-tab {
+  padding: 5px 12px;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  border-bottom: none;
+  margin-right: 1px;
+  margin-bottom: -1px;
+  border-radius: 8px 8px 0 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  background-color: #f1f5f9;
+  color: #475569;
+  align-self: flex-end;
+  height: 30px;
+  box-sizing: border-box;
+  font-size: 12.5px;
+  font-weight: 500;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── Glassmorphism Tab Context Menu ──────────────────────────────────── */
+.sfir-tab-context-menu,
+html body .sfir-tab-context-menu {
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.18), 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+  padding: 6px !important;
+  overflow: hidden;
+}
+
+.sfir-tab-context-menu .slds-dropdown__list {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.sfir-tab-context-menu .slds-dropdown__item a {
+  color: #1e293b !important;
+  border-radius: 8px !important;
+  padding: 6px 10px !important;
+  font-weight: 500 !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
+}
+
+.sfir-context-menu-item {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.sfir-context-menu-item svg {
+  opacity: 0.85 !important;
+  flex-shrink: 0 !important;
+}
+
+.sfir-tab-context-menu .slds-dropdown__item a:hover,
+.sfir-tab-context-menu .slds-dropdown__item a:focus {
+  background: var(--sfarc-accent, var(--sfarc-accent, #2196f3)) !important;
+  color: var(--sfarc-accent-contrast, #ffffff) !important;
+  text-decoration: none !important;
+}
+
+.sfir-tab-context-menu .slds-dropdown__item a:hover .sfir-context-menu-item svg,
+.sfir-tab-context-menu .slds-dropdown__item a:focus .sfir-context-menu-item svg {
+  opacity: 1 !important;
+}
+
+.sfir-tab-context-menu .slds-has-divider_top-space {
+  border-top-color: rgba(15, 23, 42, 0.1) !important;
+  margin: 4px 0 !important;
+}
+
+body.sfarc-dark-theme .sfir-tab-context-menu,
+html body.sfarc-dark-theme .sfir-tab-context-menu {
+  background: rgba(12, 15, 20, 0.6) !important;
+  backdrop-filter: blur(24px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 4px 16px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+body.sfarc-dark-theme .sfir-tab-context-menu .slds-dropdown__item a {
+  color: #cbd5e1 !important;
+}
+
+body.sfarc-dark-theme .sfir-tab-context-menu .slds-dropdown__item a:hover,
+body.sfarc-dark-theme .sfir-tab-context-menu .slds-dropdown__item a:focus {
+  background: var(--sfarc-accent, var(--sfarc-accent, #2196f3)) !important;
+  color: var(--sfarc-accent-contrast, #ffffff) !important;
+}
+
+body.sfarc-dark-theme .sfir-tab-context-menu .slds-has-divider_top-space {
+  border-top-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.query-tab:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.query-tab-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sfarc-accent, #2196f3);
+  flex-shrink: 0;
+}
+
+/* The active tab sits on a solid blue (light) / near-black (dark) surface, so
+   the default blue icon disappears against it. Switch it to the tab's text
+   color so it is clearly visible. */
+.query-tab.active .query-tab-icon {
+  color: #ffffff !important;
+}
+
+.query-tab.dragging {
+  opacity: 0.5;
+  transform: rotate(3deg);
+}
+
+.query-tab.drop-target {
+  position: relative;
+}
+
+.query-tab.drop-target::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--sfarc-accent, #2196f3);
+  border-radius: 1px;
+  z-index: 10;
+}
+
+.query-tab-name {
+  cursor: pointer;
+  padding: 1px 3px;
+  border-radius: 3px;
+  transition: background-color 0.1s;
+  white-space: nowrap;
+}
+
+.query-tab-name-input {
+  border: 1px solid var(--sfarc-accent, #2196f3) !important;
+  border-radius: 4px !important;
+  padding: 0 4px !important;
+  height: 20px !important;
+  line-height: 20px !important;
+  font-size: 12px !important;
+  font-family: inherit !important;
+  background: #fff !important;
+  min-width: 60px !important;
+  max-width: 120px !important;
+  margin: 0 !important;
+  color: #0f172a !important;
+}
+
+.query-tab-close {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 11px;
+  line-height: 1;
+  color: #64748b;
+  transition: all 0.15s ease;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
+.query-tab-close:hover {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}
+
+/* ── Add-tab (+) button — clean, minimal, matches the Chrome/Arc tab
+   aesthetic: subtle rounded square, no heavy border box, blue accent on
+   hover. The old design was a white-filled bordered box; this is a
+   transparent surface with a soft tinted hover. ── */
+.add-tab-button {
+  width: 14px;
+  height: 14px;
+  min-width: 14px;
+  min-height: 14px;
+  cursor: pointer;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  background: transparent;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  margin-top: -2px;
+}
+
+.add-tab-button .add-tab-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+.add-tab-button:hover {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+  color: var(--sfarc-accent, #2196f3);
+}
+
+.add-tab-button:active {
+  transform: scale(0.92);
+}
+
+/* Dark Mode Overrides */
+.dark-theme .query-tabs,
+.sfarc-dark-theme .query-tabs {
+  background: #12141a;
+  border-bottom-color: #26282e;
+}
+
+.dark-theme .query-tab,
+.sfarc-dark-theme .query-tab {
+  background-color: transparent;
+  border-color: #2a2c32;
+  color: #94a3b8;
+}
+
+.dark-theme .query-tab:hover,
+.sfarc-dark-theme .query-tab:hover {
+  background-color: #23262c;
+  color: #f8fafc;
+}
+
+.dark-theme .query-tab.active,
+.sfarc-dark-theme .query-tab.active {
+  background: #14161b !important;
+  color: var(--sfarc-accent-glow, #38bdf8) !important;
+  border-color: #2a2c32 !important;
+  border-bottom: 2px solid #14161b !important;
+}
+
+.dark-theme .query-tab.active .query-tab-name,
+.sfarc-dark-theme .query-tab.active .query-tab-name {
+  color: #f8fafc;
+}
+
+.dark-theme .query-tab-close,
+.sfarc-dark-theme .query-tab-close {
+  color: #94a3b8;
+}
+
+.dark-theme .query-tab-close:hover,
+.sfarc-dark-theme .query-tab-close:hover {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}
+
+.dark-theme .add-tab-button,
+.sfarc-dark-theme .add-tab-button {
+  color: #94a3b8;
+  background: transparent;
+}
+
+.dark-theme .add-tab-button:hover,
+.sfarc-dark-theme .add-tab-button:hover {
+  background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.14);
+  color: var(--sfarc-accent-glow, #38bdf8);
+}
+
+/* Standalone Dark Theme Overrides */
+body.sfarc-dark-theme .dropdown-menu {
+  background-color: #1e1e1e !important;
+  border: 1px solid #3a3a3a !important;
+}
+
+.dropdown-item {
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+}
+
+body.sfarc-dark-theme .dropdown-item {
+  color: #cbd5e1 !important;
+}
+
+body.sfarc-dark-theme .dropdown-item:hover,
+body.sfarc-dark-theme .dropdown-item.selected {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+body.sfarc-dark-theme .slds-input {
+  background-color: #1e1e1e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #3a3a3a !important;
+}
+
+/* Autocomplete suggestion pills sizing overrides */
+.autocomplete-results .slds-pill {
+  height: 20px !important;
+  min-height: 20px !important;
+  line-height: 18px !important;
+  padding: 0 6px 0 2px !important;
+  font-size: 11px !important;
+  margin: 0 !important;
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.autocomplete-results .slds-pill:hover {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.06) !important;
+  transform: translateY(-1px) !important;
+}
+
+.autocomplete-results .slds-pill__icon_container {
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  margin-right: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+}
+
+.autocomplete-results .sfir-autocomplete-icon {
+  width: 10px !important;
+  height: 9px !important;
+  -webkit-mask-size: 0.6rem !important;
+  margin: 0 !important;
+}
+
+.autocomplete-results .slds-pill__action {
+  padding-right: 2px !important;
+  line-height: 18px !important;
+  color: #334155 !important;
+  font-weight: 500 !important;
+}
+
+body.sfarc-dark-theme .dropdown-item:hover,
+body.sfarc-dark-theme .dropdown-item.selected {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+}
+
+body.sfarc-dark-theme .slds-input {
+  background-color: #1e1e1e !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #3a3a3a !important;
+}
+
+/* Autocomplete suggestion pills sizing overrides */
+.autocomplete-results .slds-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  line-height: 16px !important;
+  padding: 0 6px 0 3px !important;
+  font-size: 10px !important;
+  margin: 0 !important;
+  background-color: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 9px !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+  transition: all 0.15s ease !important;
+}
+
+.autocomplete-results .slds-pill:hover {
+  background-color: #ffffff !important;
+  border-color: #94a3b8 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+  transform: translateY(-1px) !important;
+}
+
+.autocomplete-results .slds-pill__icon_container {
+  width: 13px !important;
+  height: 13px !important;
+  min-width: 13px !important;
+  margin-right: 2px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+}
+
+.autocomplete-results .sfir-autocomplete-icon {
+  width: 8px !important;
+  height: 8px !important;
+  -webkit-mask-size: 0.5rem !important;
+  margin: 0 !important;
+}
+
+.autocomplete-results .slds-pill__icon_container ~ .slds-pill__action,
+.autocomplete-results .slds-pill__action {
+  padding-left: 2px !important;
+  padding-inline-start: 2px !important;
+  padding-right: 2px !important;
+  line-height: 16px !important;
+  color: #334155 !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.autocomplete-results .slds-pill__label {
+  line-height: 16px !important;
+  font-size: 10px !important;
+}
+.autocomplete-results .slds-pill_link {
+  text-decoration: none !important;
+}
+
+.autocomplete-results .slds-pill__label {
+  line-height: 18px !important;
+}
+
+/* Salesforce Inspector Reloaded Table Format */
+.sfir-inspector-table {
+  border-collapse: collapse;
+  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 11px !important;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0 !important;
+  width: 100% !important;
+}
+
+.sfir-table-row:nth-child(even) {
+  background-color: #f8fafc;
+}
+
+.sfir-inspector-table .sfir-table-row:nth-child(even) .scrolltable-cell:not(.header):not([style*="background-color"]) {
+  background-color: #f8fafc !important;
+}
+
+/* Higher specificity than the global table:not(.sfarc-mapping-table) td rule in
+   sfir.css (which forces 12px/16px padding + 14px font), so the results table
+   stays compact. */
+table.sfir-inspector-table th,
+table.sfir-inspector-table td {
+  border: 1px solid #e2e8f0 !important;
+  padding: 2px 8px !important;
+  white-space: pre-wrap !important;
+  color: #334155 !important;
+  line-height: 1.3 !important;
+  font-size: 11px !important;
+  /* height intentionally NOT !important: the row-resizer sets an inline
+     height while dragging and on re-render, so a hard !important here would
+     override it and snap every row back to 22px (resize appears broken). */
+  height: 22px;
+}
+
+.sfir-inspector-table .sfir-table-header-row th {
+  background-color: #f1f5f9 !important;
+  font-weight: 500 !important;
+  border-bottom: 2px solid #cbd5e1 !important;
+  color: #475569 !important;
+  padding: 4px 8px !important;
+  height: 24px !important;
+}
+
+table.sfir-inspector-table th.sfir-row-number,
+table.sfir-inspector-table td.sfir-row-number {
+  padding: 0 6px !important;
+}
+
+.sfir-inspector-table .sfir-row-number {
+  text-align: right;
+  border-right: 2px solid #cbd5e1 !important;
+  user-select: none;
+  background-color: #f4f6f9;
+  color: #706e6b;
+}
+
+.sfir-null-value {
+  color: #9faab5;
+  font-style: italic;
+}
+
+/* Dark mode overrides for suggestion pills */
+body.sfarc-dark-theme .autocomplete-results .slds-pill {
+  background-color: #252525 !important;
+  border-color: #3a3a3a !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results .slds-pill:hover {
+  background-color: #2a2a2a !important;
+  border-color: #3a3a3a !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results .slds-pill__action {
+  color: #f1f5f9 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results .slds-pill__action:hover {
+  color: #ffffff !important;
+}
+
+/* Dark theme overrides for inspector table */
+body.sfarc-dark-theme .sfir-inspector-table {
+  background-color: #1e1e1e;
+  border-color: #3a3a3a;
+}
+
+body.sfarc-dark-theme .sfir-table-row:nth-child(even) {
+  background-color: #252525;
+}
+
+body.sfarc-dark-theme .sfir-inspector-table .sfir-table-row:nth-child(even) .scrolltable-cell:not(.header):not([style*="background-color"]) {
+  background-color: #252525 !important;
+}
+
+body.sfarc-dark-theme table.sfir-inspector-table th,
+body.sfarc-dark-theme table.sfir-inspector-table td {
+  border-color: #3a3a3a;
+  color: #e0e0e0;
+  background: transparent !important;
+}
+
+body.sfarc-dark-theme .sfir-inspector-table .sfir-table-header-row th {
+  background-color: #252525;
+  border-bottom-color: #3a3a3a;
+  color: #cccccc;
+}
+
+body.sfarc-dark-theme .sfir-inspector-table .sfir-row-number {
+  background-color: #252525;
+  color: #999;
+  border-right-color: #3a3a3a;
+}
+/* Reduce button size in export result bar and make them curved pills */
+.result-bar-row-1 .slds-button,
+.result-bar-row-2 .slds-button,
+.result-bar-column .slds-button,
+.sfir-annot-btn,
+.sfir-copy-main-btn {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  line-height: 22px !important;
+  padding: 0 10px !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+  margin: 0 !important;
+}
+
+/* Text labels on the result-bar icon buttons: visible when there is room,
+   collapsed to icon-only when the row is narrow (container query). */
+.result-bar-row-1 .sfir-btn-label,
+.result-bar-row-2 .sfir-btn-label,
+.result-bar-column .sfir-btn-label {
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  margin-left: 4px !important;
+}
+
+.result-bar-column {
+  container-type: inline-size;
+  container-name: sfir-result-bar;
+}
+
+@container sfir-result-bar (max-width: 900px) {
+  .result-bar-row-1 .sfir-btn-label,
+  .result-bar-row-2 .sfir-btn-label,
+  .result-bar-column .sfir-btn-label {
+    display: none !important;
+    margin-left: 0 !important;
+  }
+  .result-bar-row-1 .slds-button__icon,
+  .result-bar-row-2 .slds-button__icon,
+  .result-bar-column .slds-button__icon {
+    margin-right: 0 !important;
+  }
+}
+
+.result-bar-row-1 .slds-button__icon,
+.result-bar-row-2 .slds-button__icon,
+.result-bar-column .slds-button__icon {
+  width: 14px !important;
+  height: 14px !important;
+  min-width: 14px !important;
+  min-height: 14px !important;
+  margin-right: 4px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  display: inline-block !important;
+}
+
+/* Add spacing between buttons in group */
+.result-bar-row-1 .slds-button-group,
+.result-bar-row-2 .slds-button-group,
+.result-bar-column .slds-button-group {
+  gap: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Reset default SLDS button-group rounded corners for curved pill buttons */
+.result-bar-row-1 .slds-button-group .slds-button,
+.result-bar-row-1 .slds-button-group .slds-button:first-child,
+.result-bar-row-1 .slds-button-group .slds-button:last-child,
+.result-bar-row-2 .slds-button-group .slds-button,
+.result-bar-row-2 .slds-button-group .slds-button:first-child,
+.result-bar-row-2 .slds-button-group .slds-button:last-child,
+.result-bar-column .slds-button-group .slds-button,
+.result-bar-column .slds-button-group .slds-button:first-child,
+.result-bar-column .slds-button-group .slds-button:last-child {
+  border-radius: 20px !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+/* Keep destructive delete button border clean and curved */
+.result-bar-row-1 .slds-button_destructive,
+.result-bar-row-1 .slds-button-group .slds-button_destructive,
+.result-bar-column .slds-button_destructive {
+  border-radius: 20px !important;
+  border: 1px solid #ef4444 !important;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  box-shadow: 0 1px 3px rgba(239, 68, 68, 0.25) !important;
+}
+.result-bar-row-1 .slds-button_destructive:hover,
+.result-bar-column .slds-button_destructive:hover {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+/* Copy dropdown main button styling matching target UI */
+.sfir-copy-main-btn,
+.sfir-copy-dropdown-wrapper .sfir-copy-main-btn {
+  border: 1px solid var(--sfarc-accent, #2196f3) !important;
+  color: var(--sfarc-accent, #2196f3) !important;
+  background-color: #e8f1fc !important;
+  border-radius: 20px !important;
+  font-weight: 500 !important;
+}
+
+.sfir-copy-main-btn:disabled,
+.sfir-copy-main-btn[disabled] {
+  border: 1px solid #e2e8f0 !important;
+  color: #94a3b8 !important;
+  background-color: #f8fafc !important;
+  opacity: 0.7 !important;
+}
+
+/* Copy floating dropdown menu — glassmorphism */
+.sfir-copy-menu {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+  margin-top: 4px !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.14), 0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  padding: 6px !important;
+  min-width: 150px !important;
+  z-index: 1000 !important;
+}
+
+body.sfarc-dark-theme .sfir-copy-menu {
+  background: rgba(10, 13, 18, 0.5) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+.sfir-copy-menu-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 8px 12px !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: #334155 !important;
+  cursor: pointer !important;
+  transition: background-color 0.15s ease !important;
+}
+
+body.sfarc-dark-theme .sfir-copy-menu-item {
+  color: #f1f5f9 !important;
+}
+
+.sfir-copy-menu-item:hover {
+  background-color: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+body.sfarc-dark-theme .sfir-copy-menu-item:hover {
+  background-color: #2a2a2e !important;
+}
+
+/* Highlight pill button matching target UI */
+.sfir-annot-btn[title*="Highlight"],
+.sfir-annot-btn[title*="highlight"] {
+  background-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.12) !important;
+  border: 1px solid rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.25) !important;
+  color: var(--sfarc-accent, #2196f3) !important;
+  border-radius: 20px !important;
+  font-weight: 500 !important;
+}
+
+/* Clear annotations pill button matching target UI */
+.sfir-annot-btn--clear {
+  background-color: #ffffff !important;
+  border: 1px solid #fca5a5 !important;
+  color: #ef4444 !important;
+  border-radius: 20px !important;
+  font-weight: 500 !important;
+}
+.sfir-annot-btn--clear:hover {
+  background-color: #fee2e2 !important;
+  border-color: #ef4444 !important;
+}
+
+body.sfarc-dark-theme .result-bar-row-1 .slds-button-group .slds-button,
+body.sfarc-dark-theme .result-bar-row-1 .slds-button-group .slds-button:first-child,
+body.sfarc-dark-theme .result-bar-row-1 .slds-button-group .slds-button:last-child,
+body.sfarc-dark-theme .result-bar-column .slds-button {
+  border-radius: 20px !important;
+  border: 1px solid #3a3a3a !important;
+}
+
+/* Autocomplete Dropdown Frosted Glass styling */
+.sfir-autocomplete-dropdown {
+  position: absolute !important;
+  max-height: 250px !important;
+  overflow-y: auto !important;
+  width: max-content !important;
+  min-width: 220px !important;
+  max-width: 400px !important;
+  z-index: 999999 !important; /* extremely high z-index to overlap everything */
+  margin: 0 !important;
+  padding: 4px 0 !important;
+  list-style: none !important;
+  
+  /* Frosted Glass Effect */
+  background: rgba(255, 255, 255, 0.75) !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%) !important;
+  backdrop-filter: blur(12px) saturate(160%) !important;
+  border: 1px solid rgba(226, 232, 240, 0.75) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1) !important;
+}
+
+/* Dark mode support for Frosted Glass */
+body.sfarc-dark-theme .sfir-autocomplete-dropdown {
+  background: rgba(30, 30, 30, 0.75) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Compact list item sizing & spacing */
+.sfir-autocomplete-dropdown .slds-dropdown__item {
+  padding: 0 !important;
+  margin: 0 !important;
+  display: block !important;
+  background: transparent !important;
+}
+
+.sfir-autocomplete-dropdown .slds-dropdown__item a {
+  display: flex !important;
+  align-items: center !important;
+  text-decoration: none !important;
+  padding: 4px 10px !important;
+  color: #1e293b !important;
+  font-size: 12px !important;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+  background: transparent !important;
+}
+
+body.sfarc-dark-theme .sfir-autocomplete-dropdown .slds-dropdown__item a {
+  color: #cbd5e1 !important;
+}
+
+.sfir-autocomplete-dropdown .slds-dropdown__item a:hover {
+  background-color: rgba(241, 245, 249, 0.8) !important;
+  color: #0f172a !important;
+}
+
+body.sfarc-dark-theme .sfir-autocomplete-dropdown .slds-dropdown__item a:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+/* Keep the icon dimensions compact and relevant to selectors */
+.sfir-autocomplete-dropdown .sfir-autocomplete-icon {
+  display: inline-block !important;
+  width: 14px !important;
+  height: 14px !important;
+  margin-right: 8px !important;
+  vertical-align: middle !important;
+  flex-shrink: 0 !important;
+  -webkit-mask-size: 14px 14px !important;
+  mask-size: 14px 14px !important;
+}
+
+/* Make sure slds-truncate inside it looks clean */
+.sfir-autocomplete-dropdown .slds-truncate {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  max-width: 320px !important;
+}
+
+/* Autocomplete Box Styling */
+.autocomplete-box {
+  margin: 0 !important;
+  border: none !important;
+  border-top: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding: 6px 12px 10px 12px !important;
+  border-bottom-left-radius: 12px !important;
+  border-bottom-right-radius: 12px !important;
+  position: relative !important;
+  z-index: 100 !important;
+  overflow: visible !important;
+}
+
+body.sfarc-dark-theme .autocomplete-box {
+  border: none !important;
+  border-top: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.autocomplete-header {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  position: relative !important;
+  z-index: 100 !important;
+  overflow: visible !important;
+}
+
+/* Autocomplete Results container layout */
+.autocomplete-results {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+  padding: 6px 4px !important;
+  margin-top: 4px !important;
+  border: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  overflow-x: auto !important;
+  min-height: 32px !important;
+  box-sizing: border-box !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results {
+  border: none !important;
+  border-top: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Dark mode autocomplete text, icon, and button color overrides */
+body.sfarc-dark-theme .autocomplete-header span {
+  color: #94a3b8 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-header .slds-button:not(.slds-button_brand),
+body.sfarc-dark-theme .autocomplete-header button:not(.slds-button_brand),
+body.sfarc-dark-theme .autocomplete-header a.slds-button:not(.slds-button_brand) {
+  background-color: #252525 !important;
+  color: #e0e0e0 !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+}
+
+body.sfarc-dark-theme .autocomplete-header .slds-button:hover:not(.slds-button_brand),
+body.sfarc-dark-theme .autocomplete-header button:hover:not(.slds-button_brand) {
+  background-color: #2a2a2a !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-color: transparent !important;
+  outline: none !important;
+}
+
+body.sfarc-dark-theme .autocomplete-header .slds-button:not(.slds-button_brand):not(.slds-button--brand) svg,
+body.sfarc-dark-theme .autocomplete-header button:not(.slds-button_brand):not(.slds-button--brand):not(.sfir-run-export-btn) svg {
+  color: #e2e8f0 !important;
+  stroke: #e2e8f0 !important;
+  fill: currentColor !important;
+}
+
+/* Accent-filled buttons in the query header (Run Export) keep their icons in
+   the dynamic contrast color — dark olive on light accents like lime, white
+   on dark accents like blue. */
+body.sfarc-dark-theme .autocomplete-header .slds-button_brand svg,
+body.sfarc-dark-theme .autocomplete-header .slds-button--brand svg,
+body.sfarc-dark-theme .autocomplete-header .sfir-run-export-btn svg,
+body.sfarc-dark-theme .autocomplete-header .slds-button_brand .slds-button__icon,
+body.sfarc-dark-theme .autocomplete-header .sfir-run-export-btn .slds-button__icon {
+  color: var(--sfarc-accent-contrast, #ffffff) !important;
+  stroke: currentColor !important;
+  fill: currentColor !important;
+}
+
+/* Pill container & hover */
+body.sfarc-dark-theme .autocomplete-results .slds-pill {
+  background-color: #252525 !important;
+  border: 1px solid #3a3a3a !important;
+  color: #e0e0e0 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results .slds-pill:hover {
+  background-color: #2a2a2a !important;
+  border-color: #3a3a3a !important;
+  color: #ffffff !important;
+}
+
+/* Pill text labels */
+body.sfarc-dark-theme .autocomplete-results .slds-pill__action,
+body.sfarc-dark-theme .autocomplete-results .slds-pill__label,
+body.sfarc-dark-theme .autocomplete-results .slds-pill_link,
+body.sfarc-dark-theme .autocomplete-results .slds-pill__icon_container ~ .slds-pill__action {
+  color: #e2e8f0 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results .slds-pill:hover .slds-pill__action,
+body.sfarc-dark-theme .autocomplete-results .slds-pill:hover .slds-pill__label,
+body.sfarc-dark-theme .autocomplete-results .slds-pill:hover .slds-pill_link {
+  color: #ffffff !important;
+}
+
+/* Pill icons & mask backgrounds */
+body.sfarc-dark-theme .autocomplete-results .sfir-autocomplete-icon,
+body.sfarc-dark-theme .sfir-autocomplete-icon {
+  background-color: #93c5fd !important;
+}
+
+body.sfarc-dark-theme .relationshipName .sfir-autocomplete-icon {
+  background-color: var(--sfarc-accent-light, #5eb4ff) !important;
+}
+
+body.sfarc-dark-theme .object .sfir-autocomplete-icon {
+  background-color: #4ade80 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-results .slds-pill__icon_container {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.expanded .autocomplete-results {
+  flex-wrap: wrap !important;
+  max-height: 160px !important;
+  overflow-y: auto !important;
+  align-items: flex-start !important;
+  gap: 4px !important;
+}
+
+/* Result Bar unified single-row styling */
+.result-bar-row-1 {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  gap: 8px !important;
+  padding: 2px 0 !important;
+  box-sizing: border-box !important;
+}
+
+.result-bar-left-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+}
+
+.result-bar-right-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  margin-left: auto !important;
+}
+
+.result-bar-left-controls h3.slds-text-heading_small {
+  margin: 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 24px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding-right: 4px !important;
+  white-space: nowrap !important;
+}
+
+/* Top Query Editor Header Action Buttons Row */
+.autocomplete-header .slds-button-group-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+.autocomplete-header .slds-button-group-row .slds-button-group-item {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.autocomplete-header .slds-button-group-row .slds-button {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  line-height: 22px !important;
+  padding: 0 14px !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  background-color: #e9ecef !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  box-shadow: none !important;
+  transition: all 0.15s ease !important;
+}
+
+/* Run Export — shared size/typography */
+.autocomplete-header .slds-button-group-row .sfir-run-export-btn {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  padding: 0 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  border-radius: 20px !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease !important;
+}
+
+/* No query yet — muted/inactive look */
+.autocomplete-header .slds-button-group-row .sfir-run-export-btn:not(.has-query) {
+  background-color: #e2e8f0 !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #64748b !important;
+  box-shadow: none !important;
+}
+.autocomplete-header .slds-button-group-row .sfir-run-export-btn:not(.has-query):hover {
+  background-color: #d8dee7 !important;
+  border-color: #94a3b8 !important;
+  color: #475569 !important;
+}
+
+/* Query present — org accent with dynamically-computed contrast text, so a
+   light accent (e.g. lime) gets dark readable text instead of white. */
+.autocomplete-header .slds-button-group-row .sfir-run-export-btn.has-query {
+  background-color: var(--sfarc-accent, #2196f3) !important;
+  border: 1px solid var(--sfarc-accent, #2196f3) !important;
+  color: var(--sfarc-accent-contrast, #ffffff) !important;
+  box-shadow: 0 2px 6px rgba(var(--sfarc-accent-rgb, 2, 132, 199), 0.3) !important;
+}
+.autocomplete-header .slds-button-group-row .sfir-run-export-btn.has-query:hover {
+  background-color: #0369a1 !important;
+  border-color: #0369a1 !important;
+  color: #ffffff !important;
+}
+
+.autocomplete-header .slds-button-group-row button.toggle {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* In the bottom action toolbar, let the button group shrink and wrap so
+   every action button stays visible. */
+.sfir-buttons-row .autocomplete-header .slds-button-group-row {
+  flex-wrap: wrap !important;
+  min-width: 0 !important;
+}
+
+body.sfarc-dark-theme .autocomplete-header .slds-button-group-row .slds-button:not(.sfir-run-export-btn.has-query) {
+  background-color: #1e1e22 !important;
+  border: 1px solid #3a3a3a !important;
+  color: #f1f5f9 !important;
+}
+
+/* Styling for the compact curved filter container */
+.result-bar-filter-container {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin-left: 4px !important;
+  vertical-align: middle !important;
+}
+
+.result-bar-filter-container .slds-input-has-icon {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* Scoped under the container (0,2,0) so these beat the generic
+   input[type="search"] rule in sfir.css (0,1,1) — otherwise that rule
+   force-applies 32px/16px padding and a 14px icon on this compact field. */
+.result-bar-filter-container .result-filter-input {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  box-sizing: border-box !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  width: 130px !important;
+  font-size: 11.5px !important;
+  padding-left: 24px !important;
+  padding-right: 6px !important;
+  border-radius: 20px 0 0 20px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-right: none !important;
+  line-height: 22px !important;
+  background-position: 7px center !important;
+  background-size: 12px !important;
+  box-shadow: none !important;
+  outline: none !important;
+  margin: 0 !important;
+}
+
+body.sfarc-dark-theme .result-filter-input {
+  border: 1px solid #3a3a3a !important;
+  border-right: none !important;
+  background-color: #1e1e1e !important;
+  color: #f1f5f9 !important;
+}
+
+.result-filter-toggle {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  width: 22px !important;
+  min-width: 22px !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin-left: 0 !important;
+  border-radius: 0 20px 20px 0 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-left: 1px solid #cbd5e1 !important;
+  background-color: #f8fafc !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+  cursor: pointer !important;
+}
+
+body.sfarc-dark-theme .result-filter-toggle {
+  border: 1px solid #3a3a3a !important;
+  background-color: #252528 !important;
+  color: #f1f5f9 !important;
+}
+
+.result-filter-toggle:hover {
+  background-color: #f1f5f9 !important;
+}
+
+/* Vertical separator line refinement */
+.result-bar-right-controls > div[style*="width: 1px"],
+.result-bar-right-controls > div[style*="width:1px"] {
+  width: 1px !important;
+  height: 16px !important;
+  background-color: #cbd5e1 !important;
+  margin: 0 4px !important;
+  display: inline-block !important;
+  align-self: center !important;
+  vertical-align: middle !important;
+}
+body.sfarc-dark-theme .result-bar-right-controls > div[style*="width: 1px"],
+body.sfarc-dark-theme .result-bar-right-controls > div[style*="width:1px"] {
+  background-color: #3a3a3a !important;
+}
+
+/* Adjust toggle filter icon size and alignment */
+.result-filter-toggle .slds-button__icon,
+.result-filter-toggle svg {
+  width: 12px !important;
+  height: 12px !important;
+  margin: 0 !important;
+}
+
+
+/* Fix for autocomplete pills icon overlapping text */
+.autocomplete-results .slds-pill__icon_container ~ .slds-pill__action {
+  padding-left: 16px !important;
+  padding-inline-start: 16px !important;
+}
+
+.autocomplete-results .slds-pill__icon_container {
+  position: absolute !important;
+  left: 2px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+/* Override sfir.css slds-card 16px padding — force 5px on data export page */
+.slds-card {
+  padding: 5px !important;
+  margin: 0 !important;
+  margin-bottom: 5px !important;
+}
+
+/* Also override any slds-m-* that still add outer spacing */
+.slds-m-around_medium,
+.slds-m-horizontal_medium,
+.slds-m-bottom_medium,
+.slds-m-around--medium,
+.slds-m-horizontal--medium,
+.slds-m-bottom--medium {
+  margin: 0 !important;
+}
+
+/* ============================================================
+   CELL ANNOTATION FEATURES — Highlight & Notes
+   ============================================================ */
+
+/* --- Toolbar Annotation Buttons --- */
+.sfir-annot-btn {
+  gap: 4px;
+  font-size: 12px;
+  transition: all 0.15s ease;
+}
+
+.sfir-annot-btn--active {
+  background: #e8f4fd !important;
+  border-color: var(--sfarc-accent, #2196f3) !important;
+  color: var(--sfarc-accent-dark, #1976d2) !important;
+  box-shadow: 0 0 0 2px rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.2) !important;
+}
+
+.sfir-annot-btn--clear {
+  color: #c23934 !important;
+  border-color: #c23934 !important;
+}
+
+.sfir-annot-btn--clear:hover {
+  background: #fdf3f2 !important;
+}
+
+/* --- Color Picker Popover — Glassmorphism --- */
+.sfir-color-picker-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(32px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(200%) !important;
+  border: 1px solid rgba(15, 23, 42, 0.1) !important;
+  border-radius: 14px !important;
+  padding: 14px !important;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+  min-width: 220px;
+  animation: sfir-popover-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Highlight Type Toggle (Background vs Border) --- */
+.sfir-hl-type-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sfir-hl-type-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: inherit;
+  border: 1.5px solid #dddbda;
+  border-radius: 6px;
+  background: #f9f9f9;
+  color: #706e6b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sfir-hl-type-btn:hover {
+  background: #f3f3f3;
+  border-color: #b0adab;
+  color: #3e3e3c;
+}
+
+.sfir-hl-type-btn.active {
+  background: #e8f4fd;
+  border-color: var(--sfarc-accent, #2196f3);
+  color: var(--sfarc-accent-dark, #1976d2);
+  box-shadow: none;
+}
+
+@keyframes sfir-popover-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.sfir-color-picker-title {
+  font-size: 11px;
+  font-weight: 500;
+  color: #3e3e3c;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sfir-color-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+button.sfir-color-swatch,
+.sfir-color-swatch {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  min-height: 26px !important;
+  border-radius: 50% !important;
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+  padding: 0 !important;
+  outline: none;
+  display: inline-block;
+  line-height: normal !important;
+  box-sizing: border-box !important;
+}
+
+.sfir-color-swatch:hover {
+  transform: scale(1.18);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.sfir-color-swatch.selected {
+  border-color: var(--sfarc-accent, #2196f3);
+  box-shadow: 0 0 0 3px rgba(var(--sfarc-accent-rgb, 33,150,243),0.25);
+  transform: scale(1.1);
+}
+
+.sfir-color-picker-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px solid #f3f3f3;
+}
+
+.sfir-color-picker-custom-label {
+  font-size: 11px;
+  color: #706e6b;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sfir-color-custom-input {
+  width: 36px;
+  height: 26px;
+  padding: 2px;
+  border: 1px solid #dddbda;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+
+.sfir-color-picker-tip {
+  font-size: 10px;
+  color: var(--sfarc-accent, #2196f3);
+  margin-top: 8px;
+  background: #e8f4fd;
+  border-radius: 4px;
+  padding: 5px 8px;
+  line-height: 1.4;
+}
+
+/* --- Dark theme: color picker popover ---
+   Scoped under .sfir-color-picker-popover with !important so these beat the
+   global dark button rules (body.sfarc-dark-theme button:not(...)) that
+   otherwise zero borders and force a flat background. */
+body.sfarc-dark-theme .sfir-color-picker-popover {
+  background: rgba(10, 13, 18, 0.5) !important;
+  backdrop-filter: blur(36px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(200%) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-hl-type-toggle {
+  border-bottom-color: #2e2e2e !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-hl-type-btn {
+  background: #252528 !important;
+  border: 1.5px solid #444444 !important;
+  color: #cbd5e1 !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-hl-type-btn:hover {
+  background: #2f2f33 !important;
+  border-color: #555555 !important;
+  color: #f1f5f9 !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-hl-type-btn.active {
+  background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.2) !important;
+  border-color: var(--sfarc-accent, #2196f3) !important;
+  color: #7fb8e8 !important;
+  box-shadow: none !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-picker-title {
+  color: #e2e8f0 !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-picker-custom {
+  border-top-color: #2e2e2e !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-picker-custom-label {
+  color: #94a3b8 !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-custom-input {
+  border-color: #444444 !important;
+}
+
+/* Swatch borders: the inline light-theme border (rgba(0,0,0,0.12)) is
+   invisible on a dark surface, so force a light border in dark mode.
+   !important beats the inline style; the selected state keeps its blue. */
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-swatch {
+  border: 2px solid rgba(255, 255, 255, 0.18) !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-swatch.selected {
+  border-color: var(--sfarc-accent, #2196f3) !important;
+}
+
+body.sfarc-dark-theme .sfir-color-picker-popover .sfir-color-picker-tip {
+  background: #17324d !important;
+  color: #93c5fd !important;
+}
+
+/* --- Cursor feedback in annotation modes --- */
+body.sfir-highlight-mode .scrolltable-cell:not(.header) {
+  cursor: cell !important;
+}
+body.sfir-highlight-mode .scrolltable-cell:not(.header):hover {
+  outline: 2px solid var(--sfir-pending-color, #fbbf24) !important;
+  outline-offset: -2px;
+}
+
+/* --- Dark-mode scrollbars for the results scroller ---
+   The export results table (.sfir-table-scroller) has no dark scrollbar
+   styling, so in dark mode it inherits the global light thumb (#cbd5e1)
+   and track (#f1f5f9) from sfir.css — a bright strip that reads as a
+   light-colored edge along the rows. Match the Data Import results
+   scroller so the thumb is a subtle gray pill on a transparent track. */
+#result-area .sfir-table-scroller::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+#result-area .sfir-table-scroller::-webkit-scrollbar-track,
+#result-area .sfir-table-scroller::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+#result-area .sfir-table-scroller::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 8px;
+}
+
+#result-area .sfir-table-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.6);
+}
+
+body.sfarc-dark-theme #result-area .sfir-table-scroller::-webkit-scrollbar-thumb {
+  background: rgba(120, 135, 156, 0.35);
+}
+
+body.sfarc-dark-theme #result-area .sfir-table-scroller::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 135, 156, 0.55);
+}
+
+/* Query-toolbar buttons — non-bold labels. The grouped rule above forces
+   font-weight 600; the toolbar reads cleaner at 500 (Run Export's own 700
+   rule in sfir.css is lower-specificity, so this also covers it). */
+.autocomplete-header .slds-button-group-item .slds-button,
+.autocomplete-header .slds-button-group-item a.slds-button {
+  font-weight: 500 !important;
+}
+
+
+/* ── Tab Open/Close Animations ──────────────────────────────────────── */
+/* ── Apple-grade smooth query tab entrance and exit ──────────────────── */
+@keyframes tabSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(2px);
+    max-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    max-width: 220px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-right: 1px;
+  }
+}
+
+@keyframes tabSlideOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    max-width: 220px;
+    padding-left: 12px;
+    padding-right: 12px;
+    margin-right: 1px;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.9) translateY(2px);
+    max-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-right: 0;
+  }
+}
+
+.query-tab {
+  animation: tabSlideIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  transform-origin: left bottom;
+  overflow: hidden;
+  white-space: nowrap;
+  will-change: transform, opacity, max-width;
+}
+
+.query-tab.removing {
+  animation: tabSlideOut 0.25s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+  pointer-events: none !important;
+}
+
+/* Close button hover effect */
+.query-tab-close {
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 10px;
+  line-height: 1;
+  transition: all 0.18s cubic-bezier(0.2, 0.8, 0.2, 1);
+  opacity: 0.65;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.query-tab-close svg {
+  width: 10px;
+  height: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.query-tab:hover .query-tab-close,
+.query-tab.active .query-tab-close {
+  opacity: 1;
+}
+
+.query-tab-close:hover {
+  background: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+  transform: scale(1.15);
+}
+
+.query-tab-close::after {
+  line-height: 1;
+  display: block;
+  transform: translateY(-1px);
+}
+
+.query-tab.active .query-tab-close:hover {
+  background: rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+}
+
+/* ── Bottom Query Actions (Templates + History) ──────────────────────── */
+.sfir-query-tab-bottom-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding-left: 5px !important;
+}
+
+.sfir-buttons-row .autocomplete-header {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* Reset the container wrapper generated by custom-dropdown.js to prevent double-border/background */
+.sfir-query-tab-bottom-actions .sfarc-custom-dropdown-container.query-history {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  border-radius: 0 !important;
+}
+
+/* Style both native select and custom dropdown trigger button */
+.sfir-query-tab-bottom-actions select.query-history,
+.sfir-query-tab-bottom-actions .query-history .sfarc-custom-dropdown-trigger {
+  height: 24px !important;
+  min-height: 24px !important;
+  max-height: 24px !important;
+  line-height: 22px !important;
+  padding: 0 24px 0 10px !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important; /* Non-curved standard border radius */
+  background-color: #e9ecef !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #1e293b !important;
+  box-shadow: none !important;
+}
+
+/* Specific native select chevron override */
+.sfir-query-tab-bottom-actions select.query-history {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2364748b'%3E%3Cpath d='M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 6px center !important;
+  background-size: 12px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+}
+
+/* Dark theme overrides */
+body.sfarc-dark-theme .sfir-query-tab-bottom-actions select.query-history,
+body.sfarc-dark-theme .sfir-query-tab-bottom-actions .query-history .sfarc-custom-dropdown-trigger {
+  background-color: #21262d !important;
+  border-color: #30363d !important;
+  color: #c9d1d9 !important;
+}
+
+.sfir-query-tab-bottom-actions .sfir-history-tab-btn {
+  height: 24px !important;
+  width: 24px !important;
+  min-height: 24px !important;
+  border-radius: 6px !important; /* Non-curved standard border radius */
+  margin: 0 !important;
+}
+
+/* ── Modern Integrated Tabs (Arc/Poolside style) ── */
+body .query-tabs {
+  background-color: #f1f5f9 !important;
+  border-bottom: 1px solid #cbd5e1 !important;
+  padding: 8px 12px 0 12px !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  height: 38px !important;
+  box-sizing: border-box !important;
+  gap: 2px !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+body.sfarc-dark-theme .query-tabs {
+  background-color: #0f1115 !important;
+  border-bottom: 1px solid #2a2c32 !important;
+}
+
+body .query-tab {
+  background-color: transparent !important;
+  border: none !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
+  height: 30px !important;
+  padding: 0 16px !important;
+  border-radius: 8px 8px 0 0 !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  position: relative !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+  font-size: 12.5px !important;
+  align-self: flex-end !important;
+  box-shadow: none !important;
+}
+
+body .query-tab:hover:not(.active) {
+  background-color: rgba(15, 23, 42, 0.06) !important;
+  color: #0f172a !important;
+}
+
+body.sfarc-dark-theme .query-tab:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: #f8fafc !important;
+}
+
+/* Active tab style */
+body .query-tab.active {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  font-weight: 500 !important;
+  z-index: 10 !important;
+  height: 30px !important;
+  margin-bottom: -1px !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+body.sfarc-dark-theme .query-tab.active {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+}
+
+body .query-tab.active .query-tab-name {
+  color: inherit !important;
+}
+
+body .query-tab.active .query-tab-icon {
+  color: var(--sfarc-accent, #2196f3) !important;
+}
+
+body.sfarc-dark-theme .query-tab.active .query-tab-icon {
+  color: var(--sfarc-accent-glow, #38bdf8) !important;
+}
+
+/* Reverse Rounded Corners at bottom of active tab */
+body .query-tab.active::before,
+body .query-tab.active::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 0 !important;
+  width: 8px !important;
+  height: 8px !important;
+  background: transparent !important;
+  pointer-events: none !important;
+  z-index: 15 !important;
+}
+
+body .query-tab.active::before {
+  left: -8px !important;
+  border-bottom-right-radius: 8px !important;
+  box-shadow: 4px 4px 0 0 #ffffff !important;
+}
+
+body .query-tab.active::after {
+  right: -8px !important;
+  border-bottom-left-radius: 8px !important;
+  box-shadow: -4px 4px 0 0 #ffffff !important;
+}
+
+body.sfarc-dark-theme .query-tab.active::before {
+  box-shadow: 4px 4px 0 0 #1e1e1e !important;
+}
+
+body.sfarc-dark-theme .query-tab.active::after {
+  box-shadow: -4px 4px 0 0 #1e1e1e !important;
+}

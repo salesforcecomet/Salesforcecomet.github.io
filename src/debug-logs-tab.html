@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="theme-manager.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Logs - Salesforce Comet</title>
+    <script src="lib/font-awesome.min.js" defer></script>
+    <link rel="stylesheet" href="glass-toast.css">
+    <script src="favicon-glyphs.js"></script>
+    <script src="colored-favicon.js" defer></script>
+    <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+    <style>
+        :root {
+            --bg-main: #0f1218;
+            --bg-panel: #161b22;
+            --bg-card: #1c2128;
+            --border-color: #30363d;
+            --text-main: #f0f6fc;
+            --text-sub: #8b949e;
+            --accent: var(--sfarc-accent, #38bdf8);
+            --accent-glow: var(--sfarc-accent-glow, #38bdf8);
+            --sf-orange: #f26b3a;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        button, .btn, .pill-icon-btn, .page-btn, input[type='button'], input[type='submit'] { box-shadow: none !important; }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        body.light-theme {
+            --bg-main: #f1f5f9;
+            --bg-panel: #ffffff;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+        }
+
+        /* ── Header ─────────────────────────────────────────────────── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+            flex-shrink: 0;
+        }
+
+        .title {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .title-sub {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--sf-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d95a2f;
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #21262d;
+        }
+
+        body.light-theme .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        /* ── Main Layout ────────────────────────────────────────────── */
+        .main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* ── Sidebar (Log List) ─────────────────────────────────────── */
+        .sidebar {
+            width: 320px;
+            min-width: 280px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .log-count {
+            background: var(--bg-card);
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 10px;
+            color: var(--text-sub);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 6px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 6px 10px;
+            color: var(--text-main);
+            font-size: 12px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-sub);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .filter-select {
+            background-color: var(--bg-card);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding: 5px 24px 5px 8px !important;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 11px;
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+        .filter-select:hover {
+            border-color: var(--text-sub);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        body.light-theme .filter-select:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        .filter-select:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 2px var(--accent-glow) !important;
+            outline: none !important;
+        }
+
+        .sidebar-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 6px;
+        }
+
+        .log-item {
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.1s;
+            margin-bottom: 2px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .log-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        body.light-theme .log-item:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        .log-item.active {
+            background: rgba(var(--sfarc-accent-rgb, 56, 189, 248), 0.12);
+            border: 1px solid rgba(var(--sfarc-accent-rgb, 56, 189, 248), 0.3);
+        }
+
+        .log-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .log-item-user {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .log-item-status {
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: rgba(52, 211, 153, 0.15);
+            color: #34d399;
+        }
+
+        .status-error {
+            background: rgba(248, 113, 113, 0.15);
+            color: #f87171;
+        }
+
+        .log-item-operation {
+            font-size: 11px;
+            color: var(--text-sub);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .log-item-meta {
+            display: flex;
+            gap: 10px;
+            font-size: 10px;
+            color: var(--text-sub);
+        }
+
+        .log-item-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.1s;
+        }
+
+        .log-item:hover .log-item-actions {
+            opacity: 1;
+        }
+
+        .log-action-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10px;
+        }
+
+        .log-action-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .log-action-btn.delete:hover {
+            color: #f87171;
+        }
+
+        /* ── Content (Log Viewer) ───────────────────────────────────── */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .viewer-tabs {
+            display: flex;
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 12px;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .viewer-tab {
+            padding: 8px 12px;
+            font-size: 12px;
+            color: var(--text-sub);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .viewer-tab:hover {
+            color: var(--text-main);
+        }
+
+        .viewer-tab.active {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+        }
+
+        .viewer-content {
+            flex: 1;
+            overflow: auto;
+            padding: 16px;
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-sub);
+            gap: 12px;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 13px;
+        }
+
+        /* ── Skeleton Loading ────────────────────────────────────────── */
+        .skeleton-item {
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+        }
+
+        .skeleton-line {
+            height: 10px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #1c2128 25%, #2a2f38 50%, #1c2128 75%);
+            background-size: 200% 100%;
+            animation: skeletonShimmer 1.5s ease-in-out infinite;
+        }
+
+        body.light-theme .skeleton-line {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+        }
+
+        @keyframes skeletonShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── Pagination ─────────────────────────────────────────────── */
+        .sidebar-footer {
+            padding: 8px 12px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .page-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* ── Refresh Animation ──────────────────────────────────────── */
+        .refresh-spin {
+            animation: refreshSpin 0.8s linear infinite;
+        }
+
+        @keyframes refreshSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ── Sidebar Collapse ────────────────────────────────────── */
+        .sidebar.collapsed {
+            width: 0 !important;
+            min-width: 0 !important;
+            overflow: hidden;
+            border-right: none !important;
+            padding: 0 !important;
+        }
+        .sidebar.collapsed > * { display: none !important; }
+        .sidebar.collapsed + .content .viewer-tabs .sidebar-collapse-icon { display: inline-flex; }
+
+        .sidebar-collapse-btn {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            border-radius: 6px;
+            padding: 6px 10px;
+            cursor: pointer;
+            font-size: 13px;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .sidebar-collapse-btn:hover {
+            color: var(--text-main);
+            border-color: var(--text-sub);
+        }
+        .sidebar.collapsed ~ .content .sidebar-collapse-btn { display: inline-flex; }
+        .sidebar.collapsed ~ .content .sidebar-collapse-icon { display: inline-flex; }
+
+        /* ── Row Entrance Animation ─────────────────────────────────── */
+        .log-item-entering {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        .log-item-visible {
+            opacity: 1;
+            transform: translateX(0);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        /* ── Table View ─────────────────────────────────────────────── */
+        .sfarc-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; table-layout: auto; }
+        .sfarc-table th { position: sticky; top: 0; background: var(--bg-card); z-index: 10; padding: 4px 8px; font-size: 10px; text-transform: uppercase; color: var(--text-sub); border-bottom: 1px solid var(--border-color); font-weight: 500; white-space: nowrap; letter-spacing: 0.05em; }
+        .sfarc-table td { padding: 4px 8px; border-bottom: 1px solid var(--border-color); white-space: normal; word-break: break-word; vertical-align: top; }
+        .sfarc-table td.status-cell { max-width: 400px; line-height: 1.4; }
+        .sfarc-table td.status-cell.success { color: #22c55e; }
+        .sfarc-table td.status-cell.failed { color: #ef4444; font-weight: 500; }
+        .sfarc-table tr { min-height: 32px; }
+        .sfarc-table tbody tr { cursor: pointer; transition: background-color 0.12s ease; }
+        .sfarc-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.015); }
+        body.light-theme .sfarc-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.015); }
+        .sfarc-table tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+        body.light-theme .sfarc-table tbody tr:hover { background: rgba(0, 0, 0, 0.03); }
+        
+        .action-group { display: flex; gap: 4px; opacity: 0; transition: opacity 0.12s ease; }
+        .sfarc-table tbody tr:hover .action-group { opacity: 1; }
+        
+        .action-btn-tbl { background: transparent; border: none; color: var(--text-sub); border-radius: 4px; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.12s ease; font-size: 10px; }
+        .action-btn-tbl:hover { color: var(--text-main); background: transparent; }
+        body.light-theme .action-btn-tbl:hover { background: transparent; }
+        .action-btn-tbl.delete:hover { color: #f87171; background: transparent; }
+
+        .status-success-text { color: #34d399; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
+        body.light-theme .status-success-text { color: #059669; }        .status-failed-text { color: #f87171; font-weight: 500; font-size: 10px; text-transform: uppercase; letter-spacing: 0.03em; }
+        body.light-theme .status-failed-text { color: #dc2626; }
+
+        .trace-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 5px 10px; margin-bottom: 3px; display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 6px; }
+        .trace-left { display: flex; align-items: center; gap: 6px; min-width: 0; flex: 1; }
+        .trace-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .trace-user { font-weight: 600; font-size: 12px; color: var(--accent); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .trace-level-badge { font-size: 9px; font-weight: 500; text-transform: uppercase; color: var(--text-sub); border: 1px solid var(--border-color); padding: 1px 4px; border-radius: 4px; white-space: nowrap; }
+        .trace-time { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--sf-orange); }
+        .trace-card .delete:hover { color: #f87171 !important; }
+
+        /* ── Sidebar Custom Dropdown & Icon Buttons ─────────────────── */
+        .sidebar-title-select {
+            font-family: inherit;
+            font-weight: 500;
+            font-size: 12.5px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-card);
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            padding: 4px 24px 4px 8px;
+            border-radius: 6px;
+            color: var(--text-main);
+            appearance: none;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.15s ease;
+        }
+        .sidebar-title-select:hover {
+            border-color: var(--text-sub);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        body.light-theme .sidebar-title-select:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        .sidebar-title-select:focus {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 0 2.5px var(--accent-glow) !important;
+            outline: none !important;
+        }
+
+        .sidebar-icon-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            outline: none;
+        }
+        .sidebar-icon-btn:hover {
+            color: var(--text-main);
+            border-color: var(--text-sub);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        body.light-theme .sidebar-icon-btn:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+        .sidebar-icon-btn.danger:hover {
+            color: #f87171 !important;
+            border-color: rgba(248, 113, 113, 0.4) !important;
+            background: rgba(248, 113, 113, 0.1) !important;
+        }
+
+        /* ── Pill Button Groups ─────────────────────────────────────── */
+        .pill-btn-group {
+            display: inline-flex;
+            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 2px;
+            border: 1px solid var(--border-color);
+            align-items: center;
+        }
+        .pill-icon-btn {
+            background: transparent;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-sub);
+            cursor: pointer;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .pill-icon-btn:hover { background: rgba(255, 255, 255, 0.08); color: var(--text-main); }
+        body.light-theme .pill-icon-btn:hover { background: rgba(0, 0, 0, 0.05); }
+        .pill-btn-group.danger .pill-icon-btn:hover { color: #f87171; }
+
+        /* ── Modals ─────────────────────────────────────────────────── */
+        .sfarc-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .sfarc-modal-content { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 480px; max-width: 90vw; display: flex; flex-direction: column; overflow: hidden; animation: modalFadeIn 0.2s ease-out; }
+        #sfarc-level-modal .sfarc-modal-content { width: 780px; max-width: 95vw; }
+        @keyframes modalFadeIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .sfarc-modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); }
+        .sfarc-modal-header h3 { font-size: 16px; font-weight: 500; margin: 0; color: var(--text-main); }
+        .sfarc-modal-header-actions { display: flex; align-items: center; gap: 12px; }
+        .sfarc-modal-close { background: transparent; border: none; color: var(--text-sub); font-size: 24px; line-height: 1; cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: all 0.15s; height: 28px; width: 28px; }
+        .sfarc-modal-close:hover { color: var(--text-main); background: rgba(255,255,255,0.1); }
+        .sfarc-modal-body { padding: 20px; overflow-y: auto; max-height: 85vh; }
+        .sfarc-modal-footer { padding: 16px 20px; border-top: 1px solid var(--border-color); background: rgba(255,255,255,0.02); display: flex; justify-content: flex-end; gap: 12px; }
+        .sfarc-form-group { margin-bottom: 16px; }
+        .sfarc-form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-main); margin-bottom: 6px; }
+        
+        .sfarc-btn-primary { background: var(--accent); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .sfarc-btn-primary:hover { background: var(--accent-glow); transform: translateY(-1px); }
+        .sfarc-btn-primary:active { transform: translateY(0); }
+        .btn-secondary { background: transparent; color: var(--text-sub); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; font-weight: 500; font-size: 13px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-secondary:hover { color: var(--text-main); border-color: var(--text-sub); background: rgba(255,255,255,0.05); }
+
+        body.light-theme .sfarc-modal-content { background: #fff; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-color: #e2e8f0; }
+        body.light-theme .sfarc-modal-header, body.light-theme .sfarc-modal-footer { background: #f8fafc; }
+        body.light-theme .sfarc-modal-close:hover { background: rgba(0,0,0,0.05); color: #000; }
+        body.light-theme .btn-secondary:hover { background: rgba(0,0,0,0.03); color: #000; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">🐛</div>
+            <div>
+                <div class="title-sub">Salesforce Comet</div>
+                <div class="title">Debug Log Reader</div>
+            </div>
+        </div>
+        <div class="header-right">
+            <!-- Global header buttons moved to local panes -->
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- Sidebar: TraceFlags List -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title" style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                    <span style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+                        <i class="fa-solid fa-bug" style="color: var(--accent); font-size: 14px; flex-shrink: 0;"></i>
+                        <select id="trace-filter-select" class="sidebar-title-select" style="flex: 1; min-width: 0;">
+                            <option value="active">Active TraceFlags</option>
+                            <option value="all">All TraceFlags</option>
+                        </select>
+                    </span>
+                    <span class="log-count" id="trace-count" style="margin-left: 2px; flex-shrink: 0;">0</span>
+                    <button class="pill-icon-btn" id="btn-toggle-sidebar" title="Collapse sidebar" style="padding: 4px; border-radius: 6px; flex-shrink: 0;">
+                        <i class="fa-solid fa-angles-left" id="sidebar-toggle-icon"></i>
+                    </button>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+                    <button class="btn btn-primary" id="btn-add-trace" style="width: 100%; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 8px 12px; font-size: 12px; font-weight: 500; border-radius: 8px; background: var(--accent); color: white; border: none; cursor: pointer; transition: background 0.15s;">
+                        <i class="fa-solid fa-user-plus"></i> Add Current User
+                    </button>
+                    <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between;">
+                        <button class="btn btn-secondary" id="btn-new-trace" style="flex: 1; display: flex; justify-content: center; align-items: center; gap: 6px; padding: 6px 10px; font-size: 11px; font-weight: 500; border-radius: 6px; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main); cursor: pointer; transition: background 0.15s;">
+                            <i class="fa-solid fa-plus"></i> Custom Trace
+                        </button>
+                        <button class="sidebar-icon-btn" title="Refresh Traces" id="btn-refresh-traces">
+                            <i class="fa-solid fa-rotate"></i>
+                        </button>
+                        <button class="sidebar-icon-btn danger" id="btn-delete-selected-traces" title="Delete selected trace flags">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="sidebar-list" id="trace-list">
+                <!-- Trace cards rendered here -->
+                <div class="empty-state">
+                    <i class="fa-solid fa-shield"></i>
+                    <p>No active trace flags</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content: Debug Logs Table -->
+        <div class="content" style="background: var(--bg-main);">
+            <div class="viewer-tabs" style="justify-content: space-between; align-items: center; padding: 10px 16px;">                    <div style="display: flex; align-items: center; gap: 12px; font-weight: 400; font-size: 13px;">
+                        <button class="sidebar-collapse-btn" id="btn-expand-sidebar" title="Expand sidebar">
+                            <i class="fa-solid fa-angles-right"></i>
+                        </button>
+                        <i class="fa-solid fa-file-lines" style="color: var(--accent);"></i> Debug Logs
+                    <span class="log-count" id="log-count">0</span>
+                </div>
+                <div style="display: flex; gap: 8px; flex: 1; max-width: 600px; justify-content: flex-end; align-items: center;">
+                    <div class="search-box" style="flex: 1; min-width: 150px;">
+                        <input type="text" class="search-input" id="search-input" placeholder="Search inside logs...">
+                    </div>
+                    <select class="filter-select" id="user-filter" style="width: 130px;">
+                        <option value="">All Users</option>
+                    </select>
+                    <select class="filter-select" id="status-filter" style="width: 130px;">
+                        <option value="">All Status</option>
+                        <option value="Success">Success</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                    
+                    <div class="pill-btn-group">
+                        <button class="pill-icon-btn" id="btn-my-logs" title="My Logs">
+                            <i class="fa-regular fa-user"></i>
+                        </button>
+                        <button class="pill-icon-btn" id="btn-import-log" title="Import Log">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        </button>
+                        <button class="pill-icon-btn" id="btn-refresh" title="Refresh Logs">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                        </button>
+                    </div>
+
+                    <div class="pill-btn-group danger" id="bulk-delete-group" style="display:none;">
+                        <button class="pill-icon-btn" id="btn-delete-selected" title="Delete Selected Logs">
+                            <i class="fa-regular fa-trash-can"></i>
+                            <span id="delete-count" style="margin-left: 6px; font-size: 11px; font-weight: 500;">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="viewer-content" style="padding: 0; display: flex; flex-direction: column;">
+                <div style="flex: 1; overflow: auto;">
+                    <table class="sfarc-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align: center; width: 40px;"><input type="checkbox" id="select-all-logs"></th>
+                                <th style="width: 80px;">Action</th>
+                                <th>User</th>
+                                <th>Operation</th>
+                                <th>Start Time</th>
+                                <th style="text-align: right;">Duration</th>
+                                <th style="text-align: right;">Size</th>
+                                <th style="min-width: 300px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="log-list">
+                            <!-- Log rows rendered here -->
+                        </tbody>
+                    </table>
+                <div class="sidebar-footer" style="background: var(--bg-card); padding: 10px 16px;">
+                    <span id="page-info">Page 1 of 1</span>
+                    <div style="display:flex;gap:4px;">
+                        <button class="page-btn" id="btn-prev" disabled><i class="fa-solid fa-chevron-left"></i></button>
+                        <button class="page-btn" id="btn-next" disabled><i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Trace Flag Modal -->
+    <div id="sfarc-trace-modal" class="sfarc-modal sfarc-drawer-modal" style="display: none;">
+        <div class="sfarc-modal-content sfarc-modal-large">
+            <div class="sfarc-modal-header">
+                <h3 id="sfarc-trace-modal-title">New Trace Flag</h3>
+                <div class="sfarc-modal-header-actions">
+                    <button class="sfarc-btn-primary" id="sfarc-create-trace-btn" style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 5px 13px; border-radius: 8px; font-size: 12px; font-weight: 500; background: var(--accent); color: white; border: none; cursor: pointer;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="display: block; flex-shrink: 0;">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        <span id="sfarc-create-trace-text">Save Trace</span>
+                    </button>
+                    <button class="sfarc-modal-close" style="background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-sub);">&times;</button>
+                </div>
+            </div>
+            <div class="sfarc-modal-body" style="padding: 16px;">
+                <div class="sfarc-form-group" style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px;">Select User</label>
+                    <div class="sfarc-search-input-wrapper" style="position: relative;">
+                        <input type="text" id="sfarc-trace-user-search" class="search-input" placeholder="Type User Name..." style="width: 100%; box-sizing: border-box;">
+                        <div id="sfarc-user-results" class="sfarc-dropdown-results" style="display:none; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 4px; z-index: 10; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                    </div>
+                </div>
+                <div class="sfarc-form-row" style="display: flex; gap: 12px; margin-bottom: 12px;">
+                    <div class="sfarc-form-group" style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px;">Start Date</label>
+                        <input type="datetime-local" id="sfarc-trace-start" class="search-input" style="width: 100%; box-sizing: border-box;">
+                    </div>
+                    <div class="sfarc-form-group" style="flex: 1;">
+                        <label style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px;">Expiration Hours</label>
+                        <select id="sfarc-trace-expiration" class="filter-select" style="width: 100%; box-sizing: border-box;">
+                            <option value="15">15 Minutes</option>
+                            <option value="30">30 Minutes</option>
+                            <option value="60" selected>1 hour</option>
+                            <option value="120">2 hours</option>
+                            <option value="240">4 hours</option>
+                            <option value="600">10 hours</option>
+                            <option value="720">12 hours</option>
+                            <option value="1440">24 hours</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="sfarc-form-group" style="margin-bottom: 12px;">
+                    <label style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px;">Select Debug Level</label>
+                    <select id="sfarc-trace-level" class="filter-select" style="width: 100%; box-sizing: border-box;">
+                        <option value="">-- Select Debug Level --</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sfarc-modal-footer" style="padding: 12px 16px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-start; align-items: center;">
+                <button class="btn btn-secondary" id="sfarc-new-level-btn" style="display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-plus"></i> New Level
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Log Level Modal -->
+    <div id="sfarc-level-modal" class="sfarc-modal sfarc-drawer-modal" style="display: none;">
+        <div class="sfarc-modal-content sfarc-modal-large">
+            <div class="sfarc-modal-header">
+                <h3>Create Log Level</h3>
+                <div class="sfarc-modal-header-actions">
+                    <button class="sfarc-btn-primary" id="sfarc-save-level-btn" style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; padding: 5px 13px; border-radius: 8px; font-size: 12px; font-weight: 500; background: var(--accent); color: white; border: none; cursor: pointer;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Save Log Level
+                    </button>
+                    <button class="sfarc-modal-close" style="background: transparent; border: none; font-size: 20px; cursor: pointer; color: var(--text-sub);">&times;</button>
+                </div>
+            </div>
+            <div class="sfarc-modal-body" style="padding: 16px;">
+                <div class="sfarc-form-group" style="margin-bottom: 12px;">
+                    <label class="required" style="display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px;">Name</label>
+                    <input type="text" id="sfarc-level-name" class="search-input" style="width: 100%; box-sizing: border-box;">
+                </div>
+                <table class="sfarc-table" style="margin-top: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left;">Category</th>
+                            <th style="text-align: center;">NONE</th>
+                            <th style="text-align: center;">ERROR</th>
+                            <th style="text-align: center;">WARN</th>
+                            <th style="text-align: center;">INFO</th>
+                            <th style="text-align: center;">DEBUG</th>
+                            <th style="text-align: center;">FINE</th>
+                            <th style="text-align: center;">FINER</th>
+                            <th style="text-align: center;">FINEST</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sfarc-level-rows">
+                        <!-- Rows for Database, Workflow, etc. -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="glass-toast.js"></script>
+    <script src="debug-logs-tab.js"></script>
+    <script src="custom-dropdown.js"></script>
+</body>
+</html>

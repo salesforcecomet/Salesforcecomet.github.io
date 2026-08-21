@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Problems Panel — Table Preview</title>
+<style>
+    :root {
+        --text-main: #cccccc;
+        --text-muted: #858585;
+        --text-active: #e8eaed;
+        --sfarc-accent-glow: #38bdf8;
+        --sfarc-accent-glow-rgb: 56, 189, 248;
+        --sfarc-accent: #2196f3;
+        --sfarc-accent-rgb: 33, 150, 243;
+    }
+    body {
+        margin: 0;
+        background: #1e1f24;
+        font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 40px 24px;
+    }
+    .frame {
+        width: 900px;
+        max-width: 96vw;
+        background: #17181c;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    /* terminal tab strip */
+    .tabs {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        padding: 0 10px;
+        background: #f6f6f7;
+        border-bottom: 2px solid #dddee1;
+    }
+    .tab {
+        padding: 9px 14px;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #5a6675;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -2px;
+    }
+    .tab.active {
+        color: #0b57d0;
+        border-bottom-color: #0b57d0;
+    }
+    .toggle {
+        margin-left: auto;
+        padding: 4px 10px;
+        font-size: 10.5px;
+        font-weight: 600;
+        border-radius: 6px;
+        border: 1px solid rgba(0,0,0,0.2);
+        background: #ffffff;
+        color: #334155;
+        cursor: pointer;
+    }
+
+    /* ==== Real CSS from src/code-editor.html (Problems panel) ==== */
+    .terminal-body {
+        padding: 8px 14px;
+        overflow-y: auto;
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        height: 420px;
+        background: transparent;
+        color: var(--text-main);
+    }
+    #terminal-body-problems .pi-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        padding-bottom: 6px;
+        margin-bottom: 4px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.22);
+        font-size: 11px;
+    }
+    #terminal-body-problems .pi-sum-title {
+        font-weight: 600;
+        color: var(--text-active);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    #terminal-body-problems .pi-sum-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        font-size: 10px;
+        font-weight: 600;
+        color: #cbd5e1;
+        background: rgba(15, 18, 24, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+    }
+    #terminal-body-problems .pi-sum-chip b { font-weight: 700; }
+    #terminal-body-problems .pi-sum-chip.error {
+        color: #fda4af;
+        border-color: rgba(248, 113, 113, 0.45);
+    }
+    #terminal-body-problems .pi-sum-chip.warning {
+        color: #fcd34d;
+        border-color: rgba(251, 191, 36, 0.45);
+    }
+    #terminal-body-problems .pi-sum-chip.info {
+        color: var(--sfarc-accent-glow, #38bdf8);
+        border-color: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.45);
+    }
+    #terminal-body-problems .pi-clear {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: none;
+        border: 1px solid rgba(128, 128, 128, 0.3);
+        color: var(--text-muted);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+    #terminal-body-problems .pi-clear:hover {
+        color: var(--text-active);
+        border-color: rgba(248, 113, 113, 0.5);
+        background: rgba(248, 113, 113, 0.1);
+    }
+    #terminal-body-problems .pi-table-wrap {
+        flex: 1;
+        min-height: 0;
+        overflow: auto;
+        border: 1px solid rgba(128, 128, 128, 0.22);
+        border-radius: 8px;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    #terminal-body-problems table.pi-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11.5px;
+    }
+    #terminal-body-problems .pi-table thead th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        text-align: left;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(128, 128, 128, 0.28);
+        padding: 6px 10px;
+        white-space: nowrap;
+    }
+    #terminal-body-problems .pi-table th.pi-th-sev,
+    #terminal-body-problems .pi-table td.pi-sev {
+        width: 34px;
+        padding: 5px 6px 5px 10px;
+    }
+    #terminal-body-problems .pi-table th.pi-th-action,
+    #terminal-body-problems .pi-table td.pi-action {
+        width: 104px;
+        text-align: right;
+        padding-right: 8px;
+    }
+    #terminal-body-problems .pi-table td {
+        padding: 5px 10px;
+        border-bottom: 1px solid rgba(128, 128, 128, 0.12);
+        vertical-align: middle;
+    }
+    #terminal-body-problems .pi-table tbody tr { cursor: pointer; }
+    #terminal-body-problems .pi-table tbody tr:nth-child(odd) td {
+        background: rgba(255, 255, 255, 0.02);
+    }
+    #terminal-body-problems .pi-table tbody tr:hover td {
+        background: rgba(255, 255, 255, 0.07);
+    }
+    #terminal-body-problems .pi-table tbody tr.info td:first-child {
+        border-left: 3px solid var(--sfarc-accent-glow, #38bdf8);
+    }
+    #terminal-body-problems .pi-table td.pi-sev i {
+        font-size: 13px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+    }
+    #terminal-body-problems .pi-table tbody tr.info td.pi-sev i {
+        color: var(--sfarc-accent-glow, #38bdf8);
+    }
+    #terminal-body-problems .pi-table td.pi-file {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-active);
+        white-space: nowrap;
+        max-width: 260px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    #terminal-body-problems .pi-table td.pi-pos {
+        font-family: 'Fira Code', 'Consolas', monospace;
+        font-size: 10.5px;
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+    #terminal-body-problems .pi-table td.pi-msg {
+        color: var(--text-main);
+        word-break: break-word;
+    }
+    #terminal-body-problems .pi-table td.pi-action .pi-jump {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--sfarc-accent-glow, #38bdf8);
+        padding: 2px 6px;
+        border-radius: 4px;
+        white-space: nowrap;
+        transition: background 0.15s ease;
+    }
+    #terminal-body-problems .pi-table td.pi-action .pi-jump:hover {
+        background: rgba(var(--sfarc-accent-glow-rgb, 56, 189, 248), 0.12);
+    }
+    /* Light theme overrides */
+    body[data-theme="sfarc-light"] .frame { background: #ffffff; border-color: rgba(15,23,42,0.14); }
+    body[data-theme="sfarc-light"] .tabs { background: #f8f9fa; }
+    body[data-theme="sfarc-light"] .tab.active { color: #0284c7; border-bottom-color: #0284c7; }
+    body[data-theme="sfarc-light"] { background: #eef0f3; }
+    body[data-theme="sfarc-light"] .terminal-body { color: #1f2937; }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table-wrap {
+        border-color: rgba(15, 23, 42, 0.14);
+    }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table thead th {
+        background: rgba(15, 23, 42, 0.04);
+        border-bottom-color: rgba(15, 23, 42, 0.14);
+    }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr:nth-child(odd) td {
+        background: rgba(15, 23, 42, 0.02);
+    }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr:hover td {
+        background: rgba(15, 23, 42, 0.06);
+    }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td {
+        border-bottom-color: rgba(15, 23, 42, 0.07);
+    }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-pos { color: #64748b; }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr.info td.pi-sev i { color: #0284c7; }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table tbody tr.info td:first-child { border-left-color: #0284c7; }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-table td.pi-action .pi-jump { color: #0284c7; }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-sum-chip {
+        background: #ffffff;
+        border-color: rgba(15, 23, 42, 0.25);
+    }
+    body[data-theme="sfarc-light"] .pi-summary { border-bottom-color: rgba(15,23,42,0.14); }
+    body[data-theme="sfarc-light"] #terminal-body-problems .pi-clear { color: #64748b; }
+    body[data-theme="sfarc-light"] .toggle { border-color: rgba(15,23,42,0.2); }
+
+    .info-icon {
+        width: 14px; height: 14px; border-radius: 50%;
+        border: 1.5px solid currentColor;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 9px; font-weight: 800; font-style: normal;
+    }
+</style>
+</head>
+<body data-theme="sfarc-dark">
+<div class="frame">
+    <div class="tabs">
+        <span class="tab">Logs</span>
+        <span class="tab">Output</span>
+        <span class="tab active">Problems</span>
+        <span class="tab">Coverage</span>
+        <span class="tab">Revisions</span>
+        <span class="tab">Security</span>
+        <button class="toggle" id="theme-toggle">Toggle Light</button>
+    </div>
+    <div id="terminal-body-problems" class="terminal-body">
+        <div id="problems-summary" class="pi-summary">
+            <span class="pi-sum-title">☰ Problems</span>
+            <span class="pi-sum-chip error"><b>0</b> errors</span>
+            <span class="pi-sum-chip warning"><b>0</b> warnings</span>
+            <span class="pi-sum-chip info"><b>2</b> info</span>
+            <button class="pi-clear">✕ Clear</button>
+        </div>
+        <div class="pi-table-wrap">
+            <table class="pi-table">
+                <thead>
+                    <tr>
+                        <th class="pi-th-sev"></th>
+                        <th class="pi-th-file">File</th>
+                        <th class="pi-th-pos">Line</th>
+                        <th class="pi-th-msg">Message</th>
+                        <th class="pi-th-action"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="problem-item info">
+                        <td class="pi-sev"><i class="info-icon">i</i></td>
+                        <td class="pi-file" title="AnimalsCallouts.cls">AnimalsCallouts.cls</td>
+                        <td class="pi-pos">L2:5</td>
+                        <td class="pi-msg">Missing '{' at 'public'</td>
+                        <td class="pi-action"><button class="pi-jump">→ Jump to Line</button></td>
+                    </tr>
+                    <tr class="problem-item info">
+                        <td class="pi-sev"><i class="info-icon">i</i></td>
+                        <td class="pi-file" title="AnimalsCallouts.cls">AnimalsCallouts.cls</td>
+                        <td class="pi-pos">L1:1</td>
+                        <td class="pi-msg">Line 2, Col 5: Missing '{' at 'public'</td>
+                        <td class="pi-action"><button class="pi-jump">→ Jump to Line</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    const btn = document.getElementById('theme-toggle');
+    btn.addEventListener('click', () => {
+        const cur = document.body.getAttribute('data-theme');
+        const next = cur === 'sfarc-light' ? 'sfarc-dark' : 'sfarc-light';
+        document.body.setAttribute('data-theme', next);
+        btn.textContent = next === 'sfarc-light' ? 'Toggle Dark' : 'Toggle Light';
+    });
+    window.__problems = {
+        rowsInTbody: document.querySelectorAll('#terminal-body-problems tbody tr.problem-item').length,
+        rowsOutsideTable: document.querySelectorAll('#terminal-body-problems > .problem-item').length,
+        tableWrap: !!document.querySelector('#terminal-body-problems .pi-table-wrap')
+    };
+</script>
+</body>
+</html>

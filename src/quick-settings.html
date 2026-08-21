@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="theme-manager.js"></script>
+    <title>Quick Settings</title>
+    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="glass-toast.css">
+    <script src="lib/font-awesome.min.js" defer></script>
+  <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+</head>
+
+<body>
+    <header class="popup-header">
+        <h1>Settings</h1>
+    </header>
+
+    <div class="popup-content" style="padding: 20px; text-align: center; color: #475569; font-size: 13px; font-family: sans-serif;">
+        <i class="fa-solid fa-circle-info" style="font-size: 24px; color: var(--sfarc-accent, #2196f3); margin-bottom: 12px; display: block;"></i>
+        <p style="margin: 0 0 16px 0; line-height: 1.5;">The overlay drawer panels have been removed. All configurations are now managed inside the main settings page.</p>
+    </div>
+
+    <footer class="popup-footer">
+        <button id="open-advanced-settings" class="btn-secondary">
+            Advanced Settings <i class="fa-solid fa-external-link-alt" style="margin-left: 6px; font-size: 12px;"></i>
+        </button>
+    </footer>
+
+    <script src="glass-toast.js"></script>
+    <script src="popup.js"></script>
+    <script src="custom-dropdown.js"></script>
+    <script src="close-on-outside.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Terminal Tabs — No Bounce</title>
+<style>
+  :root { color-scheme: light; }
+  body {
+    margin: 0;
+    padding: 24px;
+    background: #eef2f7;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  h2 { margin: 0; font-size: 15px; color: #374151; }
+  .note { font-size: 12px; color: #6b7280; max-width: 640px; }
+
+  /* ===== The exact terminal CSS from code-editor.html ===== */
+  .terminal-panel {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+  .terminal-tabs {
+    display: flex;
+    gap: 2px;
+    background: #f3f4f6;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 4px 6px 0;
+    overflow-x: auto;
+  }
+  .terminal-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4b5563;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    border-bottom: 2px solid transparent;
+    user-select: none;
+    white-space: nowrap;
+    transition: color 0.18s ease, background 0.2s ease, border-color 0.25s ease;
+  }
+  .terminal-tab:hover { background: #e5e7eb; }
+  .terminal-tab.active {
+    background: #ffffff;
+    color: #111827;
+    border-bottom-color: #2563eb;
+    animation: none; /* was: ce-slide-down 0.25s cubic-bezier(0.16,1,0.3,1) */
+  }
+  .terminal-body {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-height: 200px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 12px;
+  }
+  .terminal-body[hidden] { display: none; }
+
+  /* entrance animations (from code-editor.html) */
+  .testrun-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-left: 3px solid #2563eb;
+    border-radius: 6px;
+    padding: 10px 12px;
+    animation: ce-fade-in 0.2s ease; /* was: ce-slide-down 0.3s cubic-bezier(0.34,1.56,0.64,1) */
+  }
+  .log-line {
+    padding: 2px 4px;
+    color: #374151;
+    animation: ce-log-in 0.22s ease;
+  }
+  .problem-row {
+    padding: 6px 8px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 6px;
+    color: #b91c1c;
+    animation: ce-slide-left 0.22s ease;
+  }
+  .sec-card {
+    padding: 8px 10px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 6px;
+    color: #047857;
+    animation: ce-slide-left 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .term-anim-suppress,
+  .term-anim-suppress * {
+    animation: none !important;
+  }
+
+  @keyframes ce-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes ce-log-in { from { opacity: 0; transform: translateX(-6px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes ce-slide-left { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+  @keyframes ce-slide-down { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+  <h2>Terminal Tabs — bounce fix (live)</h2>
+  <p class="note">Switch tabs back and forth. Before the fix: the active tab slid on every click, the Output tab's test-run cards sprang past their resting spot (overshoot curve), and every switch replayed all entrance animations. Now: instant, no motion on switch; only newly appended items fade in.</p>
+
+  <div class="terminal-panel">
+    <div class="terminal-tabs" id="tabs">
+      <div class="terminal-tab" data-tab="logs">🐞 Live Variables &amp; Logs</div>
+      <div class="terminal-tab" data-tab="output">🖥️ Output / Console</div>
+      <div class="terminal-tab active" data-tab="problems">⚠️ Problems</div>
+      <div class="terminal-tab" data-tab="security">🛡️ Security &amp; Health <span style="background:#a3d9b1;color:#fff;border-radius:999px;padding:1px 8px;font-size:10px;margin-left:4px;">100/100</span></div>
+      <div class="terminal-tab" data-tab="coverage">📊 Code Coverage</div>
+      <div class="terminal-tab" data-tab="revisions">🕐 Revisions</div>
+    </div>
+
+    <div class="terminal-body" id="body-logs" hidden>
+      <div class="log-line">12:00:01.123 DEBUG [OpenFile] Opened CustomLookupController.cls</div>
+      <div class="log-line">12:00:02.456 DEBUG [Deploy] Deployed 1 ApexClass to org</div>
+      <div class="log-line">12:00:03.789 INFO  [Save] File saved locally</div>
+    </div>
+    <div class="terminal-body" id="body-output" hidden>
+      <div class="testrun-card"><b>Test run #12 — passed</b><br>CustomLookupControllerTests: 5/5 passed in 2.4s</div>
+      <div class="testrun-card"><b>Test run #13 — passed</b><br>CustomScriptTriggerTests: 8/8 passed in 3.1s</div>
+      <div class="testrun-card"><b>Test run #14 — 1 failure</b><br>DateUtilsTest.testParse: expected '2026-08-18' but got '2026-08-17'</div>
+    </div>
+    <div class="terminal-body" id="body-problems">
+      <div class="problem-row">✕ CustomLookupController.cls L12:5 — Variable does not exist: foo</div>
+      <div class="problem-row">✕ CustomLookupController.cls L9:1 — Unexpected token '}'</div>
+    </div>
+    <div class="terminal-body" id="body-security" hidden>
+      <div class="sec-card">✓ 100/100 — No CRUD/FLS violations detected</div>
+    </div>
+    <div class="terminal-body" id="body-coverage" hidden>
+      <div class="testrun-card">Coverage 78% — 45/58 classes above 75% threshold</div>
+    </div>
+    <div class="terminal-body" id="body-revisions" hidden>
+      <div class="testrun-card">Revision #3 — saved 2 minutes ago</div>
+    </div>
+  </div>
+
+  <button id="add-card" style="align-self:flex-start;padding:6px 12px;font-size:12px;border:1px solid #d1d5db;border-radius:6px;background:#fff;cursor:pointer;">Append new test-run card (animates on append, not on switch)</button>
+
+  <script>
+    // Same logic as showTerminalTab in code-editor.js
+    function showTerminalTab(tabName) {
+      const tabs = document.querySelectorAll('.terminal-tab');
+      const bodies = ['logs','output','problems','security','coverage','revisions'].map(n => document.getElementById('body-' + n));
+      const suppressAnim = (body) => {
+        if (!body) return;
+        body.classList.add('term-anim-suppress');
+        requestAnimationFrame(() => requestAnimationFrame(() => body.classList.remove('term-anim-suppress')));
+      };
+      tabs.forEach(t => t.classList.remove('active'));
+      bodies.forEach(b => b.hidden = true);
+      const tab = document.querySelector('.terminal-tab[data-tab="' + tabName + '"]');
+      const body = document.getElementById('body-' + tabName);
+      if (tab) tab.classList.add('active');
+      suppressAnim(body);
+      if (body) body.hidden = false;
+    }
+    document.getElementById('tabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.terminal-tab');
+      if (tab) showTerminalTab(tab.dataset.tab);
+    });
+    document.getElementById('add-card').addEventListener('click', () => {
+      const out = document.getElementById('body-output');
+      const card = document.createElement('div');
+      card.className = 'testrun-card';
+      card.innerHTML = '<b>Test run #' + (Math.floor(Math.random() * 100) + 15) + ' — passed</b><br>Newly appended card (fades in once)';
+      out.appendChild(card);
+      out.scrollTop = out.scrollHeight;
+    });
+  </script>
+</body>
+</html>

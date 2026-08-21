@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>metadata-exporter — Nav Slide Demo</title>
+<style>
+  /* REAL slide-transition CSS from sfir.css */
+/* ════════════════════════════════════════════════════════════════════════
+   TAB PAGE SLIDE TRANSITION (Export / Import / Limits / Metadata)
+   The four sfir pages are separate documents; nav-slide.js turns tab
+   switches into a left/right carousel. Entrance plays on load when the
+   previous page is known; exit plays on nav click before navigating.
+   Animating <html> moves fixed-position children along too, so the whole
+   page slides as one. prefers-reduced-motion users get no motion.      */
+html.sfir-page-enter-left {
+    animation: sfirPageSlideInLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.sfir-page-enter-right {
+    animation: sfirPageSlideInRight 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html.sfir-page-exit-left {
+    animation: sfirPageSlideOutLeft 0.21s ease-in;
+    overflow-x: hidden;
+}
+
+html.sfir-page-exit-right {
+    animation: sfirPageSlideOutRight 0.21s ease-in;
+    overflow-x: hidden;
+}
+
+@keyframes sfirPageSlideInLeft {
+    from { transform: translateX(-26px); opacity: 0.4; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes sfirPageSlideInRight {
+    from { transform: translateX(26px); opacity: 0.4; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes sfirPageSlideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-30px); opacity: 0.35; }
+}
+
+@keyframes sfirPageSlideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(30px); opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.sfir-page-enter-left,
+    html.sfir-page-enter-right,
+    html.sfir-page-exit-left,
+    html.sfir-page-exit-right {
+        animation: none !important;
+    }
+  /* Minimal demo chrome (mimics the sfir pages) */
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, 'Segoe UI', sans-serif; background: #0d1117; color: #c9d1d9; }
+  .slds-builder-header_container { border-bottom: 1px solid #30363d; background: #161b22; }
+  .slds-builder-header { display: flex; align-items: center; gap: 10px; padding: 0 16px; height: 46px; }
+  .slds-builder-header__nav-list { display: flex; align-items: center; list-style: none; margin: 0; padding: 4px; gap: 4px; background: rgba(255,255,255,0.04); border: 1px solid #30363d; border-radius: 999px; }
+  .slds-builder-header__nav-item { list-style: none; }
+  .slds-builder-header__item-action {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 999px;
+    color: #8b949e; text-decoration: none; font-size: 12.5px; font-weight: 600;
+    border: 1px solid transparent;
+  }
+  .slds-builder-header__item-action:hover { color: #e6edf3; background: rgba(255,255,255,0.06); }
+  .slds-builder-header__item-action.sfir-nav-active { background: #1f6feb; color: #fff; box-shadow: 0 0 0 1px rgba(255,255,255,0.1) inset; }
+  .center-title { flex: 1; text-align: center; font-size: 14px; font-weight: 700; color: #e6edf3; letter-spacing: 0.2px; }
+  .main { padding: 32px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 28px; max-width: 560px; }
+  .card h1 { margin: 0 0 6px; font-size: 18px; color: #e6edf3; }
+  .card .accent { width: 60px; height: 4px; border-radius: 4px; background: #f47067; margin-bottom: 14px; }
+  .card p { margin: 0; color: #8b949e; font-size: 13px; line-height: 1.6; }
+  .measure {
+    position: fixed; bottom: 8px; left: 8px; z-index: 999; background: rgba(0,0,0,0.8); color: #7ee787;
+    font: 11px/1.6 ui-monospace, monospace; padding: 8px 10px; border-radius: 8px; white-space: pre;
+    max-width: 90vw;
+  }
+</style>
+</head>
+<body>
+  <div class="slds-builder-header_container">
+    <header class="slds-builder-header">
+      <nav class="slds-builder-header__nav sfir-border-none">
+        <ul class="slds-builder-header__nav-list">
+
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" href="data-export.html?host=demo">
+            <span class="sfir-nav-label">Export</span>
+          </a>
+        </li>
+
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" href="data-import.html?host=demo">
+            <span class="sfir-nav-label">Import</span>
+          </a>
+        </li>
+
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action" href="org-limits.html?host=demo">
+            <span class="sfir-nav-label">Limits</span>
+          </a>
+        </li>
+
+        <li class="slds-builder-header__nav-item">
+          <a class="slds-builder-header__item-action sfir-nav-active" href="metadata-exporter.html?host=demo">
+            <span class="sfir-nav-label">Metadata</span>
+          </a>
+        </li>
+        </ul>
+      </nav>
+      <div class="center-title">Salesforce Comet — METADATA-EXPORTER PAGE</div>
+    </header>
+  </div>
+  <div class="main">
+    <div class="card">
+      <h1>Metadata</h1>
+      <div class="accent"></div>
+      <p>This is the <strong>metadata-exporter.html</strong> demo page. Click the tabs above to slide
+      between pages. The current html class is shown in the corner —
+      <em>sfir-page-enter-right</em> when arriving from the left tab, <em>sfir-page-enter-left</em>
+      when arriving from the right tab.</p>
+    </div>
+  </div>
+  <div class="measure" id="measure"></div>
+  <script>
+    /**
+ * Cross-page slide transition for the sfir tab pages
+ * (Export / Import / Limits / Metadata).
+ *
+ * The four tabs are separate documents, so switching tabs is a real
+ * navigation. This module makes it feel like a carousel:
+ *   - Entrance: when this page loads and the PREVIOUS page is known (we got
+ *     here by clicking a nav tab), the page slides in from the right when
+ *     moving forward in tab order, or from the left when moving backward.
+ *   - Exit: clicking a nav tab slides the current page out in the direction
+ *     of travel, then navigates.
+ *
+ * Direction is derived from the tab order in PAGE_ORDER plus the previously
+ * visited page stored in sessionStorage. Direct opens (menu, bookmarks) have
+ * no previous page, so no animation plays. prefers-reduced-motion disables
+ * everything.
+ */
+(function () {
+  'use strict';
+  if (typeof document === 'undefined' || typeof window === 'undefined') return;
+
+  var PAGE_ORDER = ['data-export', 'data-import', 'org-limits', 'metadata-exporter'];
+  var PAGE_MAP = {
+    export: 'data-export.html',
+    import: 'data-import.html',
+    limits: 'org-limits.html',
+    metadata: 'metadata-exporter.html'
+  };
+  var STORAGE_KEY = 'sfir_nav_prev_page';
+  var EXIT_MS = 210; // must match the CSS animation duration
+  var NAV_SELECTOR = '.slds-builder-header__item-action';
+
+  var reduceMotion = typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var navigating = false;
+
+  function currentPage() {
+    var m = (window.location.pathname || '').match(/([^/]+)\.html$/);
+    return m ? m[1] : null;
+  }
+
+  function readPrev() {
+    try { return window.sessionStorage.getItem(STORAGE_KEY); } catch (e) { return null; }
+  }
+
+  function storePrev(page) {
+    try { window.sessionStorage.setItem(STORAGE_KEY, page || ''); } catch (e) { /* ignore */ }
+  }
+
+  // ── Entrance: slide in from the side the previous page was on ─────────
+  function applyEntrance() {
+    var cur = currentPage();
+    var prev = readPrev();
+    if (!cur) return;
+    storePrev(cur);
+    if (!prev || prev === cur || reduceMotion) return;
+    var ci = PAGE_ORDER.indexOf(cur);
+    var pi = PAGE_ORDER.indexOf(prev);
+    if (ci < 0 || pi < 0) return;
+    // Moving forward in tab order -> the new page enters from the right.
+    document.documentElement.classList.add(ci > pi ? 'sfir-page-enter-right' : 'sfir-page-enter-left');
+  }
+
+  // Resolve the destination page key + href for a nav element. Returns null
+  // for non-tab links (e.g. org badge, help).
+  function resolveTarget(a) {
+    var href = a.getAttribute('href');
+    var page = a.getAttribute('data-page');
+    var file = null;
+
+    if (href) {
+      var m = href.match(/([^/?#]+)\.html/);
+      if (m) file = m[1];
+    } else if (page && PAGE_MAP[page]) {
+      file = PAGE_MAP[page].replace('.html', '');
+      href = PAGE_MAP[page] + '?' + (window.location.search || '').replace(/^\?/, '');
+    }
+    if (!file || PAGE_ORDER.indexOf(file) < 0) return null;
+    if (!href) {
+      href = file + '.html?' + (window.location.search || '').replace(/^\?/, '');
+    }
+    return { file: file, href: href };
+  }
+
+  // ── Exit: slide out toward the destination, then navigate ─────────────
+  function go(href, fromRight) {
+    if (navigating) return;
+    navigating = true;
+    if (reduceMotion || !href) {
+      window.location.href = href;
+      return;
+    }
+    var root = document.documentElement;
+    root.classList.add(fromRight ? 'sfir-page-exit-left' : 'sfir-page-exit-right');
+    window.setTimeout(function () {
+      window.location.href = href;
+    }, EXIT_MS + 30);
+  }
+
+  function onDocClick(e) {
+    if (navigating) return;
+    // New-tab gestures keep native behavior (no slide).
+    if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (!e.target || typeof e.target.closest !== 'function') return;
+    var a = e.target.closest(NAV_SELECTOR);
+    if (!a || !(a.tagName === 'A' || a.tagName === 'BUTTON')) return;
+
+    var cur = currentPage();
+    if (!cur) return;
+    var target = resolveTarget(a);
+    if (!target || target.file === cur) return;
+
+    // Capture phase: intercept before the page's own nav handlers run so the
+    // exit animation can play first.
+    e.preventDefault();
+    e.stopPropagation();
+    storePrev(cur);
+    go(target.href, PAGE_ORDER.indexOf(target.file) >= PAGE_ORDER.indexOf(cur));
+  }
+
+  function init() {
+    applyEntrance();
+    document.addEventListener('click', onDocClick, true);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Exposed for tests (distinct from theme-manager's __sfirNavSlide pill helper).
+  window.__sfirNavSlideTransition = { currentPage: currentPage, resolveTarget: resolveTarget };
+})();
+
+  </script>
+  <script>
+    function measure() {
+      const el = document.getElementById('measure');
+      const cls = document.documentElement.className;
+      const anim = getComputedStyle(document.documentElement).animationName;
+      el.textContent = 'page: metadata-exporter.html\nhtml class: ' + (cls || '(none)') +
+        '\nanimation: ' + anim;
+    }
+    // Measure a few times (the class persists; animation ends).
+    measure();
+    setTimeout(measure, 350);
+  </script>
+</body>
+</html>

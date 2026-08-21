@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+/* Copied verbatim from src/inspector.css .sfarc-toast rules */
+.sfarc-toast {
+    position: fixed !important;
+    top: 24px !important;
+    left: 50% !important;
+    transform: translate(-50%, -30px) scale(0.85) !important;
+    padding: 10px 24px !important;
+    border-radius: 30px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.3px !important;
+    color: #f4f4f5 !important;
+    background: #09090b !important;
+    border: 1px solid #27272a !important;
+    box-shadow: none !important;
+    z-index: 2147483647 !important;
+    opacity: 0 !important;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    pointer-events: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+}
+.sfarc-toast-show { opacity: 1 !important; transform: translate(-50%, 0) scale(1) !important; }
+.sfarc-toast-success { background: #09090b !important; border-color: #10b981 !important; color: #4ade80 !important; box-shadow: none !important; }
+.sfarc-toast-error { background: #09090b !important; border-color: #ef4444 !important; color: #f87171 !important; box-shadow: none !important; }
+.sfarc-toast-warning { background: #09090b !important; border-color: #f59e0b !important; color: #fbbf24 !important; box-shadow: none !important; }
+.sfarc-toast-info { background: #09090b !important; border-color: #3b82f6 !important; color: #60a5fa !important; box-shadow: none !important; }
+body { background: #e0e0e0; font-family: sans-serif; }
+button { padding: 8px 16px; margin: 8px; border-radius: 8px; border: 1px solid #999; cursor: pointer; }
+</style>
+</head>
+<body>
+<button onclick="toast('Success deleted 3 trace flags.', 'success')">Success</button>
+<button onclick="toast('Error deleting logs.', 'error')">Error</button>
+<button onclick="toast('Please select at least one trace flag to delete.', 'warning')">Warning</button>
+<button onclick="toast('Fetching accurate dates...', 'info')">Info</button>
+<script>
+function toast(message, type) {
+  const t = document.createElement('div');
+  t.className = 'sfarc-toast sfarc-toast-' + type;
+  t.textContent = message;
+  document.body.appendChild(t);
+  requestAnimationFrame(() => t.classList.add('sfarc-toast-show'));
+}
+</script>
+</body>
+</html>

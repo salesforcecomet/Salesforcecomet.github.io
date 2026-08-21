@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { background: #1e1e1e; font-family: sans-serif; padding: 24px; color: #fff; }
+.wrap { max-width: 620px; }
+/* backdrop */
+.query-backdrop {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    /* Must match #query's padding so SOQL field highlighting stays aligned. */
+    padding: 6px 12px !important;
+    font-family: Helvetica, Arial, sans-serif !important;
+    font-variant-ligatures: none !important;
+    letter-spacing: 0 !important;
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    color: transparent !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    border: none !important;
+    margin: 0 !important;
+    z-index: 1 !important;
+}
+/* query */
+#query {
+    position: relative !important;
+    z-index: 2 !important;
+    background-color: transparent !important;
+    color: #0f172a !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    /* Breathing room between the box edge and the query text. */
+    padding: 6px 12px !important;
+    min-height: 36px !important;
+    height: 48px;
+    resize: vertical !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    font-family: Helvetica, Arial, sans-serif !important;
+    font-variant-ligatures: none !important;
+    letter-spacing: 0 !important;
+    font-size: 0.85rem !important;
+    line-height: 1.45 !important;
+    caret-color: var(--sfarc-accent, #2196f3) !important;
+}
+/* preview chip */
+.sfir-query-preview-text {
+    font-family: Helvetica, Arial, sans-serif !important;
+    font-size: 11px !important;
+    color: #475569 !important;
+    background: #eef2f7 !important;
+    padding: 2px 8px !important;
+    border-radius: 6px !important;
+    border: 1px solid #d8e0ea !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+    flex: 0 1 auto !important;
+    max-width: 60% !important;
+}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div style="margin-bottom:8px; font-size:11px; color:#94a3b8; font-weight:600;">OBJECTS SUGGESTIONS:</div>
+    <div class="query-editor-wrapper" style="position:relative; width:100%; background:#ffffff; border-radius:0;">
+      <div class="query-backdrop" id="backdrop">SELECT OwnerId, BillingAddress FROM Account</div>
+      <textarea id="query" spellcheck="false">SELECT OwnerId, BillingAddress FROM Account</textarea>
+    </div>
+    <div style="margin-top:10px;">
+      <span class="sfir-query-preview-text" id="preview">SELECT OwnerId, BillingAddress FROM</span>
+    </div>
+  </div>
+  <script>
+    window.__measure = () => ({
+      editorFont: getComputedStyle(document.getElementById('query')).fontFamily,
+      backdropFont: getComputedStyle(document.getElementById('backdrop')).fontFamily,
+      previewFont: getComputedStyle(document.getElementById('preview')).fontFamily,
+      editorPad: getComputedStyle(document.getElementById('query')).padding,
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+tools:
+    shell:
+        allow:
+            - cd *
+            - ls *
+            - grep *
+            - head *
+            - sed *
+            - node *
+            - wc *
+            - echo *
+            - timeout 10 node *
+            - rm *
+            - tail *
+            - find *
+            - cat *
+            - sort
+            - python3 *
+            - '[ $code *'
+            - '[ *'
+            - uniq *
+            - sort *
+            - curl *
+            - git stash *
+            - git log *
+            - awk *
+            - stat *
+paths:
+    allow:
+        - path: /tmp/**

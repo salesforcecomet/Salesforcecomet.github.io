@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="theme-manager.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automation Cascade Explainer — Salesforce Comet</title>
+    <script src="lib/font-awesome.min.js" defer></script>
+    <link href="local-fonts.css" rel="stylesheet">
+    <link rel="stylesheet" href="glass-toast.css">
+    <link rel="icon" href="../icons/icon-48.png" type="image/png">
+    <style>
+        :root {
+            --bg-main: #0c1017;
+            --bg-panel: #161b22;
+            --bg-card: #1c2128;
+            --border-color: #30363d;
+            --text-main: #f0f6fc;
+            --text-sub: #8b949e;
+            --primary: var(--sfarc-accent-glow, #38bdf8);
+            --accent-green: #34d399;
+            --accent-amber: #fbbf24;
+            --accent-red: #f87171;
+            --accent-purple: #a855f7;
+            --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* ── Light Mode ─────────────────────────────────────────────────── */
+        body.light-theme {
+            --bg-main: #f1f5f9;
+            --bg-panel: #ffffff;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --text-main: #0f172a;
+            --text-sub: #64748b;
+            --primary: var(--sfarc-accent, #2196f3);
+            --accent-green: #059669;
+            --accent-amber: #d97706;
+            --accent-red: #dc2626;
+            --accent-purple: #7c3aed;
+        }
+
+        body.light-theme .app-header {
+            background: rgba(255, 255, 255, 0.92);
+            border-bottom-color: var(--border-color);
+        }
+
+        body.light-theme .object-select {
+            background: #ffffff;
+            border-color: #d0d5dd;
+            color: #1e293b;
+        }
+
+        body.light-theme .object-select option {
+            background: #ffffff;
+            color: #1e293b;
+        }
+
+        body.light-theme .analyze-btn {
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.25);
+        }
+
+        body.light-theme .analyze-btn:hover {
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+        }
+
+        body.light-theme .metric-card {
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        body.light-theme .timeline-step {
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+        }
+
+        body.light-theme .item-row {
+            background: rgba(0, 0, 0, 0.02);
+            border-color: rgba(0, 0, 0, 0.06);
+        }
+
+        body.light-theme .item-row:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        body.light-theme .step-dot {
+            background: var(--bg-main);
+        }
+
+        body.light-theme .step-number {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        body.light-theme .step-count-badge {
+            background: rgba(33, 150, 243, 0.12);
+            color: var(--primary);
+        }
+
+        body.light-theme .conflict-warning {
+            background: rgba(220, 38, 38, 0.08);
+            border-color: rgba(220, 38, 38, 0.2);
+        }
+
+        body.light-theme .nav-tab-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        body.light-theme .nav-tab-btn.active {
+            color: #ffffff;
+        }
+
+        body.light-theme .btn-action:not(.primary) {
+            background: rgba(0, 0, 0, 0.05);
+            border-color: #d0d5dd;
+            color: #334155;
+        }
+
+        body.light-theme .btn-action:not(.primary):hover {
+            background: rgba(0, 0, 0, 0.09);
+            border-color: rgba(0, 0, 0, 0.14);
+        }
+
+        /* ── Header ─────────────────────────────────────────────────── */
+        .app-header {
+            background: rgba(22, 27, 34, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .header-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-title-group img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .header-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .header-subtitle {
+            font-size: 11px;
+            color: var(--text-sub);
+            margin-top: 1px;
+        }
+
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        select,
+        input,
+        button {
+            font-family: inherit;
+        }
+
+        .object-select {
+            background: rgba(30, 41, 59, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #f1f5f9;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+            min-width: 180px;
+            height: 30px;
+        }
+
+        .object-select option {
+            background: var(--bg-card);
+            color: #fff;
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, var(--sfarc-accent, #2196f3) 0%, var(--sfarc-accent-dark, #1976d2) 100%);
+            color: var(--sfarc-accent-contrast, white);
+            border: none;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            height: 30px;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.4);
+        }
+
+        /* ── Main Container ─────────────────────────────────────────── */
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px 18px;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+
+        /* ── Summary Bar ─────────────────────────────────────────────── */
+        .summary-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .metric-card:hover {
+            border-color: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.35);
+            transform: translateY(-1px);
+        }
+
+        .metric-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            flex-shrink: 0;
+            background: rgba(0, 0, 0, 0.04);
+            color: var(--text-sub);
+        }
+
+        body:not(.light-theme) .metric-icon {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-sub);
+        }
+
+        .metric-info label {
+            font-size: 10px;
+            color: var(--text-sub);
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+
+        .metric-info span {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        /* ── Timeline ─────────────────────────────────────────────────── */
+        .timeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: 24px;
+            width: 2px;
+            background: var(--border-color);
+            border-radius: 2px;
+        }
+
+        .timeline-step {
+            position: relative;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 13px 17px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .timeline-step.active {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .timeline-step.empty {
+            background: rgba(248, 250, 252, 0.5);
+            border-color: var(--border-color);
+            opacity: 0.75;
+        }
+
+        body:not(.light-theme) .timeline-step.empty {
+            background: rgba(22, 27, 34, 0.4);
+            opacity: 0.7;
+        }
+
+        .step-dot {
+            position: absolute;
+            left: -30px;
+            top: 17px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            box-shadow: 0 0 0 4px var(--bg-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+            z-index: 2;
+        }
+
+        .timeline-step.active .step-dot {
+            border-color: var(--primary);
+            background: var(--bg-card);
+        }
+
+        .timeline-step.active .step-dot::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: block;
+        }
+
+        .timeline-step.empty .step-dot {
+            border-color: var(--border-color);
+            background: var(--bg-main);
+        }
+
+        .timeline-step.empty .step-dot::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--text-sub);
+            opacity: 0.35;
+            display: block;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-number {
+            font-size: 10px;
+            font-weight: 500;
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-sub);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        body:not(.light-theme) .step-number {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-sub);
+        }
+
+        .timeline-step.active .step-number {
+            background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+            color: var(--primary);
+        }
+
+        .step-icon {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .timeline-step.active .step-icon {
+            color: var(--primary);
+        }
+
+        .step-title-text {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .timeline-step.empty .step-title-text {
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-sub);
+        }
+
+        .step-count-badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 9px;
+            border-radius: 12px;
+            background: rgba(var(--sfarc-accent-rgb, 33, 150, 243), 0.1);
+            color: var(--primary);
+            letter-spacing: 0.2px;
+        }
+
+        .timeline-step.empty .step-count-badge {
+            font-size: 10.5px;
+            font-weight: 400;
+            background: transparent;
+            color: var(--text-sub);
+            opacity: 0.7;
+            border: 1px solid var(--border-color);
+        }
+
+        /* ── Item List ─────────────────────────────────────────────────── */
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .item-row {
+            background: rgba(0, 0, 0, 0.02);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 7px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+            transition: background 0.15s ease;
+        }
+
+        body:not(.light-theme) .item-row {
+            background: rgba(15, 23, 42, 0.4);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .item-row:hover {
+            background: rgba(0, 0, 0, 0.04);
+        }
+
+        body:not(.light-theme) .item-row:hover {
+            background: rgba(15, 23, 42, 0.65);
+        }
+
+        .item-name {
+            font-weight: 500;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-arrow {
+            font-size: 10px;
+            color: var(--text-sub);
+            opacity: 0.6;
+        }
+
+        .item-subtext {
+            font-size: 11px;
+            font-weight: 400;
+            color: var(--text-sub);
+        }
+
+        .step-empty-msg {
+            font-size: 11.5px;
+            font-weight: 400;
+            color: var(--text-sub);
+            opacity: 0.8;
+            padding: 2px 0;
+        }
+
+        .conflict-warning {
+            background: rgba(248, 113, 113, 0.08);
+            border: 1px solid rgba(248, 113, 113, 0.25);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            color: var(--accent-red);
+        }
+    </style>
+    <link rel="stylesheet" href="custom-dropdown.css">
+    <link rel="stylesheet" href="controls.css">
+
+    <script src="favicon-glyphs.js"></script>
+    <script src="colored-favicon.js" defer></script>
+</head>
+
+<body>
+    <header class="app-header">
+        <div class="header-title-group">
+            <i class="fa-solid fa-sitemap" style="font-size: 18px; color: var(--primary);"></i>
+            <div>
+                <div class="header-title">Automation Cascade Explainer</div>
+                <div class="header-subtitle">Salesforce Save Order of Execution Timeline & Conflict Detector</div>
+            </div>
+        </div>
+        <div class="controls-bar">
+            <select id="object-select" class="object-select" data-searchable data-search-placeholder="Search objects...">
+                <option value="">Loading objects...</option>
+            </select>
+            <button id="analyze-btn" class="analyze-btn">
+                <i class="fa-solid fa-play"></i> Analyze Execution Order
+            </button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <!-- Metric Summary Bar -->
+        <div class="summary-bar">
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fa-solid fa-bolt"></i>
+                </div>
+                <div class="metric-info">
+                    <label>Before-Save Flows</label>
+                    <span id="count-before-flows">0</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div class="metric-info">
+                    <label>Apex Triggers</label>
+                    <span id="count-triggers">0</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="metric-info">
+                    <label>Validation Rules</label>
+                    <span id="count-validations">0</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fa-solid fa-layer-group"></i>
+                </div>
+                <div class="metric-info">
+                    <label>After-Save Flows</label>
+                    <span id="count-after-flows">0</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="metric-info">
+                    <label>Field Conflicts</label>
+                    <span id="count-conflicts">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conflicts Box Container -->
+        <div id="conflicts-container" style="display: none; flex-direction: column; gap: 8px;"></div>
+
+        <!-- Execution Order Timeline -->
+        <div id="timeline-container" class="timeline-container">
+            <div style="text-align: center; color: var(--text-sub); padding: 40px; font-size: 12px;">
+                <i class="fa-solid fa-sitemap" style="font-size: 32px; opacity: 0.4; display: block; margin-bottom: 12px; color: var(--primary);"></i>
+                Select an Object and click <b>Analyze Execution Order</b> to generate the Order of Execution map.
+            </div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="glass-toast.js"></script>
+    <script src="automation-cascade.js"></script>
+    <script src="custom-dropdown.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,837 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../src/custom-dropdown.css">
+<style>
+body { font-family: -apple-system, sans-serif; margin: 0; background: #1e1e1e; }
+.tool-tab { box-sizing: border-box; }
+</style>
+<style>
+/* ── Tool Tabs — Event Monitor inspired redesign ── */
+        .tool-tab {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            background: #0c1017;
+            color: #f0f6fc;
+            overflow-y: auto;
+        }
+.tool-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #f0f6fc;
+            cursor: pointer;
+            transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+.tool-btn:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+.tool-btn.primary {
+            background: #38bdf8;
+            color: #082f49;
+            border-color: #38bdf8;
+            font-weight: 600;
+        }
+.tool-btn.primary:hover {
+            background: #7dd3fc;
+            border-color: #7dd3fc;
+            color: #082f49;
+        }
+.tool-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+.tool-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #8b949e;
+        }
+.tool-input,
+        .tool-textarea,
+        .tool-select {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            color: #f0f6fc;
+            font-size: 12.5px;
+            padding: 8px 12px;
+            outline: none;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            width: 100%;
+            box-sizing: border-box;
+            font-family: 'Fira Code', 'Consolas', monospace;
+        }
+/* Uniform control height for tool inputs + dropdowns so they align
+           pixel-perfectly in the same row (native select intrinsic heights vary) */
+        .tool-input,
+        .tool-select {
+            height: 32px;
+            min-height: 32px;
+            max-height: 32px;
+            padding: 0 12px;
+            line-height: 1;
+        }
+/* Guarantee tool dropdowns/inputs always render dark and uniform, even
+           if a global select/input rule from another stylesheet leaks in */
+        .tool-tab .tool-select,
+        .tool-tab .tool-input {
+            background-color: #161b22 !important;
+            border-color: #30363d !important;
+            color: #f0f6fc !important;
+            height: 32px !important;
+            min-height: 32px !important;
+            max-height: 32px !important;
+            border-radius: 8px !important;
+            box-sizing: border-box !important;
+        }
+.tool-input:focus,
+        .tool-textarea:focus,
+        .tool-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.18);
+        }
+.tool-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            padding-right: 30px;
+            cursor: pointer;
+            font-family: inherit;
+        }
+.tool-select option {
+            background: #161b22;
+            color: #f0f6fc;
+        }
+/* ── Bulk Permission Wizard ── */
+        .bpw-tab {
+            background: #0c1017;
+        }
+.bpw-header {
+            flex-shrink: 0;
+        }
+.bpw-header-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+.bpw-header-title>i {
+            font-size: 22px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.28);
+            border-radius: 8px;
+            padding: 8px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+.bpw-header-text h2 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+            color: #f0f6fc;
+            letter-spacing: 0.01em;
+        }
+.bpw-header-text p {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #8b949e;
+        }
+.bpw-stepper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+            padding: 10px 14px;
+            background: #11161d;
+            border: 1px solid #21262d;
+            border-radius: 10px;
+        }
+.bpw-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #8b949e;
+            white-space: nowrap;
+        }
+.bpw-step-circle {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #21262d;
+            border: 1px solid #30363d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #8b949e;
+            flex-shrink: 0;
+        }
+.bpw-step.active .bpw-step-circle {
+            background: #38bdf8;
+            border-color: #38bdf8;
+            color: #082f49;
+        }
+.bpw-step.active .bpw-step-label {
+            color: #38bdf8;
+            font-weight: 600;
+        }
+.bpw-step-label {
+            font-size: 12px;
+            font-weight: 500;
+        }
+.bpw-step-line {
+            flex: 1;
+            height: 2px;
+            min-width: 22px;
+            background: #21262d;
+            border-radius: 2px;
+        }
+.bpw-step-line.active {
+            background: #38bdf8;
+        }
+.bpw-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+.bpw-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-height: 0;
+        }
+.bpw-controls {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+.bpw-control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            min-width: 0;
+        }
+.bpw-control-group .bpw-permset {
+            width: 260px;
+        }
+.bpw-control-group.bpw-target-search {
+            flex: 1;
+            min-width: 200px;
+        }
+.bpw-control-group.bpw-object-search {
+            flex: 1;
+            min-width: 220px;
+        }
+.bpw-search-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+.bpw-search-wrap>i {
+            position: absolute;
+            left: 10px;
+            font-size: 11px;
+            color: #8b949e;
+            pointer-events: none;
+        }
+.bpw-search-wrap .tool-input {
+            padding-left: 28px;
+        }
+.bpw-list-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            background: #11161d;
+            border: 1px solid #21262d;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+.bpw-list-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-bottom: 1px solid #21262d;
+            background: #141a22;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+.bpw-select-all {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #f0f6fc;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+.bpw-select-all input[type="checkbox"],
+        .bpw-object-check input[type="checkbox"],
+        .bpw-rt-row input[type="checkbox"],
+        .bpw-field-toggle input[type="checkbox"] {
+            accent-color: #38bdf8;
+            width: 13px;
+            height: 13px;
+            cursor: pointer;
+        }
+.bpw-count-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: rgba(56, 189, 248, 0.14);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #7dd3fc;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+.bpw-selected-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            min-height: 20px;
+        }
+.bpw-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(56, 189, 248, 0.16);
+            border: 1px solid rgba(56, 189, 248, 0.32);
+            color: #bae6fd;
+            font-size: 11px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+.bpw-pill i {
+            color: #7dd3fc;
+        }
+.bpw-list-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-bottom: 1px solid #21262d;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #8b949e;
+            background: #10151c;
+            flex-shrink: 0;
+        }
+.bpw-list-check {
+            width: 22px;
+            flex-shrink: 0;
+        }
+.bpw-list-name {
+            flex: 1.2;
+            min-width: 0;
+        }
+.bpw-list-desc {
+            flex: 1;
+            min-width: 0;
+        }
+.bpw-list-scroll {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+.bpw-object-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.6);
+            cursor: pointer;
+            transition: background-color 0.12s ease;
+        }
+.bpw-object-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+.bpw-object-row.selected {
+            background: rgba(56, 189, 248, 0.1);
+        }
+.bpw-object-row.selected .bpw-object-name {
+            color: #bae6fd;
+            font-weight: 600;
+        }
+.bpw-object-check {
+            width: 22px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+.bpw-object-name {
+            flex: 1.2;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 12.5px;
+            color: #f0f6fc;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+.bpw-object-desc {
+            flex: 1;
+            font-size: 12px;
+            color: #8b949e;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+.bpw-empty {
+            padding: 26px 14px;
+            text-align: center;
+            color: #8b949e;
+            font-size: 12.5px;
+        }
+.bpw-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 4px 2px 2px;
+            flex-shrink: 0;
+        }
+.bpw-back {
+            background: transparent;
+            border-color: #30363d;
+        }
+.bpw-rt-title {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #f0f6fc;
+            flex: 1;
+        }
+.bpw-rt-group {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.6);
+        }
+.bpw-rt-object {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            color: #7dd3fc;
+            margin-bottom: 5px;
+        }
+.bpw-rt-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+.bpw-rt-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 9px;
+            border-radius: 12px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            font-size: 11.5px;
+            color: #c9d1d9;
+            cursor: pointer;
+        }
+.bpw-rt-row:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+.bpw-field-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.6);
+        }
+.bpw-field-name {
+            flex: 1.4;
+            min-width: 0;
+            font-size: 12.5px;
+            color: #f0f6fc;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+.bpw-field-api {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 10.5px;
+            color: #8b949e;
+            margin-left: 6px;
+        }
+.bpw-field-type {
+            flex: 0.6;
+            font-size: 11px;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+.bpw-field-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            color: #8b949e;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+.bpw-field-toggle:has(input:checked) {
+            color: #7dd3fc;
+        }
+.bpw-verify-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 14px;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.6);
+            font-size: 12.5px;
+            color: #8b949e;
+        }
+.bpw-verify-row strong {
+            color: #f0f6fc;
+            font-weight: 600;
+        }
+.bpw-verify-object {
+            padding: 8px 14px;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.5);
+        }
+.bpw-verify-objhead {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12.5px;
+            color: #f0f6fc;
+        }
+.bpw-verify-objhead span {
+            color: #8b949e;
+            font-size: 11.5px;
+        }
+.bpw-verify-sub {
+            font-size: 11px;
+            color: #8b949e;
+            margin-top: 3px;
+        }
+.bpw-verify-body {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+.bpw-verify-result {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.6);
+        }
+.bpw-verify-result.ok {
+            color: #34d399;
+        }
+.bpw-verify-result.err {
+            color: #f85149;
+        }
+.bpw-verify-result>i {
+            font-size: 20px;
+        }
+.bpw-verify-result div {
+            display: flex;
+            flex-direction: column;
+        }
+.bpw-verify-result strong {
+            font-size: 13px;
+            font-weight: 600;
+        }
+.bpw-verify-result span {
+            font-size: 11.5px;
+            color: #8b949e;
+        }
+.bpw-verify-fail {
+            padding: 6px 14px;
+            font-size: 11.5px;
+            color: #f87171;
+            border-bottom: 1px solid rgba(33, 38, 45, 0.4);
+        }
+.settings-footer .tool-btn i {
+            font-size: 11px;
+        }
+/* ── Light-mode: tool tabs (JSON to Apex, SOQL→GraphQL, Metadata
+           Backup, Anon Apex, REST API Tester). Everything must go light —
+           previously only the readonly output got a light background while the
+           chrome stayed dark AND kept its light #f0f6fc text, producing the
+           faint-on-white output boxes. ── */
+        body[data-theme="sfarc-light"] .tool-tab {
+            background: #f6f8fa;
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .tool-btn {
+            background: #ffffff;
+            border-color: #d8dde6;
+            color: #334155;
+        }
+body[data-theme="sfarc-light"] .tool-btn:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+body[data-theme="sfarc-light"] .tool-btn.primary {
+            background: #0284c7;
+            border-color: #0284c7;
+            color: #ffffff;
+        }
+body[data-theme="sfarc-light"] .tool-btn.primary:hover {
+            background: #0369a1;
+            border-color: #0369a1;
+            color: #ffffff;
+        }
+/* Inputs/selects/textareas — must beat the hardcoded dark
+           `.tool-tab .tool-input/.tool-select` !important rule */
+        body[data-theme="sfarc-light"] .tool-tab .tool-input,
+        body[data-theme="sfarc-light"] .tool-tab .tool-textarea,
+        body[data-theme="sfarc-light"] .tool-tab .tool-select {
+            background-color: #ffffff !important;
+            border-color: #d8dde6 !important;
+            color: #1e293b !important;
+        }
+body[data-theme="sfarc-light"] .tool-input:focus,
+        body[data-theme="sfarc-light"] .tool-textarea:focus,
+        body[data-theme="sfarc-light"] .tool-select:focus {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.14);
+        }
+body[data-theme="sfarc-light"] .tool-select option {
+            background: #ffffff;
+            color: #1e293b;
+        }
+/* ── Bulk Permission Wizard — light theme (the wizard opens in the
+           code editor tab and must look right when the editor is light) ── */
+        body[data-theme="sfarc-light"] .bpw-tab {
+            background: #ffffff;
+        }
+body[data-theme="sfarc-light"] .bpw-header-text h2 {
+            color: #0f172a;
+        }
+body[data-theme="sfarc-light"] .bpw-header-text p {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-stepper {
+            background: #f8fafc;
+            border-color: #e2e8f0;
+        }
+body[data-theme="sfarc-light"] .bpw-step {
+            color: #94a3b8;
+        }
+body[data-theme="sfarc-light"] .bpw-step-circle {
+            background: #eef2f7;
+            border-color: #d8dde6;
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-step.active .bpw-step-circle {
+            background: #0176d3;
+            border-color: #0176d3;
+            color: #ffffff;
+        }
+body[data-theme="sfarc-light"] .bpw-step.active .bpw-step-label {
+            color: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-step-line {
+            background: #d8dde6;
+        }
+body[data-theme="sfarc-light"] .bpw-step-line.active {
+            background: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-list-box {
+            background: #ffffff;
+            border-color: #d8dde6;
+        }
+body[data-theme="sfarc-light"] .bpw-list-toolbar {
+            background: #f8fafc;
+            border-bottom-color: #d8dde6;
+        }
+body[data-theme="sfarc-light"] .bpw-select-all {
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .bpw-select-all input[type="checkbox"],
+        body[data-theme="sfarc-light"] .bpw-object-check input[type="checkbox"],
+        body[data-theme="sfarc-light"] .bpw-rt-row input[type="checkbox"],
+        body[data-theme="sfarc-light"] .bpw-field-toggle input[type="checkbox"] {
+            accent-color: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-count-badge {
+            background: rgba(1, 118, 211, 0.08);
+            border-color: rgba(1, 118, 211, 0.24);
+            color: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-pill {
+            background: rgba(1, 118, 211, 0.1);
+            border-color: rgba(1, 118, 211, 0.26);
+            color: #0369a1;
+        }
+body[data-theme="sfarc-light"] .bpw-pill i {
+            color: #0369a1;
+        }
+body[data-theme="sfarc-light"] .bpw-list-head {
+            background: #f1f5f9;
+            border-bottom-color: #d8dde6;
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-object-row {
+            border-bottom-color: #eef2f7;
+        }
+body[data-theme="sfarc-light"] .bpw-object-row:hover {
+            background: #f8fafc;
+        }
+body[data-theme="sfarc-light"] .bpw-object-row.selected {
+            background: rgba(1, 118, 211, 0.06);
+        }
+body[data-theme="sfarc-light"] .bpw-object-row.selected .bpw-object-name {
+            color: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-object-name {
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .bpw-object-desc {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-empty {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-back {
+            border-color: #d8dde6;
+        }
+body[data-theme="sfarc-light"] .bpw-rt-title {
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .bpw-rt-object {
+            color: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-rt-row {
+            background: #f8fafc;
+            border-color: #d8dde6;
+            color: #334155;
+        }
+body[data-theme="sfarc-light"] .bpw-rt-row:hover {
+            border-color: rgba(1, 118, 211, 0.4);
+        }
+body[data-theme="sfarc-light"] .bpw-field-row {
+            border-bottom-color: #eef2f7;
+        }
+body[data-theme="sfarc-light"] .bpw-field-name {
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .bpw-field-api {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-field-type {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-field-toggle {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-field-toggle:has(input:checked) {
+            color: #0176d3;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-row {
+            border-bottom-color: #eef2f7;
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-row strong {
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-object {
+            border-bottom-color: #eef2f7;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-objhead {
+            color: #1e293b;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-objhead span,
+        body[data-theme="sfarc-light"] .bpw-verify-sub {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-result {
+            border-bottom-color: #eef2f7;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-result.ok {
+            color: #059669;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-result.err {
+            color: #dc2626;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-result span {
+            color: #64748b;
+        }
+body[data-theme="sfarc-light"] .bpw-verify-fail {
+            color: #dc2626;
+            border-bottom-color: #eef2f7;
+        }
+</style>
+</head><body>
+<div class="tool-tab bpw-tab" style="display:flex;flex-direction:column;height:100vh;box-sizing:border-box;padding:16px;gap:12px;overflow:auto;">
+  <div class="bpw-header"><div class="bpw-header-title"><i class="fa-solid fa-layer-group"></i><div class="bpw-header-text"><h2>Bulk Permission Wizard</h2><p>Guided setup to grant bulk permissions.</p></div></div></div>
+  <div class="bpw-stepper">
+    <div class="bpw-step active" data-bpw-step="1"><div class="bpw-step-circle">1</div><div class="bpw-step-label">Target &amp; Objects</div></div>
+    <div class="bpw-step-line"></div>
+    <div class="bpw-step" data-bpw-step="2"><div class="bpw-step-circle">2</div><div class="bpw-step-label">Objects &amp; Record Types</div></div>
+    <div class="bpw-step-line"></div>
+    <div class="bpw-step" data-bpw-step="3"><div class="bpw-step-circle">3</div><div class="bpw-step-label">Fields &amp; Perms</div></div>
+    <div class="bpw-step-line"></div>
+    <div class="bpw-step" data-bpw-step="4"><div class="bpw-step-circle">4</div><div class="bpw-step-label">Verify &amp; Execute</div></div>
+  </div>
+  <div class="bpw-body">
+    <div class="bpw-panel" data-bpw-panel="1">
+      <div class="bpw-controls">
+        <div class="bpw-control-group"><label class="tool-label" for="bpw-permset">Permission Set</label><select id="bpw-permset" class="tool-select bpw-permset"><option>Loading permission sets...</option></select></div>
+        <div class="bpw-control-group bpw-target-search"><label class="tool-label" for="bpw-target-name">Target Name</label><div class="bpw-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="bpw-target-name" class="tool-input" placeholder="Enter target Name (e.g. Sales_User_PS)..."></div></div>
+        <div class="bpw-control-group bpw-object-search"><label class="tool-label" for="bpw-object-search">SELECT OBJECTS</label><div class="bpw-search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="text" id="bpw-object-search" class="tool-input" placeholder="Search objects..."></div></div>
+      </div>
+      <div class="bpw-list-box">
+        <div class="bpw-list-toolbar"><label class="bpw-select-all"><input type="checkbox" id="bpw-select-all"><span>Select All</span></label><span class="bpw-count-badge" id="bpw-count-badge">950 objects</span><div class="bpw-selected-pills" id="bpw-selected-pills"><span class="bpw-pill"><i class="fa-solid fa-xmark"></i> Account</span><span class="bpw-pill"><i class="fa-solid fa-xmark"></i> Opportunity</span></div></div>
+        <div class="bpw-list-head"><span class="bpw-list-check"></span><span class="bpw-list-name">Object API Name</span><span class="bpw-list-desc">Description</span></div>
+        <div class="bpw-list-scroll" id="bpw-object-list" style="max-height:260px;overflow-y:auto;">
+          <div class="bpw-object-row"><span class="bpw-object-check"><input type="checkbox" checked></span><span class="bpw-object-name">AcceptedEventRelation</span><span class="bpw-object-desc">Accepted Event Relation</span></div>
+          <div class="bpw-object-row"><span class="bpw-object-check"><input type="checkbox"></span><span class="bpw-object-name">Account</span><span class="bpw-object-desc"></span></div>
+          <div class="bpw-object-row"><span class="bpw-object-check"><input type="checkbox"></span><span class="bpw-object-name">AccountChangeEvent</span><span class="bpw-object-desc">Account Change Event</span></div>
+          <div class="bpw-object-row"><span class="bpw-object-check"><input type="checkbox"></span><span class="bpw-object-name">AccountCleanInfo</span><span class="bpw-object-desc">Account Clean Info</span></div>
+          <div class="bpw-object-row"><span class="bpw-object-check"><input type="checkbox"></span><span class="bpw-object-name">AccountContactRole</span><span class="bpw-object-desc">Account Contact Role</span></div>
+        </div>
+      </div>
+      <div class="bpw-footer"><button class="tool-btn primary bpw-next" id="bpw-next-1"><i class="fa-solid fa-arrow-right"></i> Next</button></div>
+    </div>
+  </div>
+</div>
+<script src="../lib/font-awesome.min.js"></script>
+<script>
+// Theme switcher for verification
+document.body.setAttribute('data-theme', 'sfarc-dark');
+window.setTheme = function(t) { document.body.setAttribute('data-theme', t); };
+</script>
+</body></html>

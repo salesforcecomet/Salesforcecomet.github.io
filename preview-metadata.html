@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Metadata Exporter — Members Pane (dark)</title>
+  <style>
+/* custom-dropdown.css */
+
+/* NUKE native styles from wrapper container, beating inspector.css specificity */
+html body .sfarc-custom-dropdown-container,
+html body #sfarc-panel .sfarc-custom-dropdown-container,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container,
+html body #sfarc-panel .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container:hover,
+html body #sfarc-panel .sfarc-custom-dropdown-container:focus,
+html body #sfarc-panel:not(.sfarc-dark-theme) .sfarc-custom-dropdown-container:focus,
+html body #sfarc-panel.sfarc-dark-theme .sfarc-custom-dropdown-container:focus {
+    position: relative;
+    display: inline-block;
+    box-sizing: border-box;
+    font-family: inherit;
+    /* Reset all native select styles that leaked in via copied classes */
+    background: transparent !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    height: auto !important;
+    box-shadow: none !important;
+    min-height: 0 !important;
+}
+
+/* Hide the original native select but keep it in DOM for events/forms */
+select.sfarc-custom-dropdown-hidden-select,
+body select.sfarc-custom-dropdown-hidden-select,
+html body select.sfarc-custom-dropdown-hidden-select {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.sfarc-custom-dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    min-height: 26px;
+    height: 26px;
+    padding: 0 8px 0 12px;
+    background: rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    color: #1e293b;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.sfarc-custom-dropdown-trigger:hover {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.sfarc-custom-dropdown-trigger[data-disabled="true"] {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #f4f4f5;
+}
+
+.sfarc-custom-dropdown-value {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-right: 8px;
+}
+
+.sfarc-custom-dropdown-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #71717a;
+    transition: transform 0.2s ease;
+}
+
+.sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-icon {
+    transform: rotate(180deg);
+}
+
+.sfarc-custom-dropdown-container.sfarc-open {
+    z-index: 100 !important;
+}
+
+.sfarc-custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 100%;
+    max-height: 250px;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.sfarc-custom-dropdown-option {
+    display: flex;
+    align-items: center;
+    padding: 4px 12px 4px 32px; /* Extra left padding for checkmark space */
+    border-radius: 6px;
+    cursor: pointer;
+    color: #27272a;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.1s ease;
+    position: relative;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.sfarc-custom-dropdown-option:hover {
+    background: #f4f4f5;
+}
+
+.sfarc-custom-dropdown-option.sfarc-selected {
+    background: #e0f2fe; /* Light blue background for selected */
+    color: #0369a1; /* Dark blue text */
+}
+
+/* The checkmark for selected options */
+.sfarc-custom-dropdown-checkmark {
+    position: absolute;
+    left: 10px;
+    display: none;
+    color: #0284c7; /* Primary blue checkmark */
+}
+
+.sfarc-custom-dropdown-option.sfarc-selected .sfarc-custom-dropdown-checkmark {
+    display: flex;
+}
+
+/* Dark Mode Overrides */
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger {
+    background: #1e1e1e;
+    border-color: #3c3c3c;
+    color: #cccccc;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger:hover,
+.sfarc-dark-theme .sfarc-custom-dropdown-container.sfarc-open .sfarc-custom-dropdown-trigger {
+    border-color: #007fd4;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-trigger[data-disabled="true"] {
+    background: #18181b;
+    color: #71717a;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-menu {
+    background: #252526;
+    border: 1px solid #454545;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option {
+    color: #cccccc;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-option:hover,
+.sfarc-dark-theme .sfarc-custom-dropdown-option.sfarc-selected {
+    background: #04395e;
+    color: #ffffff;
+}
+
+.sfarc-dark-theme .sfarc-custom-dropdown-checkmark {
+    color: #38bdf8;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #09090b !important;
+    color: #f4f4f5 !important;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow: hidden;
+    margin-top: 44px;
+    background-color: #09090b !important;
+}
+
+/* Header */
+.header {
+    background-color: #18181b !important;
+    border-bottom: 1px solid #27272a !important;
+    padding: 8px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.header-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f4f4f5 !important;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.primary-btn {
+    background-color: #0284c7 !important;
+    color: white !important;
+    border: none !important;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+    transition: all 0.15s ease;
+}
+
+.primary-btn:hover {
+    background-color: #0369a1 !important;
+    transform: translateY(-1px);
+}
+
+.secondary-btn {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f4f4f5 !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+}
+
+.icon-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #a1a1aa;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    padding: 5px;
+    gap: 5px;
+    background-color: #09090b !important;
+    overflow: hidden;
+}
+
+.pane {
+    flex: 1;
+    background: #18181b;
+    border: 1px solid #333;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    color-scheme: dark; /* Force native UI elements (checkboxes, scrollbars) to be dark */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.pane-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #27272a !important;
+    background: #18181b !important;
+}
+
+.pane-header h3 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #f4f4f5 !important;
+}
+
+.pane-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-link {
+    color: #bbb;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+}
+
+.action-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.search-box {
+    padding: 10px 12px;
+    position: relative;
+}
+
+.search-box input[type="text"],
+input[type="text"].input-small {
+    width: 100% !important;
+    background-color: #1e1e1e !important;
+    border: 1px solid #3c3c3c !important;
+    color: #cccccc !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    font-size: 13px !important;
+    height: 28px !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease !important;
+}
+
+.search-box input[type="text"] {
+    padding: 6px 12px 6px 34px !important;
+}
+
+input[type="text"].input-small {
+    padding: 6px 14px !important;
+}
+
+.search-box input[type="text"]:focus,
+input[type="text"].input-small:focus,
+.search-box input[type="text"]:hover,
+input[type="text"].input-small:hover {
+    border-color: #007fd4 !important;
+}
+
+/* Removed light-theme input overrides to keep input fields dark */
+
+.search-box input[type="text"]::placeholder,
+input[type="text"].input-small::placeholder {
+    color: #94a3b8 !important;
+}
+
+.dropdown-small option {
+    background-color: #18181b !important;
+    color: #f1f5f9 !important;
+}
+
+.filter-toolbar {
+    padding: 0 15px 10px 15px;
+    display: flex;
+    gap: 10px;
+}
+
+.dropdown-small {
+    flex: 1;
+    cursor: pointer;
+    background-color: #1e1e1e !important;
+    color: #f1f5f9 !important;
+    border: 1px solid #3c3c3c !important;
+    border-radius: 4px !important;
+    height: 28px !important;
+    font-size: 13px !important;
+}
+
+input[type="text"].input-small {
+    flex: 1;
+}
+
+/* Removed conflicting light-theme overrides for search inputs */
+
+
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.list-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 15px 15px 15px;
+}
+
+.list-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #3f3f46 !important;
+    color: #f4f4f5 !important;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+
+.list-item:hover {
+    background-color: #27272a !important;
+    color: #ffffff !important;
+}
+
+.list-item.selected {
+    background-color: #0284c7 !important;
+    color: #ffffff !important;
+}
+
+.item-checkbox {
+    margin-right: 12px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #38bdf8;
+}
+
+.item-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.item-name {
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: #f4f4f5 !important;
+}
+
+.list-item:hover .item-name {
+    color: #ffffff !important;
+}
+
+.list-item.selected .item-name {
+    color: #ffffff !important;
+}
+
+.item-arrow {
+    margin-left: auto;
+    color: #a1a1aa !important;
+    display: flex;
+    align-items: center;
+}
+
+.list-item.selected .item-arrow {
+    color: #ffffff !important;
+}
+
+.item-meta {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.meta-item svg {
+    opacity: 0.7;
+}
+
+/* Tabs */
+.header-tabs {
+    display: flex;
+    gap: 20px;
+    margin-left: 40px;
+    flex: 1;
+}
+
+.nav-tab {
+    background: transparent;
+    border: none;
+    color: #a1a1aa !important;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    transition: all 0.15s ease;
+}
+
+.nav-tab:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.nav-tab.sfarc-active {
+    color: #ffffff !important;
+}
+
+/* Selection Pane Styles */
+.selection-pane {
+    display: flex;
+    flex-direction: column;
+}
+
+.selection-group-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    margin: 8px;
+    overflow: hidden;
+}
+
+.selection-group-header {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+.selection-group-badge {
+    font-size: 10px;
+    font-weight: 700;
+    color: #6366f1;
+    background: rgba(99, 102, 241, 0.15);
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-right: 8px;
+}
+
+.selection-count-pill {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-main);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.selection-item {
+    padding: 5px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-size: 13px;
+    color: var(--text-main);
+    transition: background 0.1s;
+}
+
+.selection-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.selection-item-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.selection-remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.selection-remove-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+body.sfarc-dark-theme .selection-group-header {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+body.light-theme .selection-group-header {
+    background: rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid var(--border);
+}
+
+body.light-theme .selection-item {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+body.light-theme .selection-item:hover {
+    background: rgba(0, 0, 0, 0.03);
+}
+
+.nav-tab.sfarc-active {
+    color: #ffffff !important;
+    background: #0284c7 !important;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+}
+
+/* View Containers */
+.view-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.view-container.sfarc-active {
+    display: flex !important;
+}
+
+/* Coverage View */
+.coverage-container {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.coverage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.coverage-search {
+    width: 300px;
+    position: relative;
+}
+
+.coverage-stats {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: #ddd;
+}
+
+.coverage-table-container {
+    flex: 1;
+    overflow: auto;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.coverage-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.coverage-table th,
+.coverage-table td {
+    padding: 10px 15px;
+    text-align: left;
+    border-bottom: 1px solid #333;
+}
+
+.coverage-table th {
+    background: #252526;
+    color: #aaa;
+    font-weight: 500;
+    position: sticky;
+    top: 0;
+}
+
+.coverage-table tr:hover {
+    background: #2a2d2e;
+}
+
+/* Progress Bar */
+.progress-bar-bg {
+    width: 100px;
+    height: 8px;
+    background: #333;
+    border-radius: 9999px !important;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: #4caf50;
+}
+
+.progress-bar-fill.low {
+    background: #f44336;
+}
+
+.progress-bar-fill.medium {
+    background: #ff9800;
+}
+
+.progress-bar-fill.high {
+    background: #4caf50;
+}
+
+.item-arrow {
+    color: #aaa;
+    font-size: 12px;
+}
+
+.loading,
+.empty-state {
+    padding: 20px;
+    text-align: center;
+    color: #aaa;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #424242;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 9999px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #888;
+}
+
+/* Drawer */
+.drawer-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(2px);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.drawer-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.drawer {
+    position: fixed;
+    z-index: 1001;
+    background: #1e1e1e;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: scale(0.98) translateY(10px);
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer.open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: all;
+}
+
+.drawer-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid #3e3e42;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e1e1e;
+}
+
+.drawer-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.drawer-content {
+    flex: 1;
+    overflow: auto;
+    padding: 20px;
+    background: #1e1e1e;
+}
+
+.drawer-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #3e3e42;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #252526;
+}
+
+/* Code Styling */
+pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 13px;
+    color: #d4d4d4;
+}
+
+.code-tag {
+    color: #569cd6;
+}
+
+.code-attr {
+    color: #9cdcfe;
+}
+
+.code-val {
+    color: #ce9178;
+}
+
+.code-content {
+    color: #d4d4d4;
+}
+
+/* Universal Dropdown Arrow Fix */
+select,
+.dropdown-small {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    padding-right: 32px !important;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') !important;
+    background-repeat: no-repeat !important;
+    background-position: right 8px center !important;
+    background-size: 16px !important;
+}
+
+/* Dark Theme Dropdown Arrow Fix */
+body.sfarc-dark-theme select,
+body.sfarc-dark-theme .dropdown-small {
+    background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23e0e0e0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') !important;
+}
+
+/* Premium Dark Mode Overrides for Metadata Exporter */
+body.sfarc-dark-theme {
+    background-color: #000000 !important;
+    color: #e2e8f0 !important;
+}
+body.sfarc-dark-theme .app-container {
+    background-color: #000000 !important;
+    color: #e2e8f0 !important;
+}
+body.sfarc-dark-theme .header {
+    background-color: #1a1a1a !important;
+    border-bottom: 1px solid #333333 !important;
+}
+body.sfarc-dark-theme .header-title {
+    color: #ffffff !important;
+}
+body.sfarc-dark-theme .nav-tab {
+    color: #cbd5e1 !important;
+    background: transparent !important;
+}
+body.sfarc-dark-theme .nav-tab:hover {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+}
+body.sfarc-dark-theme .nav-tab.sfarc-active {
+    background-color: #252526 !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #5eb4ff !important;
+}
+body.sfarc-dark-theme .primary-btn {
+    background-color: #0176d3 !important;
+    color: #ffffff !important;
+}
+body.sfarc-dark-theme .primary-btn:hover {
+    background-color: #005fb2 !important;
+}
+body.sfarc-dark-theme .secondary-btn {
+    background-color: #2d2d2d !important;
+    color: #f1f5f9 !important;
+    border: 1px solid #444444 !important;
+}
+body.sfarc-dark-theme .secondary-btn:hover {
+    background-color: #3d3d3d !important;
+    color: #ffffff !important;
+}
+body.sfarc-dark-theme .search-input,
+body.sfarc-dark-theme select,
+body.sfarc-dark-theme input,
+body.sfarc-dark-theme input[type="text"],
+body.sfarc-dark-theme input[type="search"] {
+    background-color: #1e1e1e !important;
+    color: #f1f5f9 !important;
+    border-color: #444444 !important;
+}
+body.sfarc-dark-theme .metadata-table th {
+    background-color: #2b2b2b !important;
+    color: #e2e8f0 !important;
+    border-bottom: 1px solid #333333 !important;
+}
+body.sfarc-dark-theme .metadata-table td {
+    background-color: #1e1e1e !important;
+    color: #cbd5e1 !important;
+    border-bottom: 1px solid #333333 !important;
+}
+body.sfarc-dark-theme .metadata-table tr:hover td {
+    background-color: #2a2a2a !important;
+}
+body.sfarc-dark-theme .xml-drawer {
+    background-color: #1a1a1a !important;
+    border-left: 1px solid #333333 !important;
+}
+body.sfarc-dark-theme .xml-content {
+    background-color: #000000 !important;
+    color: #e2e8f0 !important;
+    border-color: #333333 !important;
+}
+body.sfarc-dark-theme .xml-content code {
+    color: #e2e8f0 !important;
+}
+
+#update-pkg-btn {
+    display: none !important;
+}
+
+/* File Tree Styles */
+.file-tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+}
+
+.file-tree ul {
+    list-style: none;
+    margin: 0;
+    padding-left: 12px;
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    margin-left: 6px;
+    display: none;
+}
+
+.tree-folder.open > ul {
+    display: block;
+}
+
+.tree-item-row {
+    display: flex;
+    align-items: center;
+    padding: 4px 8px;
+    cursor: pointer;
+    color: #cbd5e1;
+    border-radius: 4px;
+    user-select: none;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.tree-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.tree-item-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+}
+
+.tree-item-row.selected {
+    background: rgba(2, 132, 199, 0.2);
+    color: #38bdf8;
+}
+
+/* Fix Monaco Editor Inputs (Find Widget, etc.) broken by global sfir.css rules */
+.monaco-editor input,
+.monaco-editor input[type="text"],
+.monaco-editor textarea {
+    border-radius: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+    padding: 4px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    outline: none !important;
+}
+
+.monaco-editor textarea {
+    padding: 0 !important; /* Monaco textareas shouldn't have padding */
+}
+
+.tree-caret {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.15s ease;
+    opacity: 0.6;
+}
+
+.tree-folder.open > .tree-item-row .tree-caret {
+    transform: rotate(90deg);
+}
+
+.tree-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+}
+
+/* Pane Resizer */
+.pane-resizer {
+    width: 6px;
+    flex: 0 0 6px;
+    background: transparent;
+    cursor: col-resize;
+    z-index: 10;
+    transition: background 0.2s ease;
+    border-radius: 3px;
+}
+
+.pane-resizer:hover,
+.pane-resizer.is-resizing {
+    background: #3f3f46;
+}
+
+body.is-resizing {
+    cursor: col-resize;
+    user-select: none;
+}
+body.is-resizing .right-pane {
+    pointer-events: none;
+}
+
+/* Force dark theme for the top navigation header on metadata exporter page */
+.slds-builder-header_container {
+    background: #1a1a1a !important;
+    border-bottom: 1px solid #333333 !important;
+}
+.sfir-header-title-text {
+    color: #ffffff !important;
+}
+.slds-builder-header__item-action,
+.slds-builder-header__nav-item a {
+    color: #cbd5e1 !important;
+}
+.slds-builder-header__item-action:hover,
+.slds-builder-header__nav-item a:hover {
+    background-color: #2a2a2a !important;
+    color: #ffffff !important;
+}
+.slds-builder-header__item-action.sfir-nav-active {
+    background-color: #252526 !important;
+    color: #ffffff !important;
+    border-bottom: 2px solid #5eb4ff !important;
+}
+.slds-builder-header .slds-badge {
+    background-color: #2b2b2b !important;
+    color: #f1f5f9 !important;
+    border: 1px solid #444444 !important;
+}
+.slds-builder-header__nav-list {
+    background-color: #121212 !important;
+    border: 1px solid #222222 !important;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Force dark theme for custom dropdowns on metadata exporter page */
+.sfarc-custom-dropdown-menu {
+    background: #252526 !important;
+    border: 1px solid #454545 !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+}
+.sfarc-custom-dropdown-option {
+    color: #cccccc !important;
+}
+.sfarc-custom-dropdown-option:hover,
+.sfarc-custom-dropdown-option.sfarc-selected {
+    background: #04395e !important;
+    color: #ffffff !important;
+}
+.sfarc-custom-dropdown-checkmark {
+    color: #38bdf8 !important;
+}
+/* ============================================================================
+   Salesforce Comet — Universal Control System
+   ----------------------------------------------------------------------------
+   One design language for search inputs, selects/dropdowns, icon buttons and
+   toggles across every page of the extension, matching the reference UI
+   (the header's segmented nav pill proportions):
+     • Uniform control height  — 24px
+     • Search inputs & selects — 6px radius on light #e8edf2 / #e5e8ed
+     • Icon / "+" buttons      — 24x24 with 6px radius on light #e5e8ed
+     • Toggles                 — iOS green (#4cd964) when checked
+   Dark-theme variants are provided via tokens so pages using
+   body.sfarc-dark-theme / .sfarc-dark-theme stay coherent.
+
+   Load this file LAST in every page so it wins the cascade (the codebase
+   relies on !important; equal-specificity rules resolve by load order).
+
+   Top-bar chrome (.sfir-header-select, .sfir-header-icon-btn,
+   .sfir-badge-action-btn) is intentionally untouched — the compact header
+   keeps its approved size.
+   ========================================================================== */
+
+:root {
+    --sfarc-ctl-h: 24px;
+    --sfarc-ctl-radius-pill: 6px;
+    --sfarc-ctl-radius-box: 6px;
+    --sfarc-ctl-bg: #e5e8ed;         /* selects, icon buttons */
+    --sfarc-ctl-bg-search: #e8edf2;  /* search fields */
+    --sfarc-ctl-border: #d8dde6;
+    --sfarc-ctl-text: #1e293b;
+    --sfarc-ctl-muted: #64748b;
+    --sfarc-ctl-primary: #0070d2;
+    --sfarc-ctl-primary-hover: #005fb2;
+    --sfarc-ctl-toggle-on: #4cd964;
+    --sfarc-ctl-toggle-off: #e9e9ea;
+    --sfarc-ctl-hover: rgba(0, 0, 0, 0.06);
+    --sfarc-ctl-focus-ring: rgba(0, 112, 210, 0.18);
+}
+
+/* Dark-theme tokens */
+body.sfarc-dark-theme,
+.sfarc-dark-theme {
+    --sfarc-ctl-bg: rgba(255, 255, 255, 0.09);
+    --sfarc-ctl-bg-search: rgba(255, 255, 255, 0.1);
+    --sfarc-ctl-border: rgba(255, 255, 255, 0.16);
+    --sfarc-ctl-text: #f1f5f9;
+    --sfarc-ctl-muted: #94a3b8;
+    --sfarc-ctl-toggle-off: #555555;
+    --sfarc-ctl-hover: rgba(255, 255, 255, 0.12);
+    --sfarc-ctl-focus-ring: rgba(56, 189, 248, 0.28);
+}
+
+/* ── Search inputs ─────────────────────────────────────────────────────── */
+.sfarc-debug-search-input,
+.sfarc-search-input,
+.sfir-search-input-pill,
+input[type="text"].sfir-search-pill,
+input[type="search"].sfir-search-pill,
+.sfir-col-search-input,
+.sfarc-field-search-input,
+.sfarc-table-filter,
+.feed-search,
+.cc-search-box input,
+.mac-search-wrapper input,
+.sidebar-search-box input,
+.viewer-search-wrapper input,
+.sfir-history-drawer-search-wrapper input,
+.fs-search-wrapper input,
+.search-box input[type="text"],
+.search-box input[type="search"],
+.search-bar input[type="text"],
+.search-bar input[type="search"],
+input[type="text"].input-small,
+input[type="search"].input-small,
+.sfarc-raycast-search {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-bg-search) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+}
+
+/* Search containers that draw the pill themselves */
+.sfarc-debug-search-wrapper,
+.mac-search-wrapper,
+.sidebar-search-container,
+.sfir-history-drawer-search-wrapper,
+.fs-search-wrapper,
+.sfarc-search-container,
+.viewer-search-wrapper,
+.sfarc-local-search-container {
+    background: var(--sfarc-ctl-bg-search) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    box-sizing: border-box !important;
+}
+
+/* Keep inputs inside glassy local-search surfaces transparent */
+.sfarc-local-search-container .sfarc-debug-search-input {
+    background-color: transparent !important;
+    border-color: transparent !important;
+}
+
+/* Custom dropdown containers must never paint their own chevron — the trigger
+   already renders one, and some pages' native-select arrow-fix rules would
+   otherwise show a duplicate chevron through the translucent pill. */
+.sfarc-custom-dropdown-container,
+html body .sfarc-custom-dropdown-container,
+body.sfarc-dark-theme .sfarc-custom-dropdown-container,
+.sfarc-dark-theme .sfarc-custom-dropdown-container {
+    background-image: none !important;
+    padding-right: 0 !important;
+}
+
+/* Search focus — lift the pill to white + soft blue ring */
+.sfarc-debug-search-input:focus,
+.sfarc-search-input:focus,
+.sfir-search-input-pill:focus,
+input[type="text"].sfir-search-pill:focus,
+input[type="search"].sfir-search-pill:focus,
+.sfir-col-search-input:focus,
+.sfarc-field-search-input:focus,
+.sfarc-table-filter:focus,
+.feed-search:focus,
+.cc-search-box input:focus,
+.mac-search-wrapper input:focus,
+.sidebar-search-box input:focus,
+.viewer-search-wrapper input:focus,
+.sfir-history-drawer-search-wrapper input:focus,
+.fs-search-wrapper input:focus,
+.search-box input[type="text"]:focus,
+.search-box input[type="search"]:focus,
+.search-bar input[type="text"]:focus,
+.search-bar input[type="search"]:focus,
+.sfarc-raycast-search:focus {
+    background-color: var(--sfarc-ctl-bg-search) !important;
+    border-color: var(--sfarc-ctl-primary) !important;
+    box-shadow: 0 0 0 3px var(--sfarc-ctl-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ── Selects / dropdowns ───────────────────────────────────────────────── */
+.sfarc-debug-select,
+.sfarc-custom-dropdown-trigger,
+.sub-select,
+.mac-select,
+.object-select,
+.sfir-select,
+.sfarc-table-rows-select,
+.feed-select {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-bg) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    font-size: 12.5px !important;
+    font-weight: 500 !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.sfarc-debug-select:hover,
+.sfarc-custom-dropdown-trigger:hover,
+.sub-select:hover,
+.mac-select:hover,
+.object-select:hover,
+.sfir-select:hover {
+    background-color: var(--sfarc-ctl-hover) !important;
+}
+
+.sfarc-debug-select:focus,
+.sub-select:focus,
+.mac-select:focus,
+.object-select:focus,
+.sfir-select:focus {
+    border-color: var(--sfarc-ctl-primary) !important;
+    box-shadow: 0 0 0 3px var(--sfarc-ctl-focus-ring) !important;
+    outline: none !important;
+}
+
+/* ── Icon buttons (incl. "+" add buttons) ──────────────────────────────── */
+.sfarc-debug-icon-btn,
+.sfarc-dropdown-plus-btn,
+.sfarc-action-icon,
+.sfarc-icon-btn,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save),
+.viewer-btn.icon-btn,
+.search-action-btn {
+    width: var(--sfarc-ctl-h) !important;
+    height: var(--sfarc-ctl-h) !important;
+    min-width: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    max-width: var(--sfarc-ctl-h) !important;
+    max-height: var(--sfarc-ctl-h) !important;
+    flex: 0 0 var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-box) !important;
+    background-color: var(--sfarc-ctl-bg) !important;
+    border: 1px solid var(--sfarc-ctl-border) !important;
+    color: var(--sfarc-ctl-text) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.12s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.sfarc-debug-icon-btn:hover,
+.sfarc-dropdown-plus-btn:hover,
+.sfarc-action-icon:hover,
+.sfarc-icon-btn:hover,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save):hover,
+.viewer-btn.icon-btn:hover,
+.search-action-btn:hover {
+    background-color: var(--sfarc-ctl-hover) !important;
+}
+
+.sfarc-debug-icon-btn:active,
+.sfarc-dropdown-plus-btn:active,
+.sfarc-action-icon:active,
+.sfarc-icon-btn:active,
+.icon-btn:not(.icon-btn-small):not(.icon-btn-save):active,
+.viewer-btn.icon-btn:active,
+.search-action-btn:active {
+    transform: scale(0.92) !important;
+}
+
+/* ── Primary / action buttons ──────────────────────────────────────────── */
+.sfarc-debug-btn.primary,
+.sfarc-btn-primary,
+.sfir-btn-primary,
+.sfarc-primary-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    background-color: var(--sfarc-ctl-primary) !important;
+    border: 1px solid var(--sfarc-ctl-primary) !important;
+    color: #ffffff !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    padding: 0 14px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+.sfarc-debug-btn.primary:hover,
+.sfarc-btn-primary:hover,
+.sfir-btn-primary:hover,
+.sfarc-primary-btn:hover {
+    background-color: var(--sfarc-ctl-primary-hover) !important;
+    border-color: var(--sfarc-ctl-primary-hover) !important;
+}
+
+/* Secondary .sfarc-debug-btn — same pill height, light surface */
+.sfarc-debug-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    border-radius: var(--sfarc-ctl-radius-pill) !important;
+    box-sizing: border-box !important;
+}
+
+/* Generic .sfarc-btn (data pages) — universal height, keep page colors */
+.sfarc-btn {
+    height: var(--sfarc-ctl-h) !important;
+    min-height: var(--sfarc-ctl-h) !important;
+    padding: 0 12px !important;
+    font-size: 12px !important;
+}
+
+/* ── Toggles — iOS green when checked ──────────────────────────────────── */
+.sfarc-slider,
+.sfir-header-toggle-switch {
+    background-color: var(--sfarc-ctl-toggle-off) !important;
+}
+
+.sfarc-switch input:checked + .sfarc-slider,
+.sfarc-toggle-switch input:checked + .sfarc-slider,
+input:checked + .sfir-header-toggle-switch,
+#sfarc-header-icons-toggle.active .sfarc-apple-switch {
+    background-color: var(--sfarc-ctl-toggle-on) !important;
+    border-color: var(--sfarc-ctl-toggle-on) !important;
+}
+
+  </style>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #e2e8f0;
+    }
+    .demo-shell {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .pane {
+      background: #0d0d0f;
+      border: 1px solid #2a2a2d;
+      border-radius: 10px;
+      width: 360px;
+      overflow: visible;
+      padding-bottom: 12px;
+    }
+    .pane-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid #2a2a2d;
+    }
+    .pane-header h3 {
+      margin: 0;
+      font-size: 14px;
+      color: #ffffff;
+    }
+    .empty-state {
+      padding: 24px 14px;
+      font-size: 12.5px;
+      color: #64748b;
+      text-align: center;
+    }
+    .action-link svg { color: #94a3b8; }
+    .right-pane { background: #0d0d0f !important; }
+  </style>
+</head>
+<body class="sfarc-dark-theme">
+  <h2 style="font-size:15px;margin:0 0 4px;color:#e2e8f0;">Metadata Exporter — Members pane (real styles, dark)</h2>
+  <p style="font-size:12px;color:#64748b;margin:0 0 20px;">Real metadata-exporter.css + custom-dropdown.css + controls.css + custom-dropdown.js inlined.</p>
+
+  <div class="demo-shell">
+    <div class="pane right-pane">
+      <div class="pane-header">
+        <h3 id="selected-type-name">ApexClass</h3>
+        <div class="pane-actions">
+          <span id="select-all-members" class="action-link" title="Select All">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          </span>
+          <span id="clear-all-members" class="action-link" title="Clear All">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </span>
+        </div>
+      </div>
+      <div class="search-box">
+        <span class="search-icon">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </span>
+        <input type="text" id="member-search" placeholder="Filter Members...">
+      </div>
+      <div class="filter-toolbar">
+        <select id="sort-members" class="dropdown-small">
+          <option value="name">Name (A-Z)</option>
+          <option value="date-desc">Newest First</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="user">User (A-Z)</option>
+        </select>
+        <input type="text" id="filter-user" class="input-small" placeholder="Filter User...">
+      </div>
+      <div id="members-list" class="list-container">
+        <div class="empty-state">Select a metadata type to view members</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+// custom-dropdown.js
+
+(function() {
+    // Prevent multiple injections
+    if (window.sfarcCustomDropdownsInitialized) return;
+    window.sfarcCustomDropdownsInitialized = true;
+
+    const CHECKMARK_SVG = `<svg class="sfarc-custom-dropdown-checkmark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const CHEVRON_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+    // Close all open dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.sfarc-custom-dropdown-container')) {
+            document.querySelectorAll('.sfarc-custom-dropdown-container.sfarc-open').forEach(el => {
+                el.classList.remove('sfarc-open');
+            });
+        }
+    });
+
+    function enhanceSelect(selectEl) {
+        if (selectEl.classList.contains('sfarc-custom-processed')) return;
+        if (selectEl.hasAttribute('multiple')) return; // Skip multi-select for now
+
+        selectEl.classList.add('sfarc-custom-processed');
+        selectEl.classList.add('sfarc-custom-dropdown-hidden-select');
+
+        // Create Container
+        const container = document.createElement('div');
+        container.className = 'sfarc-custom-dropdown-container';
+        
+        // Inherit inline styles that affect layout
+        if (selectEl.style.width) container.style.width = selectEl.style.width;
+        if (selectEl.style.flex) container.style.flex = selectEl.style.flex;
+        if (selectEl.style.flexShrink) container.style.flexShrink = selectEl.style.flexShrink;
+        if (selectEl.style.flexGrow) container.style.flexGrow = selectEl.style.flexGrow;
+        if (selectEl.style.minWidth) container.style.minWidth = selectEl.style.minWidth;
+        if (selectEl.style.maxWidth) container.style.maxWidth = selectEl.style.maxWidth;
+
+        // Copy classes from the select (except the hidden one) to the container to inherit positioning/margin
+        Array.from(selectEl.classList).forEach(cls => {
+            if (cls !== 'sfarc-custom-processed' && cls !== 'sfarc-custom-dropdown-hidden-select') {
+                container.classList.add(cls);
+            }
+        });
+
+        // Trigger Button
+        const trigger = document.createElement('div');
+        trigger.className = 'sfarc-custom-dropdown-trigger';
+        if (selectEl.disabled) trigger.setAttribute('data-disabled', 'true');
+        
+        // Inherit height/padding if explicitly set
+        if (selectEl.style.height) trigger.style.height = selectEl.style.height;
+        if (selectEl.style.padding) trigger.style.padding = selectEl.style.padding;
+        if (selectEl.style.fontSize) trigger.style.fontSize = selectEl.style.fontSize;
+
+        const valueSpan = document.createElement('span');
+        valueSpan.className = 'sfarc-custom-dropdown-value';
+        
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'sfarc-custom-dropdown-icon';
+        iconSpan.innerHTML = CHEVRON_SVG;
+
+        trigger.appendChild(valueSpan);
+        trigger.appendChild(iconSpan);
+
+        // Menu
+        const menu = document.createElement('div');
+        menu.className = 'sfarc-custom-dropdown-menu';
+
+        container.appendChild(trigger);
+        container.appendChild(menu);
+
+        // Insert container right after the select in the DOM
+        selectEl.parentNode.insertBefore(container, selectEl.nextSibling);
+
+        // Function to rebuild options
+        const rebuildMenu = () => {
+            menu.innerHTML = '';
+            const options = Array.from(selectEl.options);
+            
+            // Sync selected value to trigger
+            const selectedOption = options.find(opt => opt.selected) || options[0];
+            if (selectedOption) {
+                valueSpan.textContent = selectedOption.textContent;
+            } else {
+                valueSpan.textContent = '';
+            }
+
+            options.forEach((opt, index) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'sfarc-custom-dropdown-option';
+                if (opt.selected) {
+                    optDiv.classList.add('sfarc-selected');
+                }
+                optDiv.innerHTML = `${CHECKMARK_SVG} ${opt.textContent}`;
+                
+                optDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    // Close menu
+                    container.classList.remove('sfarc-open');
+                    
+                    // Update native select
+                    selectEl.selectedIndex = index;
+                    selectEl.value = opt.value;
+                    
+                    // Dispatch change event so existing logic fires
+                    selectEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    
+                    // Update UI
+                    rebuildMenu();
+                });
+                
+                menu.appendChild(optDiv);
+            });
+            
+            // Sync disabled state
+            if (selectEl.disabled) {
+                trigger.setAttribute('data-disabled', 'true');
+            } else {
+                trigger.removeAttribute('data-disabled');
+            }
+        };
+
+        rebuildMenu();
+
+        // Trigger Click Event
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (selectEl.disabled) return;
+            
+            // Close other open menus
+            document.querySelectorAll('.sfarc-custom-dropdown-container.sfarc-open').forEach(el => {
+                if (el !== container) el.classList.remove('sfarc-open');
+            });
+
+            container.classList.toggle('sfarc-open');
+        });
+
+        // Watch for changes to the original select (e.g., options injected dynamically or value changed via JS)
+        const observer = new MutationObserver((mutations) => {
+            let needsRebuild = false;
+            mutations.forEach(m => {
+                if (m.type === 'childList' || (m.type === 'attributes' && (m.attributeName === 'disabled' || m.attributeName === 'value'))) {
+                    needsRebuild = true;
+                }
+            });
+            if (needsRebuild) rebuildMenu();
+        });
+
+        observer.observe(selectEl, { childList: true, attributes: true, subtree: true });
+        
+        // Also listen to 'change' event on original select in case it's changed by code without attributes mutating
+        selectEl.addEventListener('change', () => {
+            rebuildMenu();
+        });
+    }
+
+    // Initialize all existing selects
+    function initAll() {
+        document.querySelectorAll('select').forEach(enhanceSelect);
+    }
+
+    // Watch for new selects added to the DOM dynamically
+    const domObserver = new MutationObserver((mutations) => {
+        let hasNewNodes = false;
+        mutations.forEach(m => {
+            if (m.addedNodes.length > 0) hasNewNodes = true;
+        });
+        
+        if (hasNewNodes) {
+            document.querySelectorAll('select:not(.sfarc-custom-processed)').forEach(enhanceSelect);
+        }
+    });
+
+    // Start observing DOM when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            initAll();
+            domObserver.observe(document.body, { childList: true, subtree: true });
+        });
+    } else {
+        initAll();
+        domObserver.observe(document.body, { childList: true, subtree: true });
+    }
+
+})();
+
+  </script>
+</body>
+</html>

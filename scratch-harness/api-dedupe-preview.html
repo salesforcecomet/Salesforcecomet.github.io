@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>API-name badge dedupe harness (key-based)</title>
+<style>
+body { font-family: -apple-system, sans-serif; padding: 20px; }
+.records-record-layout-item { border: 1px solid #ddd; border-radius: 6px; margin: 8px 0; padding: 8px 10px; }
+.slds-form-element__label { font-weight: 600; }
+.sfarc-api-badge { margin-left: 8px; background: #1589ee; color: white; padding: 2px 6px; font-size: 11px; font-family: monospace; border-radius: 3px; white-space: nowrap; }
+#results { margin-top: 16px; font: 12px/1.6 monospace; white-space: pre-wrap; }
+button { margin: 4px 4px 0 0; padding: 6px 12px; border-radius: 6px; border: 1px solid #999; cursor: pointer; }
+</style>
+</head>
+<body>
+<h3>API-name badge dedupe — key-based (Object.ApiName), incl. DOM churn</h3>
+<button id="run">Run: both paths + 3 re-scans</button>
+<button id="churn">Re-render (fresh label elements, badges destroyed)</button>
+<button id="dup">Stale old + fresh duplicate containers (coexist)</button>
+<button id="reset">Reset DOM</button>
+<div id="stage"></div>
+<div id="results"></div>
+<script>
+// ── Fakes for the parts main.js relies on ──
+window.escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+window.sfApi = {
+    describe: async () => ({ fields: [
+        { label: 'Name', name: 'Name' },
+        { label: 'Account Number', name: 'AccountNumber' },
+        { label: 'Annual Revenue', name: 'AnnualRevenue' },
+        { label: 'Customer Priority', name: 'CustomerPriority__c' },
+        { label: 'Billing Address', name: 'BillingAddress' }
+    ] })
+};
+const searchCache = { objects: {} };
+const detectRecordContext = () => ({ objectType: 'Account' });
+
+// ── EXACT logic copied from main.js (key-based dedupe) ──
+let sfarcApiBadgedKeys = new Map();
+function resetApiBadgeDedupe() { sfarcApiBadgedKeys = new Map(); }
+function isApiBadged(key) { return !!key && sfarcApiBadgedKeys.has(key); }
+
+// True when a badge for this API name is already visible ANYWHERE in the page.
+function hasLiveBadge(apiName) {
+    return Array.from(document.querySelectorAll('.sfarc-api-badge')).some(b =>
+        b.dataset.api === apiName || (b.dataset.api && b.dataset.api.split(', ').includes(apiName)));
+}
+
+function hasApiBadgeInScope(el) {
+    if (!el) return false;
+    if (el.querySelector && el.querySelector('.sfarc-api-badge')) return true;
+    const scope = el.closest ? el.closest('[data-target-selection-name^="sfdc:recordField"]') : null;
+    return !!scope && !!scope.querySelector('.sfarc-api-badge');
+}
+
+function createApiBadge(apiNameStr) {
+    const badge = document.createElement('span');
+    badge.className = 'sfarc-api-badge sfarc-api-name-badge';
+    badge.dataset.api = apiNameStr;
+    badge.innerHTML = '👁 ' + window.escapeHtml(apiNameStr);
+    return badge;
+}
+
+function normalizeFieldLabel(text) {
+    return (text || '').replace(/\s+/g, ' ').replace(/\s*\(required\)\s*$/i, '').replace(/\s*[*:]\s*$/, '').trim().toLowerCase();
+}
+
+function scanAttributePath() {
+    let count = 0;
+    const fieldEls = document.querySelectorAll('[data-target-selection-name^="sfdc:recordField"]');
+    fieldEls.forEach(fieldEl => {
+        const selName = fieldEl.getAttribute('data-target-selection-name');
+        if (!selName) return;
+        const parts = selName.split('.');
+        const apiName = parts[parts.length - 1];
+        if (!apiName || apiName === 'null' || apiName === 'undefined') return;
+        if (fieldEl.querySelector('[data-target-selection-name^="sfdc:recordField"]')) return;
+        const fieldKey = parts.length >= 3 ? parts[parts.length - 2] + '.' + apiName : apiName;
+        if (hasLiveBadge(apiName)) return;
+        const labelEl = fieldEl.querySelector('.slds-form-element__label, .test-id__field-label') || fieldEl.querySelector('span');
+        if (!labelEl || hasApiBadgeInScope(labelEl)) return;
+        labelEl.appendChild(createApiBadge(apiName));
+        sfarcApiBadgedKeys.set(fieldKey, true);
+        count++;
+    });
+    return count;
+}
+
+function scanLabelPath() {
+    const context = detectRecordContext();
+    const fields = [{ label: 'Name', name: 'Name' }, { label: 'Account Number', name: 'AccountNumber' }, { label: 'Annual Revenue', name: 'AnnualRevenue' }, { label: 'Customer Priority', name: 'CustomerPriority__c' }, { label: 'Billing Address', name: 'BillingAddress' }];
+    const labelMap = {};
+    fields.forEach(f => {
+        const key = normalizeFieldLabel(f.label);
+        if (!labelMap[key]) labelMap[key] = [];
+        labelMap[key].push(f.name);
+    });
+    let count = 0;
+    const labelEls = document.querySelectorAll('td.labelCol, th.labelCol, .test-id__field-label, .slds-form-element__label, span.slds-form-element__label');
+    labelEls.forEach(el => {
+        if (hasApiBadgeInScope(el)) return;
+        const clone = el.cloneNode(true);
+        clone.querySelectorAll('.sfarc-api-badge, i, svg').forEach(c => c.remove());
+        const key = normalizeFieldLabel(clone.textContent);
+        let apiNames = labelMap[key];
+        if (!apiNames) apiNames = labelMap[key + ' id'];
+        if (!apiNames) apiNames = labelMap[normalizeFieldLabel('account ' + key)];
+        if (apiNames && apiNames.length) {
+            if (apiNames.some(n => hasLiveBadge(n))) return;
+            el.appendChild(createApiBadge(apiNames.join(', ')));
+            apiNames.forEach(n => sfarcApiBadgedKeys.set(context.objectType + '.' + n, true));
+            count++;
+        }
+    });
+    return count;
+}
+
+// ── Lightning-like DOM: wrapper AND child div both carry the attribute; a
+//    non-label span exists before the real label to force the fallback path. ──
+function buildDom() {
+    const stage = document.getElementById('stage');
+    stage.innerHTML = '';
+    const fields = [
+        { label: 'Name', api: 'Name', id: 'sfdc:recordField.Account.Name' },
+        { label: 'Account Number', api: 'AccountNumber', id: 'sfdc:recordField.Account.AccountNumber' },
+        { label: 'Annual Revenue', api: 'AnnualRevenue', id: 'sfdc:recordField.Account.AnnualRevenue' },
+        { label: 'Customer Priority', api: 'CustomerPriority__c', id: 'sfdc:recordField.Account.CustomerPriority__c' },
+        { label: 'Billing Address', api: 'BillingAddress', id: 'sfdc:recordField.Account.BillingAddress' }
+    ];
+    fields.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'records-record-layout-item slds-form-element';
+        item.setAttribute('data-target-selection-name', f.id);
+        item.innerHTML = `
+            <div class="slds-form-element__control" data-target-selection-name="${f.id}">
+                <span class="layout-icon">★</span>
+                <span class="slds-form-element__label">${f.label}</span>
+                <records-output-field><span class="value">value…</span></records-output-field>
+            </div>`;
+        stage.appendChild(item);
+    });
+}
+
+function runScans(label, count) {
+    const runs = [];
+    for (let i = 0; i < count; i++) {
+        let added = scanAttributePath();
+        added += scanLabelPath();
+        runs.push({ pass: i + 1, added, totalBadges: document.querySelectorAll('.sfarc-api-badge').length });
+    }
+    const perField = [];
+    document.querySelectorAll('.records-record-layout-item').forEach(item => {
+        perField.push(item.querySelector('.slds-form-element__label').textContent.trim() + ' → ' + item.querySelectorAll('.sfarc-api-badge').length + ' badge(s)');
+    });
+    const allOne = document.querySelectorAll('.records-record-layout-item .sfarc-api-badge').length === document.querySelectorAll('.records-record-layout-item').length;
+    document.getElementById('results').textContent =
+        label + '\n' + JSON.stringify(runs, null, 1) + '\n\nper field:\n' + perField.join('\n') + '\n\nALL FIELDS EXACTLY 1 BADGE: ' + allOne;
+}
+
+document.getElementById('run').addEventListener('click', () => {
+    resetApiBadgeDedupe();
+    document.querySelectorAll('.sfarc-api-badge').forEach(b => b.remove());
+    runScans('RUN (fresh)', 4);
+});
+
+document.getElementById('churn').addEventListener('click', () => {
+    // Lightning re-render: replace every field's inner DOM with FRESH label
+    // elements (no badges) — element-based dedupe would re-badge these; the
+    // key-based dedupe must keep exactly one badge per field.
+    document.querySelectorAll('.records-record-layout-item').forEach(item => {
+        const id = item.getAttribute('data-target-selection-name');
+        const label = item.querySelector('.slds-form-element__label').textContent.trim();
+        const control = item.querySelector('.slds-form-element__control') || item;
+        control.innerHTML = `<span class="layout-icon">★</span><span class="slds-form-element__label">${label}</span><records-output-field><span class="value">value…</span></records-output-field>`;
+        if (item !== control) control.setAttribute('data-target-selection-name', id);
+    });
+    runScans('AFTER LIGHTNING RE-RENDER (fresh label elements)', 3);
+});
+
+document.getElementById('dup').addEventListener('click', () => {
+    // Lightning leaves the old badged element in the DOM while adding a fresh
+    // duplicate container for the same field — the exact 2-3 pill scenario.
+    const stage = document.getElementById('stage');
+    const fields = [
+        { label: 'Name', api: 'Name', id: 'sfdc:recordField.Account.Name' },
+        { label: 'Account Number', api: 'AccountNumber', id: 'sfdc:recordField.Account.AccountNumber' },
+        { label: 'Annual Revenue', api: 'AnnualRevenue', id: 'sfdc:recordField.Account.AnnualRevenue' },
+        { label: 'Customer Priority', api: 'CustomerPriority__c', id: 'sfdc:recordField.Account.CustomerPriority__c' },
+        { label: 'Billing Address', api: 'BillingAddress', id: 'sfdc:recordField.Account.BillingAddress' }
+    ];
+    fields.forEach(f => {
+        const item = document.createElement('div');
+        item.className = 'records-record-layout-item slds-form-element';
+        item.setAttribute('data-target-selection-name', f.id);
+        item.innerHTML = `<div class="slds-form-element__control" data-target-selection-name="${f.id}"><span class="layout-icon">★</span><span class="slds-form-element__label">${f.label}</span><records-output-field><span class="value">value…</span></records-output-field></div>`;
+        stage.appendChild(item);
+    });
+    runScans('AFTER STALE OLD + FRESH DUPLICATE CONTAINERS COEXIST', 3);
+});
+
+document.getElementById('reset').addEventListener('click', () => { buildDom(); document.getElementById('results').textContent = ''; });
+buildDom();
+</script>
+</body>
+</html>
