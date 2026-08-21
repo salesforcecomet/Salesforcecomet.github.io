@@ -1,15 +1,15 @@
 {
   "screenshots": [
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczM-example1.png",
+      "url": "store-assets/screenshot-command-palette-1280x800.png",
       "label": "Command Palette — Search everything instantly"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczM-example2.png",
-      "label": "Record Inspector — View every field"
+      "url": "store-assets/screenshot-data-export-1280x800.png",
+      "label": "Data Export — Query and analyze Salesforce data"
     },
     {
-      "url": "https://lh3.googleusercontent.com/pw/AP1GczM-example3.png",
+      "url": "store-assets/screenshot-code-editor-1280x800.png",
       "label": "Monaco Code Editor — Write Apex in your browser"
     }
   ]
