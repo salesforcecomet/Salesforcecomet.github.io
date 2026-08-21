@@ -1,15 +1,15 @@
 {
   "screenshots": [
     {
-      "url": "store-assets/screenshot-command-palette-1280x800.png",
+      "url": "store-assets/screenshot-command-palette-v2.png",
       "label": "Command Palette — Search everything instantly"
     },
     {
-      "url": "store-assets/screenshot-data-export-1280x800.png",
+      "url": "store-assets/screenshot-data-export-v2.png",
       "label": "Data Export — Query and analyze Salesforce data"
     },
     {
-      "url": "store-assets/screenshot-code-editor-1280x800.png",
+      "url": "store-assets/screenshot-code-editor-v2.png",
       "label": "Monaco Code Editor — Write Apex in your browser"
     }
   ]
