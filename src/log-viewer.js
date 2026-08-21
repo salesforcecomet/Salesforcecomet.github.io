@@ -518,7 +518,7 @@ function setupActions() {
     const reportBugsBtn = document.getElementById('report-bugs-btn');
     if (reportBugsBtn) {
         reportBugsBtn.addEventListener('click', () => {
-            window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank');
+            window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank');
         });
     }
 

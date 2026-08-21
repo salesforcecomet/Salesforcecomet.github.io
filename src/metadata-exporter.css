@@ -1358,6 +1358,37 @@ body.sfarc-light-theme ::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
 }
 
+/* Metadata selection feedback */
+.metadata-selected-count {
+    display: inline-flex;
+    min-width: 22px;
+    height: 18px;
+    padding: 0 6px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--sfarc-accent, #10b981) 38%, transparent);
+    border-radius: 999px;
+    color: var(--sfarc-accent, #10b981);
+    background: color-mix(in srgb, var(--sfarc-accent, #10b981) 12%, transparent);
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.metadata-member-row:hover,
+.metadata-member-row:focus-visible {
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.metadata-member-row.is-selected {
+    background: color-mix(in srgb, var(--sfarc-accent, #10b981) 8%, transparent);
+    box-shadow: inset 2px 0 var(--sfarc-accent, #10b981);
+}
+
+.metadata-member-row:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--sfarc-accent, #10b981) 70%, white);
+    outline-offset: -2px;
+}
+
 .org-transfer-modal { position: fixed; inset: 0; z-index: 2400; display: grid; place-items: center; padding: 24px; background: rgba(0,0,0,.68); }
 .org-transfer-modal[hidden] { display: none; }
 .org-transfer-dialog { width: min(920px, 94vw); max-height: 88vh; display: flex; flex-direction: column; overflow: hidden; color: #e4e4e7; background: #18181b; border: 1px solid #3f3f46; border-radius: 12px; box-shadow: 0 24px 70px rgba(0,0,0,.55); }

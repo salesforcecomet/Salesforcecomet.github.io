@@ -1,7 +1,8 @@
 {
     "manifest_version": 3,
     "name": "Salesforce Comet",
-    "version": "3.1.1",
+    "version": "3.1.3",
+    "homepage_url": "https://github.com/salesforcecomet/Salesforcecomet.github.io",
     "minimum_chrome_version": "111",
     "description": "Powerful Salesforce development tools for inspecting data, metadata, and debugging.",
     "author": "Salesforce Comet",

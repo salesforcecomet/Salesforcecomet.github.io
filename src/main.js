@@ -2374,7 +2374,7 @@ function injectUI() {
         var reportBtn = document.getElementById('sfarc-report-bugs-btn');
         if (reportBtn && !reportBtn.dataset.sfarcBound) {
             reportBtn.addEventListener('click', () => {
-                window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank');
+                window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank');
             });
             reportBtn.dataset.sfarcBound = 'true';
         }
@@ -2433,7 +2433,7 @@ function injectUI() {
     var reportBugsBtn = document.getElementById('sfarc-report-bugs-btn');
     if (reportBugsBtn) {
         reportBugsBtn.addEventListener('click', () => {
-            window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank');
+            window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank');
         });
 
         // Alternating text: Report Bug <-> Suggest Feature
@@ -3971,14 +3971,14 @@ function sfarcInitReviewAndFeedbackSystem() {
     if (feedbackBtn) {
         feedbackBtn.addEventListener('click', () => {
             if (banner) banner.style.display = 'none';
-            window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank');
+            window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank');
         });
     }
 
     if (headerFeedbackBtn) {
         headerFeedbackBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank');
+            window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank');
         });
     }
 

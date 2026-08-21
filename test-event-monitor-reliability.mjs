@@ -3,7 +3,7 @@ import fs from "node:fs";
 const source = fs.readFileSync("src/event-monitor.js", "utf8");
 const checks = [
   ["host pin is read and sent to cookie lookup", /params\.get\('host'\)/.test(source) && /url: pinnedUrl/.test(source)],
-  ["cached session must match pinned org", /normalizeHost\(res\.sfarc_cached_session\.instanceUrl\) === normalizeHost\(pinnedUrl\)/.test(source)],
+  ["cached session must match pinned org", /normalizeHost\(cached\.instanceUrl\) === normalizeHost\(pinnedUrl\)/.test(source)],
   ["Ready follows REST session verification", /await makeRestFetch\(`\$\{instanceUrl\}\/services\/data\/v60\.0\/limits`\)/.test(source)],
   ["subscribe is committed only after acknowledgement", /if \(!subscribed\).*\n\s*activeSubscriptions\.set/s.test(source)],
   ["unsubscribe is removed only after acknowledgement", /if \(!acknowledged\).*\n\s*}\n\s*activeSubscriptions\.delete/s.test(source)],

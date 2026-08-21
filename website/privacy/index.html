@@ -92,7 +92,7 @@
                 </div>
                 <div class="detail-card">
                     <h4><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg> Storage</h4>
-                    <p>The session token is kept in memory while features run. A copy may be cached in local extension storage for a few minutes so that standalone tool tabs can pick it up; it is not retained beyond your browser session.</p>
+                    <p>The session token is kept in memory while features run. A timestamped copy may be placed in Chrome's in-memory session storage for up to ten minutes so standalone tool tabs can use it. It is never written to persistent extension storage and is cleared when the browser session ends.</p>
                 </div>
             </div>
         </div>

@@ -162,7 +162,8 @@ async function build() {
 
     console.log('Packaging optimized production ZIP archive...');
     const { execSync } = require('child_process');
-    const zipPath = path.join(__dirname, 'salesforce-comet-production.zip');
+    const manifest = await fs.readJson(path.join(srcDir, 'manifest.json'));
+    const zipPath = path.join(__dirname, `salesforce-comet-v${manifest.version}-production.zip`);
     if (await fs.pathExists(zipPath)) {
         await fs.remove(zipPath);
     }

@@ -197,7 +197,9 @@ htmlPages.forEach((p) => {
 
 const bg = fs.readFileSync('src/background.js', 'utf8');
 check('background injects close-on-outside in loadMain', bg.includes("'src/close-on-outside.js',\n                        'src/smart-suggestions.js',\n                        'src/main.js'"));
-check('background injects close-on-outside in retry path', bg.includes("files: ['src/glass-toast.js', 'src/close-on-outside.js', 'src/smart-suggestions.js', 'src/main.js']"));
+check('background retry bootstraps the guarded content script instead of reinjecting main',
+    bg.includes("files: ['src/content.js']") &&
+    !bg.includes("files: ['src/glass-toast.js', 'src/close-on-outside.js', 'src/smart-suggestions.js', 'src/main.js']"));
 
 check('selector covers .sfarc-drawer-modal', src.includes("'.sfarc-drawer-modal'"));
 check('selector covers .modal-overlay', src.includes("'.modal-overlay'"));

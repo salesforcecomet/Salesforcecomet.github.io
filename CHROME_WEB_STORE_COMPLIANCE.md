@@ -32,7 +32,7 @@ store listing. The checklist below maps the current state of the code to the off
 | **No artificial service-worker keepalive** — removed the repeating no-op alarm; alarms remain only for the bounded 40-second quick-login cleanup. | `src/background.js` |
 | **Store artwork prepared** — three 1280×800 product screenshots, a 440×280 promo tile, and a 1400×560 marquee are stored locally for dashboard upload. | `website/store-assets/` |
 | **No broken references** — fixed the missing Monaco AMD `require.config` in the Diff Checker (was pointing at a nonexistent `code-editor/monaco-config.js`, so Monaco never loaded) and a dead favicon path in `completion_list.html`. | `src/diff-checker.js`, `src/diff-checker.html`, `src/completion_list.html` |
-| **Metadata accuracy** — removed the trailing space from the manifest `name` ("Salesforce Comet"); version bumped to 3.1.1 in `manifest.json` + `README.md`. | `manifest.json`, `README.md` |
+| **Metadata accuracy** — removed the trailing space from the manifest `name` ("Salesforce Comet"); current release version is maintained in `manifest.json`. | `manifest.json` |
 
 ## 🧩 Permission justification (paste into your dashboard notes)
 
@@ -43,6 +43,7 @@ store listing. The checklist below maps the current state of the code to the off
 | `storage` | The local account vault (encrypted), settings, and caches. |
 | `scripting` | Injects the dev-tools UI (`main.js`) into authorized Salesforce hosts on demand; injects the console suppressor in the MAIN world. |
 | `alarms` | Runs the one-shot 40-second watchdog that deletes transient quick-login credentials. |
+| `contextMenus` | Adds an optional Salesforce-only right-click menu that opens selected extension tools such as Data Export, Comet Launcher, Code Editor, and user-configured shortcuts. It is restricted to Salesforce page patterns and does not read, store, or transmit the clicked page, link, selection, or field contents. |
 
 ## 📋 Dashboard actions (you must do — not code)
 
@@ -52,6 +53,7 @@ store listing. The checklist below maps the current state of the code to the off
 4. **Screenshots & promo:** upload the prepared assets from `website/store-assets/` and review them once more for store-listing accuracy and any org-identifying information.
 5. **Verified identity:** complete **publisher verification** (trader verification for the EU) and enable **2-Step Verification** on the developer Google account — both are mandatory for publishing.
 6. **Nominate for Featured** after publishing via **One Stop Support** (requires: published & public item, English support, no active policy violations, core features free/no login wall).
+7. **Support URL:** use `https://github.com/salesforcecomet/Salesforcecomet.github.io/issues`. It is public and was verified to return HTTP 200. Do not use the old Google Form; it returns HTTP 401 to unauthenticated availability checks.
 
 ## ⚠️ Residual risks to decide on
 
@@ -70,7 +72,7 @@ store listing. The checklist below maps the current state of the code to the off
 ```
 node --check src/background.js src/content.js src/api.js src/main.js src/popup.js
 node --check src/vault-crypto.js src/flow-scanner-content/interceptor.js src/flow-scanner-content/content-script.js
-node build.js        # produces dist/ + salesforce-comet-production.zip
+node build.js        # produces dist/ + salesforce-comet-v<manifest-version>-production.zip
 grep -rn "raw.githubusercontent" src/   # must return nothing
 grep -rn "eval(" src/ -l --include="*.js" | grep -v -E "lib/|react"  # must return nothing
 grep -rn "<script>" src/*.html          # must return nothing (inline scripts are CSP-blocked)

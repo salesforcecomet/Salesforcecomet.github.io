@@ -428,7 +428,7 @@ function setupEventListeners() {
     const bugBtn = document.getElementById('report-bugs-btn');
     if (bugBtn) {
         bugBtn.addEventListener('click', () => {
-            window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank');
+            window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank');
         });
     }
 }
@@ -652,6 +652,7 @@ function renderTypesList(filter = '') {
         <tr style="border-bottom: 1px solid #27272a;">
             <th style="padding: 2px 4px; text-align: left; font-weight: 500; color: #71717a; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; width: 22px;"></th>
             <th style="padding: 2px 4px; text-align: left; font-weight: 500; color: #71717a; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px;">TYPE NAME</th>
+            <th style="padding: 2px 4px; text-align: right; font-weight: 500; color: #71717a; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; width: 62px;">SELECTED</th>
             <th style="padding: 2px 4px; text-align: right; font-weight: 500; color: #71717a; font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; width: 22px;"></th>
         </tr>
     `;
@@ -672,12 +673,17 @@ function renderTypesList(filter = '') {
         };
 
         const isSelected = selectedTypes.has(type.xmlName);
+        const selectedCount = selectedMembers[type.xmlName]?.size || 0;
+        const selectedLabel = selectedCount > 0 ? String(selectedCount) : (isSelected ? 'All' : '');
 
         tr.innerHTML = `
             <td style="padding: 2px 4px;">
                 <input type="checkbox" class="item-checkbox" ${isSelected ? 'checked' : ''}>
             </td>
             <td style="padding: 2px 4px; color: #e4e4e7; font-weight: 400;">${getTypeIcon(type.xmlName)}${window.escapeHtml(type.xmlName)}</td>
+            <td style="padding: 2px 4px; text-align: right;">
+                ${selectedLabel ? `<span class="metadata-selected-count" title="${selectedCount > 0 ? `${selectedCount} selected component${selectedCount === 1 ? '' : 's'}` : 'All components selected'}">${selectedLabel}</span>` : ''}
+            </td>
             <td style="padding: 2px 4px; text-align: right;">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #52525b;"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </td>
@@ -691,6 +697,9 @@ function renderTypesList(filter = '') {
                 selectedTypes.delete(type.xmlName);
                 if (selectedMembers[type.xmlName]) delete selectedMembers[type.xmlName];
             }
+            renderTypesList(document.getElementById('type-search').value);
+            if (currentType === type.xmlName) renderMembersList();
+            renderSelectionPane();
         };
 
         tbody.appendChild(tr);
@@ -787,6 +796,23 @@ function renderMembersList() {
 
     const selectedSet = selectedMembers[currentType] || new Set();
 
+    const setMemberSelected = (memberName, checked) => {
+        if (!selectedMembers[currentType]) selectedMembers[currentType] = new Set();
+
+        if (checked) {
+            selectedMembers[currentType].add(memberName);
+            selectedTypes.add(currentType);
+        } else {
+            selectedMembers[currentType].delete(memberName);
+            if (selectedMembers[currentType].size === 0) {
+                delete selectedMembers[currentType];
+                selectedTypes.delete(currentType);
+            }
+        }
+        renderTypesList(document.getElementById('type-search').value);
+        renderSelectionPane();
+    };
+
     // Create table layout
     const table = document.createElement('table');
     table.className = 'members-table';
@@ -812,14 +838,17 @@ function renderMembersList() {
     // every row at once can lock up the extension for large orgs.
     sfarcRenderChunkedList(tbody, filtered, (member) => {
         const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #1f1f23; transition: background 0.1s; line-height: 1.1;';
-        tr.onmouseover = () => tr.style.background = 'rgba(255, 255, 255, 0.03)';
-        tr.onmouseout = () => tr.style.background = 'transparent';
+        tr.className = 'metadata-member-row';
+        tr.tabIndex = 0;
+        if (typeof tr.setAttribute === 'function') tr.setAttribute('role', 'checkbox');
+        tr.style.cssText = 'border-bottom: 1px solid #1f1f23; transition: background 0.1s; line-height: 1.1; cursor: pointer;';
         
         const isChecked = selectedSet.has(member.fullName);
         const dateStr = member.lastModifiedDate ? new Date(member.lastModifiedDate).toLocaleDateString() : '-';
         const userStr = member.lastModifiedByName || '-';
         const typeStr = currentType || '-';
+        tr.classList.toggle('is-selected', isChecked);
+        if (typeof tr.setAttribute === 'function') tr.setAttribute('aria-checked', String(isChecked));
         
         tr.innerHTML = `
             <td style="padding: 2px 4px;">
@@ -833,21 +862,25 @@ function renderMembersList() {
         
         const checkbox = tr.querySelector('.item-checkbox');
         checkbox.onchange = (e) => {
-            if (!selectedMembers[currentType]) selectedMembers[currentType] = new Set();
-
-            if (e.target.checked) {
-                selectedMembers[currentType].add(member.fullName);
-                selectedTypes.add(currentType);
-            } else {
-                selectedMembers[currentType].delete(member.fullName);
-                if (selectedMembers[currentType].size === 0) {
-                    delete selectedMembers[currentType];
-                    selectedTypes.delete(currentType);
-                }
-            }
-            renderTypesList(document.getElementById('type-search').value);
-            renderSelectionPane();
+            setMemberSelected(member.fullName, e.target.checked);
+            tr.classList.toggle('is-selected', e.target.checked);
+            if (typeof tr.setAttribute === 'function') tr.setAttribute('aria-checked', String(e.target.checked));
         };
+
+        const toggleFromRow = () => {
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+        };
+        tr.addEventListener('click', (e) => {
+            if (e.target.closest('input, button, a, select, textarea')) return;
+            toggleFromRow();
+        });
+        tr.addEventListener('keydown', (e) => {
+            if (e.target.closest('input, button, a, select, textarea')) return;
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            e.preventDefault();
+            toggleFromRow();
+        });
         
         return tr;
     }, { moreTag: 'tr', moreColspan: 5 });

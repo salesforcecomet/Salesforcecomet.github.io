@@ -598,7 +598,7 @@ function setupEventListeners() {
 
     document.getElementById('theme-toggle-btn').addEventListener('click', toggleTheme);
     const bugBtn = document.getElementById('report-bugs-btn');
-    if (bugBtn) bugBtn.addEventListener('click', () => window.open('https://docs.google.com/forms/d/e/1FAIpQLSc4V3_SP9XdosnLhEq7064nFe1UwgpOhdlYcqu9zvxy63gicg/viewform?usp=publish-editor', '_blank'));
+    if (bugBtn) bugBtn.addEventListener('click', () => window.open('https://github.com/salesforcecomet/Salesforcecomet.github.io/issues', '_blank'));
 
     // Cmd/Ctrl + Enter Keyboard Shortcut to save edited record values in Show All Data
     document.addEventListener('keydown', async (e) => {
