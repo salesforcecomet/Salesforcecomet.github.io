@@ -52,7 +52,13 @@
 
         <h1 class="hero-title">
             Your Entire Salesforce<br>
-            <span class="hero-accent">Toolkit in One Extension</span>
+            <span class="hero-feature-wrap" id="heroFeatureRotator">
+                <span class="hero-accent hero-feature" id="heroFeature" aria-live="polite">Toolkit in One Extension</span>
+                <span class="hero-feature-meta" aria-hidden="true">
+                    <span class="hero-feature-count"><span id="heroFeatureCurrent">01</span>/<span id="heroFeatureTotal">09</span></span>
+                    <span class="hero-feature-track"><span id="heroFeatureProgress"></span></span>
+                </span>
+            </span>
         </h1>
 
         <p class="hero-desc">
@@ -419,6 +425,71 @@
     const links = document.getElementById('navLinks');
     toggle.addEventListener('click', () => links.classList.toggle('open'));
     links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+    /* Hero feature rotator */
+    (function () {
+        const rotator = document.getElementById('heroFeatureRotator');
+        const label = document.getElementById('heroFeature');
+        const currentEl = document.getElementById('heroFeatureCurrent');
+        const totalEl = document.getElementById('heroFeatureTotal');
+        const progress = document.getElementById('heroFeatureProgress');
+        if (!rotator || !label || !currentEl || !totalEl || !progress) return;
+
+        const features = [
+            'Toolkit in One Extension',
+            'Command Palette',
+            'Record Inspector',
+            'Monaco Code Editor',
+            'Debug Log Manager',
+            'Data Export & Import',
+            'Metadata Explorer',
+            'Flow Scanner',
+            'Access & Security Analyzer'
+        ];
+        const interval = 2000;
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let index = 0;
+        let timer = null;
+        let paused = false;
+
+        totalEl.textContent = String(features.length).padStart(2, '0');
+
+        function restartProgress() {
+            progress.style.animation = 'none';
+            void progress.offsetWidth;
+            progress.style.animation = reducedMotion ? 'none' : `heroCountdown ${interval}ms linear forwards`;
+        }
+
+        function showFeature(nextIndex) {
+            index = (nextIndex + features.length) % features.length;
+            label.classList.remove('is-entering');
+            label.classList.add('is-leaving');
+            window.setTimeout(() => {
+                label.textContent = features[index];
+                currentEl.textContent = String(index + 1).padStart(2, '0');
+                label.classList.remove('is-leaving');
+                label.classList.add('is-entering');
+                restartProgress();
+            }, reducedMotion ? 0 : 180);
+        }
+
+        function start() {
+            if (reducedMotion || paused || timer) return;
+            restartProgress();
+            timer = window.setInterval(() => showFeature(index + 1), interval);
+        }
+
+        function stop() {
+            if (timer) window.clearInterval(timer);
+            timer = null;
+            progress.style.animationPlayState = 'paused';
+        }
+
+        rotator.addEventListener('mouseenter', () => { paused = true; stop(); });
+        rotator.addEventListener('mouseleave', () => { paused = false; start(); });
+        document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
+        start();
+    })();
 
     /* ── Slideshow: Fetch from screenshots.json ── */
     (async function() {
